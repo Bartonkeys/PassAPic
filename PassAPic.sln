@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Web", "PassAPic\PassAPic.Web.csproj", "{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Data", "PassAPic.Data\PassAPic.Data.csproj", "{47D67790-5496-4905-9785-9A281F5F818F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Contracts", "PassAPic.Contracts\PassAPic.Contracts.csproj", "{9829536C-B05A-4430-B6A0-EA3A3E42861C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Core", "PassAPic.Core\PassAPic.Core.csproj", "{09318371-A58A-41CA-BDD5-20B460E6A2BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D67790-5496-4905-9785-9A281F5F818F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D67790-5496-4905-9785-9A281F5F818F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D67790-5496-4905-9785-9A281F5F818F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D67790-5496-4905-9785-9A281F5F818F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9829536C-B05A-4430-B6A0-EA3A3E42861C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9829536C-B05A-4430-B6A0-EA3A3E42861C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9829536C-B05A-4430-B6A0-EA3A3E42861C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9829536C-B05A-4430-B6A0-EA3A3E42861C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09318371-A58A-41CA-BDD5-20B460E6A2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09318371-A58A-41CA-BDD5-20B460E6A2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09318371-A58A-41CA-BDD5-20B460E6A2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09318371-A58A-41CA-BDD5-20B460E6A2BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

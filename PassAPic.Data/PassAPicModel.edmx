@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PassAPicModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="PassAPicModelStoreContainer">
+    <EntitySet Name="Games" EntityType="PassAPicModel.Store.Games" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Turns" EntityType="PassAPicModel.Store.Turns" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Users" EntityType="PassAPicModel.Store.Users" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="GameTurn" Association="PassAPicModel.Store.GameTurn">
+      <End Role="Game" EntitySet="Games" />
+      <End Role="Turn" EntitySet="Turns" />
+    </AssociationSet>
+    <AssociationSet Name="UserGame" Association="PassAPicModel.Store.UserGame">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Game" EntitySet="Games" />
+    </AssociationSet>
+    <AssociationSet Name="TurnUser" Association="PassAPicModel.Store.TurnUser">
+      <End Role="Turn" EntitySet="Turns" />
+      <End Role="User" EntitySet="Users" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Games">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="NumberOfParticipants" Type="int" Nullable="false" />
+    <Property Name="GeneratedWord" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Users_Id" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Turns">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Word" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Image" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Game_Id" Type="int" Nullable="false" />
+    <Property Name="Users_Id" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DeviceGuid" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="IsOnline" Type="bit" Nullable="false" />
+  </EntityType>
+  <Association Name="GameTurn">
+    <End Role="Game" Type="PassAPicModel.Store.Games" Multiplicity="1" />
+    <End Role="Turn" Type="PassAPicModel.Store.Turns" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Game">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Turn">
+        <PropertyRef Name="Game_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="UserGame">
+    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="0..1" />
+    <End Role="Game" Type="PassAPicModel.Store.Games" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Game">
+        <PropertyRef Name="Users_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="TurnUser">
+    <End Role="Turn" Type="PassAPicModel.Store.Turns" Multiplicity="*" />
+    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Turn">
+        <PropertyRef Name="Users_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="PassAPicModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="PassAPicModelContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Games" EntityType="PassAPicModel.Game" />
+          <EntitySet Name="Guesses" EntityType="PassAPicModel.Guess" />
+          <AssociationSet Name="GameTurn" Association="PassAPicModel.GameTurn">
+            <End Role="Game" EntitySet="Games" />
+            <End Role="Turn" EntitySet="Guesses" />
+          </AssociationSet>
+          <EntitySet Name="Users" EntityType="PassAPicModel.User" />
+          <AssociationSet Name="UserGame" Association="PassAPicModel.UserGame">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Game" EntitySet="Games" />
+          </AssociationSet>
+          <AssociationSet Name="TurnUser" Association="PassAPicModel.TurnUser">
+            <End Role="Turn" EntitySet="Guesses" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Game">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Turns" Relationship="PassAPicModel.GameTurn" FromRole="Game" ToRole="Turn" />
+          <NavigationProperty Name="Users" Relationship="PassAPicModel.UserGame" FromRole="Game" ToRole="User" />
+          <Property Name="NumberOfGuesses" Type="Int32" Nullable="false" />
+          <Property Name="GeneratedWord" Type="String" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Guess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Game" Relationship="PassAPicModel.GameTurn" FromRole="Turn" ToRole="Game" />
+          <NavigationProperty Name="Users" Relationship="PassAPicModel.TurnUser" FromRole="Turn" ToRole="User" />
+          <Property Name="Order" Type="String" Nullable="false" />
+        </EntityType>
+        <Association Name="GameTurn">
+          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="PassAPicModel.Guess" Role="Turn" Multiplicity="*" />
+        </Association>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Games" Relationship="PassAPicModel.UserGame" FromRole="User" ToRole="Game" />
+          <Property Name="DeviceGuid" Type="Guid" Nullable="false" />
+          <Property Name="Username" Type="String" Nullable="false" />
+          <Property Name="IsOnline" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Turn" Relationship="PassAPicModel.TurnUser" FromRole="User" ToRole="Turn" />
+        </EntityType>
+        <Association Name="UserGame">
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="*" />
+        </Association>
+        <Association Name="TurnUser">
+          <End Type="PassAPicModel.Guess" Role="Turn" Multiplicity="1" />
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="1" />
+        </Association>
+        <EntityType Name="WordGuess" BaseType="PassAPicModel.Guess" >
+          <Property Name="Word" Type="String" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ImageGuess" BaseType="PassAPicModel.Guess" >
+          <Property Name="Image" Type="String" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="PassAPicModelStoreContainer" CdmEntityContainer="PassAPicModelContainer">
+    <EntitySetMapping Name="Games">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
+        <MappingFragment StoreEntitySet="Games">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="NumberOfGuesses" ColumnName="NumberOfParticipants" />
+          <ScalarProperty Name="GeneratedWord" ColumnName="GeneratedWord" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Guesses">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Guess)">
+        <MappingFragment StoreEntitySet="Turns">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.User)">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="DeviceGuid" ColumnName="DeviceGuid" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="IsOnline" ColumnName="IsOnline" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="GameTurn" TypeName="PassAPicModel.GameTurn" StoreEntitySet="Turns">
+      <EndProperty Name="Game">
+        <ScalarProperty Name="Id" ColumnName="Game_Id" />
+      </EndProperty>
+      <EndProperty Name="Turn">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="UserGame" TypeName="PassAPicModel.UserGame" StoreEntitySet="Games">
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="Users_Id" />
+      </EndProperty>
+      <EndProperty Name="Game">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="Users_Id" IsNull="false" />
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="TurnUser" TypeName="PassAPicModel.TurnUser" StoreEntitySet="Turns">
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="Users_Id" />
+      </EndProperty>
+      <EndProperty Name="Turn">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

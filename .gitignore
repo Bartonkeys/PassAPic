@@ -1,0 +1,17 @@
+bin
+
+obj
+
+bin
+
+obj
+
+bin
+
+obj
+
+obj
+
+bin
+packages/*
+!packages/repositories.config
