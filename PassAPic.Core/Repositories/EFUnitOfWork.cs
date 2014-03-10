@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Objects;
-using System.Linq;
-using System.Text;
-using Jampot.TheAppBuilder.CoreLibrary.Repositories.Helpers;
 using PassAPic.Contracts;
 using PassAPic.Data;
 using PassAPic.Repositories.Helpers;
@@ -17,7 +13,7 @@ namespace PassAPic.Core.Repositories
 
         public IUserRepository User { get { return GetRepo<IUserRepository>(); } }
         public IRepository<Game> Game { get { return GetStandardRepository<Game>(); } }
-        public IRepository<Turn> Turn { get { return GetStandardRepository<Turn>(); } }
+        public IRepository<Guess> Guess { get { return GetStandardRepository<Guess>(); } }
 
 
         private readonly IRepositoryProvider _repositoryProvider;

@@ -112,7 +112,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <NavigationProperty Name="Turns" Relationship="PassAPicModel.GameTurn" FromRole="Game" ToRole="Turn" />
+          <NavigationProperty Name="Guesses" Relationship="PassAPicModel.GameTurn" FromRole="Game" ToRole="Turn" />
           <NavigationProperty Name="Users" Relationship="PassAPicModel.UserGame" FromRole="Game" ToRole="User" />
           <Property Name="NumberOfGuesses" Type="Int32" Nullable="false" />
           <Property Name="GeneratedWord" Type="String" Nullable="false" />
@@ -124,7 +124,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Game" Relationship="PassAPicModel.GameTurn" FromRole="Turn" ToRole="Game" />
           <NavigationProperty Name="Users" Relationship="PassAPicModel.TurnUser" FromRole="Turn" ToRole="User" />
-          <Property Name="Order" Type="String" Nullable="false" />
+          <Property Name="Order" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="GameTurn">
           <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
@@ -139,7 +139,7 @@
           <Property Name="DeviceGuid" Type="Guid" Nullable="false" />
           <Property Name="Username" Type="String" Nullable="false" />
           <Property Name="IsOnline" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Turn" Relationship="PassAPicModel.TurnUser" FromRole="User" ToRole="Turn" />
+          <NavigationProperty Name="Guess" Relationship="PassAPicModel.TurnUser" FromRole="User" ToRole="Turn" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />

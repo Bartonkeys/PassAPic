@@ -25,6 +25,6 @@ namespace PassAPic.Data
         public bool IsOnline { get; set; }
     
         public virtual ICollection<Game> Games { get; set; }
-        public virtual Turn Turn { get; set; }
+        public virtual Guess Guess { get; set; }
     }
 }

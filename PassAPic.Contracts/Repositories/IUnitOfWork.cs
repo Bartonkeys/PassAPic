@@ -9,7 +9,7 @@ namespace PassAPic.Contracts
 
         IUserRepository User { get; }
         IRepository<Game> Game { get; }
-        IRepository<Turn> Turn { get; }
+        IRepository<Guess> Guess { get; }
         void Commit();
     }
 }

@@ -53,6 +53,12 @@
     <Compile Include="Game.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Guess.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ImageGuess.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PassAPicModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -69,10 +75,10 @@
       <DependentUpon>PassAPicModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Turn.cs">
+    <Compile Include="User.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="User.cs">
+    <Compile Include="WordGuess.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

@@ -26,7 +26,7 @@ namespace PassAPic.Data
         }
     
         public virtual DbSet<Game> Games { get; set; }
-        public virtual DbSet<Turn> Turns { get; set; }
+        public virtual DbSet<Guess> Guesses { get; set; }
         public virtual DbSet<User> Users { get; set; }
     }
 }

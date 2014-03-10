@@ -16,14 +16,14 @@ namespace PassAPic.Data
     {
         public Game()
         {
-            this.Turns = new HashSet<Turn>();
+            this.Guesses = new HashSet<Guess>();
         }
     
         public int Id { get; set; }
-        public int NumberOfParticipants { get; set; }
+        public int NumberOfGuesses { get; set; }
         public string GeneratedWord { get; set; }
     
-        public virtual ICollection<Turn> Turns { get; set; }
+        public virtual ICollection<Guess> Guesses { get; set; }
         public virtual User Users { get; set; }
     }
 }
