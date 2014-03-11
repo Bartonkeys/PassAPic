@@ -24,7 +24,7 @@
       <End Role="Guess" EntitySet="Guesses" />
       <End Role="User" EntitySet="Users" />
     </AssociationSet>
-    <AssociationSet Name="GuessUser1" Association="PassAPicModel.Store.GuessUser1">
+    <AssociationSet Name="GuessNextUser" Association="PassAPicModel.Store.NextGuesses">
       <End Role="Guess" EntitySet="Guesses" />
       <End Role="User" EntitySet="Users" />
     </AssociationSet>
@@ -54,6 +54,8 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Order" Type="int" Nullable="false" />
     <Property Name="Game_Id" Type="int" Nullable="false" />
+    <Property Name="User_Id" Type="int" Nullable="true" />
+    <Property Name="NextUser_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="Users">
     <Key>
@@ -62,8 +64,6 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
     <Property Name="IsOnline" Type="bit" Nullable="false" />
-    <Property Name="Guess_Id" Type="int" Nullable="true" />
-    <Property Name="Guess1_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="Words">
     <Key>
@@ -111,26 +111,26 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="GuessUser">
-    <End Role="Guess" Type="PassAPicModel.Store.Guesses" Multiplicity="0..1" />
-    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="*" />
+    <End Role="Guess" Type="PassAPicModel.Store.Guesses" Multiplicity="*" />
+    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="0..1" />
     <ReferentialConstraint>
-      <Principal Role="Guess">
+      <Principal Role="User">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="User">
-        <PropertyRef Name="Guess_Id" />
+      <Dependent Role="Guess">
+        <PropertyRef Name="User_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="GuessUser1">
-    <End Role="Guess" Type="PassAPicModel.Store.Guesses" Multiplicity="0..1" />
-    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="*" />
+  <Association Name="NextGuesses">
+    <End Role="Guess" Type="PassAPicModel.Store.Guesses" Multiplicity="*" />
+    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="0..1" />
     <ReferentialConstraint>
-      <Principal Role="Guess">
+      <Principal Role="User">
         <PropertyRef Name="Id" />
       </Principal>
-      <Dependent Role="User">
-        <PropertyRef Name="Guess1_Id" />
+      <Dependent Role="Guess">
+        <PropertyRef Name="NextUser_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -183,7 +183,7 @@
             <End EntitySet="Users" Role="User" />
           </AssociationSet>
           <EntitySet Name="Words" EntityType="PassAPicModel.Word" />
-          <AssociationSet Name="GuessUser1" Association="PassAPicModel.GuessUser1">
+          <AssociationSet Name="GuessNextUser" Association="PassAPicModel.NextGuesses">
             <End Role="Guess" EntitySet="Guesses" />
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
@@ -207,7 +207,7 @@
           <NavigationProperty Name="Game" Relationship="PassAPicModel.GameTurn" FromRole="Turn" ToRole="Game" />
           <NavigationProperty Name="User" Relationship="PassAPicModel.GuessUser" FromRole="Guess" ToRole="User" />
           <Property Name="Order" Nullable="false" Type="Int32" />
-          <NavigationProperty Name="NextUser" Relationship="PassAPicModel.GuessUser1" FromRole="Guess" ToRole="User" />
+          <NavigationProperty Name="NextUser" Relationship="PassAPicModel.NextGuesses" FromRole="Guess" ToRole="User" />
         </EntityType>
         <Association Name="GameTurn">
           <End Type="PassAPicModel.Game" Multiplicity="1" Role="Game" />
@@ -221,15 +221,15 @@
           <NavigationProperty Name="Games" Relationship="PassAPicModel.UserGame" FromRole="User" ToRole="Game" />
           <Property Name="Username" Nullable="false" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="IsOnline" Nullable="false" Type="Boolean" />
-          <NavigationProperty Name="Guess" Relationship="PassAPicModel.GuessUser" FromRole="User" ToRole="Guess" />
-          <NavigationProperty Name="Guess1" Relationship="PassAPicModel.GuessUser1" FromRole="User" ToRole="Guess" />
+          <NavigationProperty Name="CompletedGuesses" Relationship="PassAPicModel.GuessUser" FromRole="User" ToRole="Guess" />
+          <NavigationProperty Name="NextGuesses" Relationship="PassAPicModel.NextGuesses" FromRole="User" ToRole="Guess" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
           <End Type="PassAPicModel.Game" Multiplicity="*" Role="Game" />
         </Association>
         <Association Name="GuessUser">
-          <End Type="PassAPicModel.Guess" Multiplicity="0..1" Role="Guess" />
+          <End Type="PassAPicModel.Guess" Multiplicity="*" Role="Guess" />
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
         </Association>
         <EntityType Name="WordGuess" BaseType="PassAPicModel.Guess" >
@@ -245,8 +245,8 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="word" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
         </EntityType>
-        <Association Name="GuessUser1">
-          <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="0..1" />
+        <Association Name="NextGuesses">
+          <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="*" />
           <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />
         </Association>
       </Schema>
@@ -319,23 +319,23 @@
       </EndProperty>
       <Condition ColumnName="Creator_Id" IsNull="false" />
     </AssociationSetMapping>
-    <AssociationSetMapping Name="GuessUser" TypeName="PassAPicModel.GuessUser" StoreEntitySet="Users">
-      <EndProperty Name="Guess">
-        <ScalarProperty Name="Id" ColumnName="Guess_Id" />
-      </EndProperty>
+    <AssociationSetMapping Name="GuessUser" TypeName="PassAPicModel.GuessUser" StoreEntitySet="Guesses">
       <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="User_Id" />
+      </EndProperty>
+      <EndProperty Name="Guess">
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
-      <Condition ColumnName="Guess_Id" IsNull="false" />
+      <Condition ColumnName="User_Id" IsNull="false" />
     </AssociationSetMapping>
-    <AssociationSetMapping Name="GuessUser1" TypeName="PassAPicModel.GuessUser1" StoreEntitySet="Users">
-      <EndProperty Name="Guess">
-        <ScalarProperty Name="Id" ColumnName="Guess1_Id" />
-      </EndProperty>
+    <AssociationSetMapping Name="GuessNextUser" TypeName="PassAPicModel.NextGuesses" StoreEntitySet="Guesses">
       <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="NextUser_Id" />
+      </EndProperty>
+      <EndProperty Name="Guess">
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
-      <Condition ColumnName="Guess1_Id" IsNull="false" />
+      <Condition ColumnName="NextUser_Id" IsNull="false" />
     </AssociationSetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>

@@ -17,7 +17,7 @@
         <InheritanceConnector EntityType="PassAPicModel.WordGuess" />
         <InheritanceConnector EntityType="PassAPicModel.ImageGuess" />
         <EntityTypeShape EntityType="PassAPicModel.Word" Width="1.5" PointX="1.75" PointY="3.25" />
-        <AssociationConnector Association="PassAPicModel.GuessUser1" />
+        <AssociationConnector Association="PassAPicModel.NextGuesses" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

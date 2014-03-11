@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/11/2014 22:23:30
+-- Date Created: 03/11/2014 22:58:28
 -- Generated from EDMX file: C:\YerMA\PassAPic\PassAPic.Data\PassAPicModel.edmx
 -- --------------------------------------------------
 
@@ -77,7 +77,9 @@ GO
 CREATE TABLE [dbo].[Guesses] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Order] int  NOT NULL,
-    [Game_Id] int  NOT NULL
+    [Game_Id] int  NOT NULL,
+    [User_Id] int  NULL,
+    [NextUser_Id] int  NULL
 );
 GO
 
@@ -85,9 +87,7 @@ GO
 CREATE TABLE [dbo].[Users] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Username] nvarchar(max)  NOT NULL,
-    [IsOnline] bit  NOT NULL,
-    [Guess_Id] int  NULL,
-    [Guess1_Id] int  NULL
+    [IsOnline] bit  NOT NULL
 );
 GO
 
@@ -184,32 +184,32 @@ ON [dbo].[Games]
     ([Creator_Id]);
 GO
 
--- Creating foreign key on [Guess_Id] in table 'Users'
-ALTER TABLE [dbo].[Users]
+-- Creating foreign key on [User_Id] in table 'Guesses'
+ALTER TABLE [dbo].[Guesses]
 ADD CONSTRAINT [FK_GuessUser]
-    FOREIGN KEY ([Guess_Id])
-    REFERENCES [dbo].[Guesses]
+    FOREIGN KEY ([User_Id])
+    REFERENCES [dbo].[Users]
         ([Id])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_GuessUser'
 CREATE INDEX [IX_FK_GuessUser]
-ON [dbo].[Users]
-    ([Guess_Id]);
+ON [dbo].[Guesses]
+    ([User_Id]);
 GO
 
--- Creating foreign key on [Guess1_Id] in table 'Users'
-ALTER TABLE [dbo].[Users]
-ADD CONSTRAINT [FK_GuessUser1]
-    FOREIGN KEY ([Guess1_Id])
-    REFERENCES [dbo].[Guesses]
+-- Creating foreign key on [NextUser_Id] in table 'Guesses'
+ALTER TABLE [dbo].[Guesses]
+ADD CONSTRAINT [FK_NextGuesses]
+    FOREIGN KEY ([NextUser_Id])
+    REFERENCES [dbo].[Users]
         ([Id])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
 
--- Creating non-clustered index for FOREIGN KEY 'FK_GuessUser1'
-CREATE INDEX [IX_FK_GuessUser1]
-ON [dbo].[Users]
-    ([Guess1_Id]);
+-- Creating non-clustered index for FOREIGN KEY 'FK_NextGuesses'
+CREATE INDEX [IX_FK_NextGuesses]
+ON [dbo].[Guesses]
+    ([NextUser_Id]);
 GO
 
 -- Creating foreign key on [Id] in table 'Guesses_WordGuess'
