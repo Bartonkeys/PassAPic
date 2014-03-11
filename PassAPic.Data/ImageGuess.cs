@@ -12,18 +12,8 @@ namespace PassAPic.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    public partial class ImageGuess : Guess
     {
-        public User()
-        {
-            this.Games = new HashSet<Game>();
-        }
-    
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public bool IsOnline { get; set; }
-    
-        public virtual ICollection<Game> Games { get; set; }
-        public virtual Guess Guess { get; set; }
+        public string Image { get; set; }
     }
 }

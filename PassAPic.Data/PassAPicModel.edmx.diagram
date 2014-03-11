@@ -8,9 +8,9 @@
         <EntityTypeShape EntityType="PassAPicModel.Game" Width="2" PointX="3.5" PointY="1" />
         <EntityTypeShape EntityType="PassAPicModel.Guess" Width="1.5" PointX="6.125" PointY="2.25" />
         <AssociationConnector Association="PassAPicModel.GameTurn" />
-        <EntityTypeShape EntityType="PassAPicModel.User" Width="1.5" PointX="0.75" PointY="2" />
+        <EntityTypeShape EntityType="PassAPicModel.User" PointX="8.375" PointY="1.125" Width="1.5" />
         <AssociationConnector Association="PassAPicModel.UserGame" />
-        <AssociationConnector Association="PassAPicModel.TurnUser" />
+        <AssociationConnector Association="PassAPicModel.GuessUser" />
         <EntityTypeShape EntityType="PassAPicModel.WordGuess" Width="1.5" PointX="4.875" PointY="4.625" />
         <InheritanceConnector EntityType="PassAPicModel.WordGuess" />
         <EntityTypeShape EntityType="PassAPicModel.ImageGuess" Width="1.5" PointX="7.5" PointY="4.625" />
