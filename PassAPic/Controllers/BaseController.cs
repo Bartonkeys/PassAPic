@@ -13,5 +13,7 @@ namespace PassAPic.Controllers
     {
         protected static readonly log4net.ILog _log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         protected IUnitOfWork UnitOfWork;
+        protected List<String> Words;
+        protected Random random = new Random();
     }
 }

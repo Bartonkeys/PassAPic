@@ -78,6 +78,9 @@
     <Compile Include="User.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Word.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="WordGuess.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>

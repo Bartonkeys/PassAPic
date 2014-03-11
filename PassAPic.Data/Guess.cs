@@ -18,6 +18,7 @@ namespace PassAPic.Data
         public int Order { get; set; }
     
         public virtual Game Game { get; set; }
-        public virtual User Users { get; set; }
+        public virtual User User { get; set; }
+        public virtual User NextUser { get; set; }
     }
 }

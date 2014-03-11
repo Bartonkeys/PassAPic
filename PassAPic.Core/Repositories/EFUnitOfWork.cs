@@ -14,6 +14,7 @@ namespace PassAPic.Core.Repositories
         public IUserRepository User { get { return GetRepo<IUserRepository>(); } }
         public IRepository<Game> Game { get { return GetStandardRepository<Game>(); } }
         public IRepository<Guess> Guess { get { return GetStandardRepository<Guess>(); } }
+        public IRepository<Word> Word { get { return GetStandardRepository<Word>(); } }
 
 
         private readonly IRepositoryProvider _repositoryProvider;

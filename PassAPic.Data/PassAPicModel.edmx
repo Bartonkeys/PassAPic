@@ -9,6 +9,7 @@
     <EntitySet Name="Games" EntityType="PassAPicModel.Store.Games" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Guesses" EntityType="PassAPicModel.Store.Guesses" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Users" EntityType="PassAPicModel.Store.Users" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Words" EntityType="PassAPicModel.Store.Words" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Guesses_WordGuess" EntityType="PassAPicModel.Store.Guesses_WordGuess" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Guesses_ImageGuess" EntityType="PassAPicModel.Store.Guesses_ImageGuess" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="GameTurn" Association="PassAPicModel.Store.GameTurn">
@@ -20,6 +21,10 @@
       <End Role="Game" EntitySet="Games" />
     </AssociationSet>
     <AssociationSet Name="GuessUser" Association="PassAPicModel.Store.GuessUser">
+      <End Role="Guess" EntitySet="Guesses" />
+      <End Role="User" EntitySet="Users" />
+    </AssociationSet>
+    <AssociationSet Name="GuessUser1" Association="PassAPicModel.Store.GuessUser1">
       <End Role="Guess" EntitySet="Guesses" />
       <End Role="User" EntitySet="Users" />
     </AssociationSet>
@@ -38,8 +43,9 @@
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="NumberOfGuesses" Type="int" Nullable="false" />
-    <Property Name="GeneratedWord" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="Users_Id" Type="int" Nullable="true" />
+    <Property Name="StartingWord" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="GameOverMan" Type="bit" Nullable="false" />
+    <Property Name="Creator_Id" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="Guesses">
     <Key>
@@ -57,6 +63,14 @@
     <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
     <Property Name="IsOnline" Type="bit" Nullable="false" />
     <Property Name="Guess_Id" Type="int" Nullable="true" />
+    <Property Name="Guess1_Id" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Words">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="word" Type="varchar" Nullable="false" MaxLength="200" />
   </EntityType>
   <EntityType Name="Guesses_WordGuess">
     <Key>
@@ -92,7 +106,7 @@
         <PropertyRef Name="Id" />
       </Principal>
       <Dependent Role="Game">
-        <PropertyRef Name="Users_Id" />
+        <PropertyRef Name="Creator_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -105,6 +119,18 @@
       </Principal>
       <Dependent Role="User">
         <PropertyRef Name="Guess_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="GuessUser1">
+    <End Role="Guess" Type="PassAPicModel.Store.Guesses" Multiplicity="0..1" />
+    <End Role="User" Type="PassAPicModel.Store.Users" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Guess">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="User">
+        <PropertyRef Name="Guess1_Id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -144,8 +170,8 @@
           <EntitySet Name="Games" EntityType="PassAPicModel.Game" />
           <EntitySet Name="Guesses" EntityType="PassAPicModel.Guess" />
           <AssociationSet Name="GameTurn" Association="PassAPicModel.GameTurn">
-            <End Role="Game" EntitySet="Games" />
-            <End Role="Turn" EntitySet="Guesses" />
+            <End EntitySet="Games" Role="Game" />
+            <End EntitySet="Guesses" Role="Turn" />
           </AssociationSet>
           <EntitySet Name="Users" EntityType="PassAPicModel.User" />
           <AssociationSet Name="UserGame" Association="PassAPicModel.UserGame">
@@ -156,6 +182,11 @@
             <End EntitySet="Guesses" Role="Guess" />
             <End EntitySet="Users" Role="User" />
           </AssociationSet>
+          <EntitySet Name="Words" EntityType="PassAPicModel.Word" />
+          <AssociationSet Name="GuessUser1" Association="PassAPicModel.GuessUser1">
+            <End Role="Guess" EntitySet="Guesses" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -163,22 +194,24 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <NavigationProperty Name="Guesses" Relationship="PassAPicModel.GameTurn" FromRole="Game" ToRole="Turn" />
-          <NavigationProperty Name="Users" Relationship="PassAPicModel.UserGame" FromRole="Game" ToRole="User" />
+          <NavigationProperty Name="Creator" Relationship="PassAPicModel.UserGame" FromRole="Game" ToRole="User" />
           <Property Name="NumberOfGuesses" Type="Int32" Nullable="false" />
-          <Property Name="GeneratedWord" Type="String" Nullable="false" />
+          <Property Name="StartingWord" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="GameOverMan" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Guess">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
           <NavigationProperty Name="Game" Relationship="PassAPicModel.GameTurn" FromRole="Turn" ToRole="Game" />
-          <NavigationProperty Name="Users" Relationship="PassAPicModel.GuessUser" FromRole="Guess" ToRole="User" />
-          <Property Name="Order" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="PassAPicModel.GuessUser" FromRole="Guess" ToRole="User" />
+          <Property Name="Order" Nullable="false" Type="Int32" />
+          <NavigationProperty Name="NextUser" Relationship="PassAPicModel.GuessUser1" FromRole="Guess" ToRole="User" />
         </EntityType>
         <Association Name="GameTurn">
-          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
-          <End Type="PassAPicModel.Guess" Role="Turn" Multiplicity="*" />
+          <End Type="PassAPicModel.Game" Multiplicity="1" Role="Game" />
+          <End Type="PassAPicModel.Guess" Multiplicity="*" Role="Turn" />
         </Association>
         <EntityType Name="User">
           <Key>
@@ -186,9 +219,10 @@
           </Key>
           <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
           <NavigationProperty Name="Games" Relationship="PassAPicModel.UserGame" FromRole="User" ToRole="Game" />
-          <Property Name="Username" Nullable="false" Type="String" />
+          <Property Name="Username" Nullable="false" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="IsOnline" Nullable="false" Type="Boolean" />
           <NavigationProperty Name="Guess" Relationship="PassAPicModel.GuessUser" FromRole="User" ToRole="Guess" />
+          <NavigationProperty Name="Guess1" Relationship="PassAPicModel.GuessUser1" FromRole="User" ToRole="Guess" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -199,11 +233,22 @@
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
         </Association>
         <EntityType Name="WordGuess" BaseType="PassAPicModel.Guess" >
-          <Property Name="Word" Type="String" Nullable="false" />
+          <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
         </EntityType>
         <EntityType Name="ImageGuess" BaseType="PassAPicModel.Guess" >
-          <Property Name="Image" Type="String" Nullable="false" />
+          <Property Name="Image" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
         </EntityType>
+        <EntityType Name="Word">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="word" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="GuessUser1">
+          <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="0..1" />
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -215,7 +260,8 @@
         <MappingFragment StoreEntitySet="Games">
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="NumberOfGuesses" ColumnName="NumberOfGuesses" />
-          <ScalarProperty Name="GeneratedWord" ColumnName="GeneratedWord" />
+          <ScalarProperty Name="StartingWord" ColumnName="StartingWord" />
+          <ScalarProperty Name="GameOverMan" ColumnName="GameOverMan" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -248,6 +294,14 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="Words">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Word)">
+        <MappingFragment StoreEntitySet="Words">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="word" ColumnName="word" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <AssociationSetMapping Name="GameTurn" TypeName="PassAPicModel.GameTurn" StoreEntitySet="Guesses">
       <EndProperty Name="Game">
         <ScalarProperty Name="Id" ColumnName="Game_Id" />
@@ -258,12 +312,12 @@
     </AssociationSetMapping>
     <AssociationSetMapping Name="UserGame" TypeName="PassAPicModel.UserGame" StoreEntitySet="Games">
       <EndProperty Name="User">
-        <ScalarProperty Name="Id" ColumnName="Users_Id" />
+        <ScalarProperty Name="Id" ColumnName="Creator_Id" />
       </EndProperty>
       <EndProperty Name="Game">
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
-      <Condition ColumnName="Users_Id" IsNull="false" />
+      <Condition ColumnName="Creator_Id" IsNull="false" />
     </AssociationSetMapping>
     <AssociationSetMapping Name="GuessUser" TypeName="PassAPicModel.GuessUser" StoreEntitySet="Users">
       <EndProperty Name="Guess">
@@ -273,6 +327,15 @@
         <ScalarProperty Name="Id" ColumnName="Id" />
       </EndProperty>
       <Condition ColumnName="Guess_Id" IsNull="false" />
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="GuessUser1" TypeName="PassAPicModel.GuessUser1" StoreEntitySet="Users">
+      <EndProperty Name="Guess">
+        <ScalarProperty Name="Id" ColumnName="Guess1_Id" />
+      </EndProperty>
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="Guess1_Id" IsNull="false" />
     </AssociationSetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
@@ -290,6 +353,7 @@
         <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
         <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
       </DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->

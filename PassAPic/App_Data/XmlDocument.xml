@@ -462,5 +462,18 @@
             Handles setup of game and management of guesses and results
             </summary>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.PostStart(PassAPic.Models.GameSetupModel)">
+            <summary>
+            Lets play. Set up game, generate first word and return to user.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.GameController.PostImageGuess(PassAPic.Models.ImageModel)">
+            <summary>
+            Post up image guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
+            If this is last guess then dont set next user and mark game as over. Im aware this wont happen on an image, but shall stick it in here anyway.
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

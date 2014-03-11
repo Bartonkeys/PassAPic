@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/11/2014 10:05:37
+-- Date Created: 03/11/2014 22:23:30
 -- Generated from EDMX file: C:\YerMA\PassAPic\PassAPic.Data\PassAPicModel.edmx
 -- --------------------------------------------------
 
@@ -26,6 +26,9 @@ GO
 IF OBJECT_ID(N'[dbo].[FK_GuessUser]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_GuessUser];
 GO
+IF OBJECT_ID(N'[dbo].[FK_GuessUser1]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_GuessUser1];
+GO
 IF OBJECT_ID(N'[dbo].[FK_WordGuess_inherits_Guess]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Guesses_WordGuess] DROP CONSTRAINT [FK_WordGuess_inherits_Guess];
 GO
@@ -46,6 +49,9 @@ GO
 IF OBJECT_ID(N'[dbo].[Users]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Users];
 GO
+IF OBJECT_ID(N'[dbo].[Words]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[Words];
+GO
 IF OBJECT_ID(N'[dbo].[Guesses_WordGuess]', 'U') IS NOT NULL
     DROP TABLE [dbo].[Guesses_WordGuess];
 GO
@@ -61,8 +67,9 @@ GO
 CREATE TABLE [dbo].[Games] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [NumberOfGuesses] int  NOT NULL,
-    [GeneratedWord] nvarchar(max)  NOT NULL,
-    [Users_Id] int  NULL
+    [StartingWord] nvarchar(max)  NOT NULL,
+    [GameOverMan] bit  NOT NULL,
+    [Creator_Id] int  NULL
 );
 GO
 
@@ -79,7 +86,15 @@ CREATE TABLE [dbo].[Users] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Username] nvarchar(max)  NOT NULL,
     [IsOnline] bit  NOT NULL,
-    [Guess_Id] int  NULL
+    [Guess_Id] int  NULL,
+    [Guess1_Id] int  NULL
+);
+GO
+
+-- Creating table 'Words'
+CREATE TABLE [dbo].[Words] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [word] varchar(200)  NOT NULL
 );
 GO
 
@@ -119,6 +134,12 @@ ADD CONSTRAINT [PK_Users]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
+-- Creating primary key on [Id] in table 'Words'
+ALTER TABLE [dbo].[Words]
+ADD CONSTRAINT [PK_Words]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
 -- Creating primary key on [Id] in table 'Guesses_WordGuess'
 ALTER TABLE [dbo].[Guesses_WordGuess]
 ADD CONSTRAINT [PK_Guesses_WordGuess]
@@ -149,10 +170,10 @@ ON [dbo].[Guesses]
     ([Game_Id]);
 GO
 
--- Creating foreign key on [Users_Id] in table 'Games'
+-- Creating foreign key on [Creator_Id] in table 'Games'
 ALTER TABLE [dbo].[Games]
 ADD CONSTRAINT [FK_UserGame]
-    FOREIGN KEY ([Users_Id])
+    FOREIGN KEY ([Creator_Id])
     REFERENCES [dbo].[Users]
         ([Id])
     ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -160,7 +181,7 @@ ADD CONSTRAINT [FK_UserGame]
 -- Creating non-clustered index for FOREIGN KEY 'FK_UserGame'
 CREATE INDEX [IX_FK_UserGame]
 ON [dbo].[Games]
-    ([Users_Id]);
+    ([Creator_Id]);
 GO
 
 -- Creating foreign key on [Guess_Id] in table 'Users'
@@ -175,6 +196,20 @@ ADD CONSTRAINT [FK_GuessUser]
 CREATE INDEX [IX_FK_GuessUser]
 ON [dbo].[Users]
     ([Guess_Id]);
+GO
+
+-- Creating foreign key on [Guess1_Id] in table 'Users'
+ALTER TABLE [dbo].[Users]
+ADD CONSTRAINT [FK_GuessUser1]
+    FOREIGN KEY ([Guess1_Id])
+    REFERENCES [dbo].[Guesses]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_GuessUser1'
+CREATE INDEX [IX_FK_GuessUser1]
+ON [dbo].[Users]
+    ([Guess1_Id]);
 GO
 
 -- Creating foreign key on [Id] in table 'Guesses_WordGuess'
