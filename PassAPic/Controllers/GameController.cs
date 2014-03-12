@@ -104,5 +104,49 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        // POST /api/game/guessword
+        /// <summary>
+        /// Post up word guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
+        /// If this is last guess then dont set next user and mark game as over.
+        /// </summary>
+        /// <returns></returns>
+        [Route("GuessWord")]
+        public HttpResponseMessage PostWordGuess(WordModel model)
+        {
+            try
+            {
+                var user = UnitOfWork.User.GetById(model.UserId);
+                var nextUser = UnitOfWork.User.GetById(model.NextUserId);
+                var game = UnitOfWork.Game.GetById(model.GameId);
+
+                if (game.Guesses.Any(x => x.User.Id == nextUser.Id))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                var order = game.Guesses.Count + 1;
+
+                var wordGuess = new WordGuess
+                {
+                    Order = order,
+                    User = user,
+                    Word = model.Word
+                };
+
+                if (order < game.NumberOfGuesses) wordGuess.NextUser = nextUser;
+                else game.GameOverMan = true;
+
+                game.Guesses.Add(wordGuess);
+
+                UnitOfWork.Commit();
+
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
     }
 }
