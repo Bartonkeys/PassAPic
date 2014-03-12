@@ -12,6 +12,9 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "gameId")]
         public int GameId { get; set; }
 
+        [JsonProperty(PropertyName = "startingWord")]
+        public string StartingWord { get; set; }
+
         [JsonProperty(PropertyName = "guesses")]
         public List<GameBaseModel> Guesses { get; set; } 
     }
