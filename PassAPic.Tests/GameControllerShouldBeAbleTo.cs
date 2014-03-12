@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -67,9 +68,9 @@ namespace PassAPic.Tests
         public async Task PlayGame()
         {
             var firstWordDown = new WordModel(); 
-            var firstImageDown = new ImageModel();
-            var secondWordDown = new WordModel();
-            var secondImageDown = new ImageModel();
+            var firstImageDownList = new List<GameBaseModel>();
+            var secondWordDownList = new List<GameBaseModel>();
+            var secondImageDownList = new List<GameBaseModel>();
 
             using (var client = new HttpClient())
             {
@@ -107,7 +108,7 @@ namespace PassAPic.Tests
                 response = await client.GetAsync("api/game/guesses/" + firstImageUp.NextUserId);
                 if (response.IsSuccessStatusCode)
                 {
-                    firstImageDown = await response.Content.ReadAsAsync<ImageModel>();
+                    firstImageDownList = await response.Content.ReadAsAsync<List<GameBaseModel>>();
                 }
                 else Assert.Fail();
 
@@ -115,10 +116,10 @@ namespace PassAPic.Tests
 
                 var secondWordUp = new WordModel()
                 {
-                    GameId = firstImageDown.GameId,
+                    GameId = firstImageDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.GameId).FirstOrDefault(),
                     NextUserId = 3,
                     Word = "First Word Up",
-                    UserId = firstImageDown.UserId
+                    UserId = firstImageDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.UserId).FirstOrDefault()
                 };
                 response = await client.PostAsJsonAsync("api/game/guessword", secondWordUp);
                 if (!response.IsSuccessStatusCode) Assert.Fail();
@@ -126,7 +127,7 @@ namespace PassAPic.Tests
                 response = await client.GetAsync("api/game/guesses/" + secondWordUp.NextUserId);
                 if (response.IsSuccessStatusCode)
                 {
-                    secondWordDown = await response.Content.ReadAsAsync<WordModel>();
+                    secondWordDownList = await response.Content.ReadAsAsync<List<GameBaseModel>>();
                 }
                 else Assert.Fail();
 
@@ -134,10 +135,10 @@ namespace PassAPic.Tests
 
                 var secondImageUp = new ImageModel
                 {
-                    GameId = secondWordDown.GameId,
+                    GameId = secondWordDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.GameId).FirstOrDefault(),
                     NextUserId = 4,
                     Image = "Second Image",
-                    UserId = secondWordDown.UserId
+                    UserId = secondWordDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.UserId).FirstOrDefault()
                 };
                 response = await client.PostAsJsonAsync("api/game/guessimage", secondImageUp);
                 if (!response.IsSuccessStatusCode) Assert.Fail();
@@ -145,7 +146,7 @@ namespace PassAPic.Tests
                 response = await client.GetAsync("api/game/guesses/" + secondImageUp.NextUserId);
                 if (response.IsSuccessStatusCode)
                 {
-                    secondImageDown = await response.Content.ReadAsAsync<ImageModel>();
+                    secondImageDownList = await response.Content.ReadAsAsync<List<GameBaseModel>>();
                 }
                 else Assert.Fail();
 
@@ -153,10 +154,10 @@ namespace PassAPic.Tests
 
                 var finalWordUp = new WordModel()
                 {
-                    GameId = secondImageDown.GameId,
+                    GameId = secondImageDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.GameId).FirstOrDefault(),
                     NextUserId = 455,
                     Word = "final word",
-                    UserId = secondImageDown.UserId
+                    UserId = secondImageDownList.Where(x => x.GameId == firstWordDown.GameId).Select(y => y.UserId).FirstOrDefault()
                 };
                 response = await client.PostAsJsonAsync("api/game/guessword", finalWordUp);
                 if (!response.IsSuccessStatusCode) Assert.Fail();
@@ -165,7 +166,7 @@ namespace PassAPic.Tests
                 response = await client.GetAsync("api/game/results/1");
                 if (response.IsSuccessStatusCode)
                 {
-                    var games = await response.Content.ReadAsAsync<List<Game>>();
+                    var games = await response.Content.ReadAsAsync<List<ResultsModel>>();
                 }
 
 

@@ -219,8 +219,46 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var completedGames = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Game.GameOverMan).Select(y => y.Game).ToList();
-                return Request.CreateResponse(HttpStatusCode.OK, completedGames);
+                var results = UnitOfWork.Guess
+                    .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
+                    .Select(y => new ResultsModel{GameId = y.Game.Id, Guesses = new List<GameBaseModel>()}).ToList();
+
+                foreach (var result in results)
+                {
+                    var game = UnitOfWork.Game.GetById(result.GameId);
+
+                    foreach (var guess in game.Guesses.OrderBy(x => x.Order))
+                    {
+                        if (guess is WordGuess)
+                        {
+                            var wordGuess = (WordGuess)guess;
+                            var wordModel = new WordModel
+                            {
+                                GameId = wordGuess.Game.Id,
+                                UserId = wordGuess.NextUser.Id,
+                                Word = wordGuess.Word
+                            };
+
+                            result.Guesses.Add(wordModel);
+                        }
+                        else if (guess is ImageGuess)
+                        {
+                            var imageGuess = (ImageGuess)guess;
+
+                            var imageModel = new ImageModel
+                            {
+                                GameId = imageGuess.Game.Id,
+                                UserId = imageGuess.NextUser.Id,
+                                Image = imageGuess.Image
+                            };
+
+                            result.Guesses.Add(imageModel);
+                        }
+                    }
+                    
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, results);
             }
             catch (Exception ex)
             {
