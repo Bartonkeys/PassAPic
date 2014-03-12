@@ -16,6 +16,7 @@ namespace PassAPic.Data
     {
         public int Id { get; set; }
         public int Order { get; set; }
+        public bool Complete { get; set; }
     
         public virtual Game Game { get; set; }
         public virtual User User { get; set; }

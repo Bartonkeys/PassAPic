@@ -53,6 +53,7 @@
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Order" Type="int" Nullable="false" />
+    <Property Name="Complete" Type="bit" Nullable="false" />
     <Property Name="Game_Id" Type="int" Nullable="false" />
     <Property Name="User_Id" Type="int" Nullable="true" />
     <Property Name="NextUser_Id" Type="int" Nullable="true" />
@@ -208,6 +209,7 @@
           <NavigationProperty Name="User" Relationship="PassAPicModel.GuessUser" FromRole="Guess" ToRole="User" />
           <Property Name="Order" Nullable="false" Type="Int32" />
           <NavigationProperty Name="NextUser" Relationship="PassAPicModel.NextGuesses" FromRole="Guess" ToRole="User" />
+          <Property Name="Complete" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="GameTurn">
           <End Type="PassAPicModel.Game" Multiplicity="1" Role="Game" />
@@ -270,6 +272,7 @@
         <MappingFragment StoreEntitySet="Guesses">
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Order" ColumnName="Order" />
+          <ScalarProperty Name="Complete" ColumnName="Complete" />
         </MappingFragment>
       </EntityTypeMapping>
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.WordGuess)">

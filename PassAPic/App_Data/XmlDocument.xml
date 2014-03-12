@@ -482,5 +482,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetGuesses(System.Int32)">
+            <summary>
+            Returns collection of guesses for user
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.GameController.GetResults(System.Int32)">
+            <summary>
+            Returns collection of finished games for user
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

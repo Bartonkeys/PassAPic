@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 03/11/2014 22:58:28
+-- Date Created: 03/12/2014 10:20:40
 -- Generated from EDMX file: C:\YerMA\PassAPic\PassAPic.Data\PassAPicModel.edmx
 -- --------------------------------------------------
 
@@ -24,10 +24,10 @@ IF OBJECT_ID(N'[dbo].[FK_UserGame]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Games] DROP CONSTRAINT [FK_UserGame];
 GO
 IF OBJECT_ID(N'[dbo].[FK_GuessUser]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_GuessUser];
+    ALTER TABLE [dbo].[Guesses] DROP CONSTRAINT [FK_GuessUser];
 GO
-IF OBJECT_ID(N'[dbo].[FK_GuessUser1]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[Users] DROP CONSTRAINT [FK_GuessUser1];
+IF OBJECT_ID(N'[dbo].[FK_NextGuesses]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[Guesses] DROP CONSTRAINT [FK_NextGuesses];
 GO
 IF OBJECT_ID(N'[dbo].[FK_WordGuess_inherits_Guess]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[Guesses_WordGuess] DROP CONSTRAINT [FK_WordGuess_inherits_Guess];
@@ -77,6 +77,7 @@ GO
 CREATE TABLE [dbo].[Guesses] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [Order] int  NOT NULL,
+    [Complete] bit  NOT NULL,
     [Game_Id] int  NOT NULL,
     [User_Id] int  NULL,
     [NextUser_Id] int  NULL

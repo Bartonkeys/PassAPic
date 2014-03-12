@@ -76,9 +76,11 @@ namespace PassAPic.Controllers
                 var nextUser = UnitOfWork.User.GetById(model.NextUserId);
                 var game = UnitOfWork.Game.GetById(model.GameId);
 
-                if (game.Guesses.Any(x => x.User.Id == nextUser.Id))
+                if (NextUserAlreadyHadAGo(game, model.NextUserId))
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                SetPreviousGuessAsComplete(game, model.UserId);
 
                 var order = game.Guesses.Count + 1;
 
@@ -105,6 +107,11 @@ namespace PassAPic.Controllers
             }
         }
 
+        private bool NextUserAlreadyHadAGo(Game game, int nextUserId)
+        {
+            return game.Guesses.Any(x => x.User.Id == nextUserId);
+        }
+
         // POST /api/game/guessword
         /// <summary>
         /// Post up word guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
@@ -120,9 +127,11 @@ namespace PassAPic.Controllers
                 var nextUser = UnitOfWork.User.GetById(model.NextUserId);
                 var game = UnitOfWork.Game.GetById(model.GameId);
 
-                if (game.Guesses.Any(x => x.User.Id == nextUser.Id))
+                if (NextUserAlreadyHadAGo(game, model.NextUserId))
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                SetPreviousGuessAsComplete(game, model.UserId);
 
                 var order = game.Guesses.Count + 1;
 
@@ -147,6 +156,82 @@ namespace PassAPic.Controllers
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+        // GET /api/game/Guesses
+        /// <summary>
+        /// Returns collection of guesses for user
+        /// </summary>
+        /// <returns></returns>
+        [Route("Guesses/{userId}")]
+        public HttpResponseMessage GetGuesses(int userId)
+        {
+            try
+            {
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);
+                var gameModelList = new List<GameBaseModel>();
+
+                foreach (var guess in guesses)
+                {
+                    if (guess is WordGuess)
+                    {
+                        var wordGuess = (WordGuess) guess;
+                        var wordModel = new WordModel
+                        {
+                            GameId = wordGuess.Game.Id,
+                            UserId = wordGuess.NextUser.Id,
+                            Word = wordGuess.Word
+                        };
+
+                        gameModelList.Add(wordModel);
+                    }
+                    else if (guess is ImageGuess)
+                    {
+                        var imageGuess = (ImageGuess) guess;
+
+                        var imageModel = new ImageModel
+                        {
+                            GameId = imageGuess.Game.Id,
+                            UserId = imageGuess.NextUser.Id,
+                            Image = imageGuess.Image
+                        };
+
+                        gameModelList.Add(imageModel);
+                    }
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, gameModelList);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        // GET /api/game/Results
+        /// <summary>
+        /// Returns collection of finished games for user
+        /// </summary>
+        /// <returns></returns>
+        [Route("Results/{userId}")]
+        public HttpResponseMessage GetResults(int userId)
+        {
+            try
+            {
+                var completedGames = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Game.GameOverMan).Select(y => y.Game).ToList();
+                return Request.CreateResponse(HttpStatusCode.OK, completedGames);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+        private void SetPreviousGuessAsComplete(Game game, int userId)
+        {
+            var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
+            if (previousGuess != null) previousGuess.Complete = true;
         }
     }
 }
