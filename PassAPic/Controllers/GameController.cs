@@ -236,7 +236,7 @@ namespace PassAPic.Controllers
                             var wordModel = new WordModel
                             {
                                 GameId = wordGuess.Game.Id,
-                                UserId = wordGuess.NextUser.Id,
+                                UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
                                 Word = wordGuess.Word
                             };
 
@@ -249,7 +249,7 @@ namespace PassAPic.Controllers
                             var imageModel = new ImageModel
                             {
                                 GameId = imageGuess.Game.Id,
-                                UserId = imageGuess.NextUser.Id,
+                                UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
                                 Image = imageGuess.Image
                             };
 
