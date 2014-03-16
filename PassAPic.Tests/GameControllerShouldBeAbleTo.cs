@@ -166,7 +166,7 @@ namespace PassAPic.Tests
                 response = await client.GetAsync("api/game/results/1");
                 if (response.IsSuccessStatusCode)
                 {
-                    var games = await response.Content.ReadAsAsync<List<ResultsModel>>();
+                    var games = await response.Content.ReadAsAsync<List<GamesModel>>();
                 }
 
 

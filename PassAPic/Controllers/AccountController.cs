@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using System.Web.UI;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
@@ -124,46 +125,10 @@ namespace PassAPic.Controllers
                 UnitOfWork.User.Update(user);
                 UnitOfWork.Commit();
 
+                var results = user.Games.Select(y => new GamesModel{GameId = y.Id, StartingWord = y.StartingWord,
+                        NumberOfGuesses = y.NumberOfGuesses, GameOverMan = y.GameOverMan}).ToList();
 
-                //Create a list of games which the logged in user is currently playing
-                //var listOfGames =
-                //    from game in user.Games
-                //    where game.Creator.Id == user.Id
-                //    select game;
-
-
-                //var result = from game in user.Games
-                //             where game.Creator.Id == user.Id
-                //             select new { game.NumberOfGuesses, game.GameOverMan, game.StartingWord };
-
-                //List<Game> listOfGames = result.AsEnumerable()
-                //                          .Select(o => new Game
-                //                          {
-                //                              NumberOfGuesses = o.NumberOfGuesses,
-                //                              GameOverMan = o.GameOverMan,
-                //                              StartingWord = o.StartingWord                                                                                     
-                //                          }).ToList();
-
-                //var listOfGameIds =
-                //    from game in user.Games
-                //    where game.Creator.Id == user.Id
-                //    select game.Id;
-
-                var result = from game in user.Games
-                             where game.Creator.Id == user.Id
-                             select new { game.Id, game.NumberOfGuesses, game.GameOverMan, game.StartingWord };
-
-                var listOfGames = result.AsEnumerable()
-                                          .Select(o => new Game
-                                          {
-                                              NumberOfGuesses = o.NumberOfGuesses,
-                                              GameOverMan = o.GameOverMan,
-                                              StartingWord = o.StartingWord,
-                                              Guesses = null
-                                          }).ToList();
-
-
-                return Request.CreateResponse(HttpStatusCode.OK, listOfGames);
+                return Request.CreateResponse(HttpStatusCode.OK, results);
             }
             catch (Exception ex)
             {

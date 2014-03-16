@@ -221,7 +221,8 @@ namespace PassAPic.Controllers
             {
                 var results = UnitOfWork.Guess
                     .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
-                    .Select(y => new ResultsModel{GameId = y.Game.Id, StartingWord = y.Game.StartingWord}).ToList();
+                    .Select(y => new GamesModel{GameId = y.Game.Id, StartingWord = y.Game.StartingWord,
+                        NumberOfGuesses = y.Game.NumberOfGuesses, GameOverMan = y.Game.GameOverMan}).ToList();
 
                 foreach (var result in results)
                 {

@@ -214,7 +214,7 @@
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\ImageModel.cs" />
-    <Compile Include="Models\ResultsModel.cs" />
+    <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\WordModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
