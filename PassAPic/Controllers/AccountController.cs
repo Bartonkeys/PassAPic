@@ -124,7 +124,10 @@ namespace PassAPic.Controllers
                 UnitOfWork.User.Update(user);
                 UnitOfWork.Commit();
 
-                return Request.CreateResponse(HttpStatusCode.OK);
+                //Create a list of games which the logged in user is currently playing
+                var listOfGames = user.Games;
+               
+                return Request.CreateResponse(HttpStatusCode.OK, listOfGames);
             }
             catch (Exception ex)
             {
