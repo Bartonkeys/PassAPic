@@ -144,12 +144,26 @@ namespace PassAPic.Controllers
                 //                              StartingWord = o.StartingWord                                                                                     
                 //                          }).ToList();
 
-                var listOfGameIds =
-                    from game in user.Games
-                    where game.Creator.Id == user.Id
-                    select game.Id;
+                //var listOfGameIds =
+                //    from game in user.Games
+                //    where game.Creator.Id == user.Id
+                //    select game.Id;
 
-                return Request.CreateResponse(HttpStatusCode.OK, listOfGameIds);
+                var result = from game in user.Games
+                             where game.Creator.Id == user.Id
+                             select new { game.Id, game.NumberOfGuesses, game.GameOverMan, game.StartingWord };
+
+                var listOfGames = result.AsEnumerable()
+                                          .Select(o => new Game
+                                          {
+                                              NumberOfGuesses = o.NumberOfGuesses,
+                                              GameOverMan = o.GameOverMan,
+                                              StartingWord = o.StartingWord,
+                                              Guesses = null
+                                          }).ToList();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, listOfGames);
             }
             catch (Exception ex)
             {
