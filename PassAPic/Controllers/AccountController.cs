@@ -132,21 +132,24 @@ namespace PassAPic.Controllers
                 //    select game;
 
 
-                var result = from game in user.Games
-                             where game.Creator.Id == user.Id
-                             select new { game.NumberOfGuesses, game.GameOverMan, game.StartingWord };
+                //var result = from game in user.Games
+                //             where game.Creator.Id == user.Id
+                //             select new { game.NumberOfGuesses, game.GameOverMan, game.StartingWord };
 
-                List<Game> listOfGames = result.AsEnumerable()
-                                          .Select(o => new Game
-                                          {
-                                              NumberOfGuesses = o.NumberOfGuesses,
-                                              GameOverMan = o.GameOverMan,
-                                              StartingWord = o.StartingWord
-                                              
-                                              
-                                          }).ToList();
-                
-                return Request.CreateResponse(HttpStatusCode.OK, listOfGames);
+                //List<Game> listOfGames = result.AsEnumerable()
+                //                          .Select(o => new Game
+                //                          {
+                //                              NumberOfGuesses = o.NumberOfGuesses,
+                //                              GameOverMan = o.GameOverMan,
+                //                              StartingWord = o.StartingWord                                                                                     
+                //                          }).ToList();
+
+                var listOfGameIds =
+                    from game in user.Games
+                    where game.Creator.Id == user.Id
+                    select game.Id;
+
+                return Request.CreateResponse(HttpStatusCode.OK, listOfGameIds);
             }
             catch (Exception ex)
             {
