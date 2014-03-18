@@ -215,6 +215,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
+    <Compile Include="Models\OpenGamesModel.cs" />
     <Compile Include="Models\WordModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

@@ -169,7 +169,9 @@ namespace PassAPic.Controllers
             try
             {
                 var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);
-                var gameModelList = new List<GameBaseModel>();
+                var gameModelList = new OpenGamesModel();
+                var wordModelList = new List<WordModel>();
+                var imageModelList = new List<ImageModel>();
 
                 foreach (var guess in guesses)
                 {
@@ -183,7 +185,7 @@ namespace PassAPic.Controllers
                             Word = wordGuess.Word
                         };
 
-                        gameModelList.Add(wordModel);
+                        wordModelList.Add(wordModel);
                     }
                     else if (guess is ImageGuess)
                     {
@@ -196,9 +198,12 @@ namespace PassAPic.Controllers
                             Image = imageGuess.Image
                         };
 
-                        gameModelList.Add(imageModel);
+                        imageModelList.Add(imageModel);
                     }
                 }
+
+                gameModelList.WordModelList = wordModelList;
+                gameModelList.ImageModelList = imageModelList;
 
                 return Request.CreateResponse(HttpStatusCode.OK, gameModelList);
             }
