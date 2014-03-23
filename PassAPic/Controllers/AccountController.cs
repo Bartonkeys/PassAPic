@@ -96,7 +96,7 @@ namespace PassAPic.Controllers
                     UnitOfWork.User.SearchFor(x => x.IsOnline)
                         .Select(y => new AccountModel {UserId = y.Id, Username = y.Username})
                         .ToList();
-                return Request.CreateResponse(HttpStatusCode.Created, usersOnline);
+                return Request.CreateResponse(HttpStatusCode.OK, usersOnline);
             }
             catch (Exception ex)
             {
