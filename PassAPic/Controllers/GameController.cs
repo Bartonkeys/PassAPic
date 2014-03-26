@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Data;
 using PassAPic.Models;
+using PassAPic.Core.AnimatedGif;
 
 namespace PassAPic.Controllers
 {
@@ -224,6 +229,7 @@ namespace PassAPic.Controllers
         {
             try
             {
+                
                 var results = UnitOfWork.Guess
                     .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
                     .Select(y => new GamesModel{GameId = y.Game.Id, StartingWord = y.Game.StartingWord,
@@ -233,6 +239,22 @@ namespace PassAPic.Controllers
                 {
                     var game = UnitOfWork.Game.GetById(result.GameId);
                     result.Guesses = new List<GameBaseModel>();
+                    var imageFilePaths = new String[result.NumberOfGuesses];
+                    var filePathServer = "";
+                    var tempDirName = "temp_" + Guid.NewGuid();
+                    var filePathTemp = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName);
+                    
+                   // var inputPath = filePathServer + "images\\";
+                    //var outputPath = filePathServer + "animation\\";
+
+                    //Delete all files in temp dir
+                    //string[] fileNames = Directory.GetFiles(filePathTemp);
+                    //foreach (string fileName in fileNames)
+                    //    File.Delete(fileName);
+
+                    //Create new folder
+                    Directory.CreateDirectory(filePathTemp);
+
 
                     foreach (var guess in game.Guesses.OrderBy(x => x.Order))
                     {
@@ -247,6 +269,14 @@ namespace PassAPic.Controllers
                             };
 
                             result.Guesses.Add(wordModel);
+                            filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + wordGuess.Order + ".png");
+
+                            Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
+                            wordImage.Save(filePathServer, ImageFormat.Png);
+
+                            imageFilePaths[wordGuess.Order - 1] = filePathServer;
+                         
+
                         }
                         else if (guess is ImageGuess)
                         {
@@ -260,11 +290,43 @@ namespace PassAPic.Controllers
                             };
 
                             result.Guesses.Add(imageModel);
+                            String imageStr = imageGuess.Image;
+
+                            //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
+
+                            byte[] byteBuffer = Convert.FromBase64String(imageStr);
+                            MemoryStream memoryStream = new MemoryStream(byteBuffer);
+
+                            memoryStream.Position = 0;
+
+                            Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
+
+                            //memoryStream.Close();
+
+                            filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
+
+                            bmpFromString.Save(filePathServer, ImageFormat.Png);
+                            imageFilePaths[imageGuess.Order - 1] = filePathServer;
+
+                            memoryStream.Close();
                         }
+                       
                     }
-                    
+
+                    //Add the new Animated Gif to this Result object
+                    filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/" + result.GameId + ".gif");
+                    if (File.Exists(filePathServer))
+                    {
+                        File.Delete(filePathServer);
+                    }
+                    Image animatedGif = AnimatedGifController.CreateAnimatedGifFromBitmapArray(imageFilePaths, false,
+                                                                                               filePathServer);
+                    string animatedGifAsbase64 = ImageToBase64(animatedGif, ImageFormat.Gif);
+                    result.Animation = animatedGifAsbase64;  
+                   
                 }
 
+               
                 return Request.CreateResponse(HttpStatusCode.OK, results);
             }
             catch (Exception ex)
@@ -278,5 +340,37 @@ namespace PassAPic.Controllers
             var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
             if (previousGuess != null) previousGuess.Complete = true;
         }
+
+        public static Bitmap Base64StringToBitmap(string base64String)
+        {
+            Bitmap bmpReturn = null;
+
+            byte[] byteBuffer = Convert.FromBase64String(base64String);
+            MemoryStream memoryStream = new MemoryStream(byteBuffer);
+
+            memoryStream.Position = 0;
+
+            bmpReturn = (Bitmap)Bitmap.FromStream(memoryStream);
+
+            memoryStream.Close();
+
+            return bmpReturn;
+        }
+
+        public string ImageToBase64(Image image, ImageFormat format)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // Convert Image to byte[]
+                image.Save(ms, format);
+                byte[] imageBytes = ms.ToArray();
+
+                // Convert byte[] to Base64 String
+                string base64String = Convert.ToBase64String(imageBytes);
+                return base64String;
+            }
+        }
     }
+
+    
 }

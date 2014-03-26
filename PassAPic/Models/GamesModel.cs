@@ -22,6 +22,10 @@ namespace PassAPic.Models
         public Boolean GameOverMan { get; set; } 
 
         [JsonProperty(PropertyName = "guesses")]
-        public List<GameBaseModel> Guesses { get; set; } 
+        public List<GameBaseModel> Guesses { get; set; }
+
+        [JsonProperty(PropertyName = "animation")]
+        public string Animation { get; set; } 
+
     }
 }
