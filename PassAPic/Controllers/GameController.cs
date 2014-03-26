@@ -241,17 +241,19 @@ namespace PassAPic.Controllers
                     result.Guesses = new List<GameBaseModel>();
                     var imageFilePaths = new String[result.NumberOfGuesses];
                     var filePathServer = "";
+                    var filePathServerAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + result.GameId + ".gif");
+
+                    Boolean animationExists = false;
+
+                    if (File.Exists(filePathServerAnimatedGif))
+                    {
+                        animationExists = true;
+                    }
+                    
+
                     var tempDirName = "temp_" + Guid.NewGuid();
                     var filePathTemp = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName);
                     
-                   // var inputPath = filePathServer + "images\\";
-                    //var outputPath = filePathServer + "animation\\";
-
-                    //Delete all files in temp dir
-                    //string[] fileNames = Directory.GetFiles(filePathTemp);
-                    //foreach (string fileName in fileNames)
-                    //    File.Delete(fileName);
-
                     //Create new folder
                     Directory.CreateDirectory(filePathTemp);
 
@@ -269,13 +271,18 @@ namespace PassAPic.Controllers
                             };
 
                             result.Guesses.Add(wordModel);
-                            filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + wordGuess.Order + ".png");
 
-                            Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
-                            wordImage.Save(filePathServer, ImageFormat.Png);
+                            if (!animationExists)
+                            {
+                                filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + wordGuess.Order + ".png");
 
-                            imageFilePaths[wordGuess.Order - 1] = filePathServer;
+                                Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
+                                wordImage.Save(filePathServer, ImageFormat.Png);
+
+                                imageFilePaths[wordGuess.Order - 1] = filePathServer;
                          
+                            }
+                            
 
                         }
                         else if (guess is ImageGuess)
@@ -290,38 +297,47 @@ namespace PassAPic.Controllers
                             };
 
                             result.Guesses.Add(imageModel);
-                            String imageStr = imageGuess.Image;
 
-                            //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
+                            if (!animationExists)
+                            {
+                                String imageStr = imageGuess.Image;
 
-                            byte[] byteBuffer = Convert.FromBase64String(imageStr);
-                            MemoryStream memoryStream = new MemoryStream(byteBuffer);
+                                //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
 
-                            memoryStream.Position = 0;
+                                byte[] byteBuffer = Convert.FromBase64String(imageStr);
+                                MemoryStream memoryStream = new MemoryStream(byteBuffer);
 
-                            Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
+                                memoryStream.Position = 0;
 
-                            //memoryStream.Close();
+                                Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
 
-                            filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
+                                //memoryStream.Close();
 
-                            bmpFromString.Save(filePathServer, ImageFormat.Png);
-                            imageFilePaths[imageGuess.Order - 1] = filePathServer;
+                                filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
 
-                            memoryStream.Close();
+                                bmpFromString.Save(filePathServer, ImageFormat.Png);
+                                imageFilePaths[imageGuess.Order - 1] = filePathServer;
+
+                                memoryStream.Close(); 
+                            }
+                            
                         }
                        
                     }
 
                     //Add the new Animated Gif to this Result object
-                    filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/" + result.GameId + ".gif");
-                    if (File.Exists(filePathServer))
+                    string animatedGifAsbase64;
+                    if (animationExists)
                     {
-                        File.Delete(filePathServer);
+                        animatedGifAsbase64 = ImageToBase64(new Bitmap(filePathServerAnimatedGif), ImageFormat.Gif);
                     }
-                    Image animatedGif = AnimatedGifController.CreateAnimatedGifFromBitmapArray(imageFilePaths, false,
-                                                                                               filePathServer);
-                    string animatedGifAsbase64 = ImageToBase64(animatedGif, ImageFormat.Gif);
+                    else
+                    {
+                        Image animatedGif = AnimatedGifController.CreateAnimatedGifFromBitmapArray(imageFilePaths, false,
+                                                                                               filePathServerAnimatedGif);
+                        animatedGifAsbase64 = ImageToBase64(animatedGif, ImageFormat.Gif);
+                    }
+                    
                     result.Animation = animatedGifAsbase64;  
                    
                 }
