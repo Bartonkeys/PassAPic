@@ -243,13 +243,7 @@ namespace PassAPic.Controllers
                     var filePathServer = "";
                     var filePathServerAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + result.GameId + ".gif");
 
-                    Boolean animationExists = false;
-
-                    if (File.Exists(filePathServerAnimatedGif))
-                    {
-                        animationExists = true;
-                    }
-                    
+                    bool animationExists = File.Exists(filePathServerAnimatedGif);
 
                     var tempDirName = "temp_" + Guid.NewGuid();
                     var filePathTemp = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName);
@@ -310,12 +304,12 @@ namespace PassAPic.Controllers
                                 memoryStream.Position = 0;
 
                                 Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
-
+                                var resizedBitmap = ResizeBitmap(bmpFromString, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
                                 //memoryStream.Close();
 
                                 filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
 
-                                bmpFromString.Save(filePathServer, ImageFormat.Png);
+                                resizedBitmap.Save(filePathServer, ImageFormat.Png);
                                 imageFilePaths[imageGuess.Order - 1] = filePathServer;
 
                                 memoryStream.Close(); 
@@ -351,6 +345,8 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+
         private void SetPreviousGuessAsComplete(Game game, int userId)
         {
             var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
@@ -385,6 +381,14 @@ namespace PassAPic.Controllers
                 string base64String = Convert.ToBase64String(imageBytes);
                 return base64String;
             }
+        }
+
+        private static Bitmap ResizeBitmap(Bitmap sourceBMP, int width, int height)
+        {
+            Bitmap result = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(result))
+                g.DrawImage(sourceBMP, 0, 0, width, height);
+            return result;
         }
     }
 
