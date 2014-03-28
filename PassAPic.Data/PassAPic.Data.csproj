@@ -75,6 +75,9 @@
       <DependentUpon>PassAPicModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PushRegister.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
