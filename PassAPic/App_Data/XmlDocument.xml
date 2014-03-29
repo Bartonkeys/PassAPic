@@ -457,6 +457,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.AccountController.RegisterPush(PassAPic.Models.RegisterItem)">
+            <summary>
+            POST a JObject up to register a device
+            </summary>
+            <param name="jsonData"></param>
+            <returns></returns>
+        </member>
         <member name="T:PassAPic.Controllers.GameController">
             <summary>
             Handles setup of game and management of guesses and results

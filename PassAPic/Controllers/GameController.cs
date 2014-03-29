@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Http;
 using Ninject;
 using PassAPic.Contracts;
+using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
@@ -103,6 +104,8 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
+                SendPushMessage(nextUser.Id, PushRegisterLibrary.ImageGuessPushString);
+
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
             catch (Exception ex)
@@ -153,6 +156,8 @@ namespace PassAPic.Controllers
                 game.Guesses.Add(wordGuess);
 
                 UnitOfWork.Commit();
+
+                SendPushMessage(nextUser.Id, PushRegisterLibrary.WordGuessPushString);
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -347,6 +352,15 @@ namespace PassAPic.Controllers
         }
 
 
+
+        
+        
+        
+        
+        
+        #region "Helper methods"
+
+
         private void SetPreviousGuessAsComplete(Game game, int userId)
         {
             var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
@@ -390,7 +404,23 @@ namespace PassAPic.Controllers
                 g.DrawImage(sourceBMP, 0, 0, width, height);
             return result;
         }
-    }
 
-    
+        private void SendPushMessage(int userId, String messageToPush)
+        {
+            //Grab the list of devices while we have access to the UnitOfWork object
+            var listOfPushDevices = UnitOfWork.PushRegister.SearchFor(x => x.UserId == userId).ToList();
+
+            //Check user has any devices registered for push
+            if (listOfPushDevices.Count > 0)
+            {
+                //TODO: Prob should interface this - may change Push provider
+                PushRegisterLibrary.SendPush(userId, messageToPush, listOfPushDevices);
+            }
+            
+        }
+
+
+        #endregion
+
+    }
 }

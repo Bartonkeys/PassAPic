@@ -15,12 +15,15 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
+using Newtonsoft.Json.Linq;
 using Ninject;
 using PassAPic.Contracts;
+using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Providers;
 using PassAPic.Results;
+
 
 namespace PassAPic.Controllers
 {
@@ -32,7 +35,8 @@ namespace PassAPic.Controllers
     public class AccountController : BaseController
     {
         private const string LocalLoginProvider = "Local";
-
+        
+        
         [Inject]
         public AccountController(IUnitOfWork unitOfWork)
             : this(Startup.UserManagerFactory(), Startup.OAuthOptions.AccessTokenFormat)
@@ -176,6 +180,82 @@ namespace PassAPic.Controllers
                           .ToArray());
 
         }
+
+
+
+        // POST api/Account/RegisterPush
+        /// <summary>
+        /// POST a JObject up to register a device
+        /// </summary>
+        /// <param name="jsonData"></param>
+        /// <returns></returns>
+        [Route("RegisterPush")]
+        [AllowAnonymous]
+        [HttpPost]
+        public HttpResponseMessage RegisterPush([FromBody] RegisterItem registerItem)
+        {
+           
+            //If deviceType is not passed in - it will default to zero
+            int deviceType = registerItem.DeviceType;
+            int userId = registerItem.UserId;
+            String deviceToken = registerItem.DeviceToken;
+
+            //RegisterLibrary.RegisterDeviceWithUser(userId, deviceToken, deviceType);
+
+            string msg = "";
+
+            try
+            {
+                var registration = UnitOfWork.PushRegister.SearchFor(x => x.DeviceToken == deviceToken).FirstOrDefault();
+                if (registration != null)
+                {
+                    if (registration.UserId == userId && deviceType == PushRegisterLibrary.DeviceTypeIos)
+                    {
+                        //DO NOTHING - the record already exists and is correct 
+                        //NB iOS will always have the same UUID per device
+                    }
+                    else if (registration.UserId == userId && deviceType != PushRegisterLibrary.DeviceTypeIos)
+                    {
+                        //Droid and WP8 could have multiple device IDs linking user & device - its generated each time
+                        //NB this code is identical to the base case below but we may vary for other devices
+                        UnitOfWork.PushRegister.Delete(registration);
+                        UnitOfWork.PushRegister.Insert(new PushRegister() { UserId = userId, DeviceToken = deviceToken, DeviceType = deviceType, Timestamp = DateTime.Now });
+                    }
+
+                    else
+                    {
+                        //deviceToken associated with different member ID so remove this record to prevent duplicate push meassages
+                        UnitOfWork.PushRegister.Delete(registration);
+                        UnitOfWork.PushRegister.Insert(new PushRegister() { UserId = userId, DeviceToken = deviceToken, DeviceType = deviceType, Timestamp = DateTime.Now });
+                    }
+                    
+                }
+                else
+                {
+                    //No entry for this deviceToken - so create a new one
+                    UnitOfWork.PushRegister.Insert(new PushRegister() { UserId = userId, DeviceToken = deviceToken, DeviceType = deviceType, Timestamp = DateTime.Now });
+                }
+
+                UnitOfWork.Commit();
+
+                msg = "Success";
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException.InnerException.Message.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+                }
+                else
+                {throw;}
+            }
+
+
+            return Request.CreateResponse(HttpStatusCode.Created, msg);
+       
+        }
+
+       
 
         #region Lets Comment out this code for a while
 
