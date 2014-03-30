@@ -30,12 +30,12 @@ namespace PassAPic.Core.PushRegistration
             {
                 switch (pushDevice.DeviceType)
                 {
-                    case PushRegisterLibrary.DeviceTypeAndroid:
+                    case PushRegisterService.DeviceTypeAndroid:
                         deviceTokenOptionList.Add(
                             new UrbanAirshipPushObject.UADeviceTokenOptionAndroid(pushDevice.DeviceToken));
                         break;
 
-                    case PushRegisterLibrary.DeviceTypeIos:
+                    case PushRegisterService.DeviceTypeIos:
                         deviceTokenOptionList.Add(
                             new UrbanAirshipPushObject.UADeviceTokenOptionIos(pushDevice.DeviceToken));
                         break;

@@ -209,12 +209,12 @@ namespace PassAPic.Controllers
                 var registration = UnitOfWork.PushRegister.SearchFor(x => x.DeviceToken == deviceToken).FirstOrDefault();
                 if (registration != null)
                 {
-                    if (registration.UserId == userId && deviceType == PushRegisterLibrary.DeviceTypeIos)
+                    if (registration.UserId == userId && deviceType == PushRegisterService.DeviceTypeIos)
                     {
                         //DO NOTHING - the record already exists and is correct 
                         //NB iOS will always have the same UUID per device
                     }
-                    else if (registration.UserId == userId && deviceType != PushRegisterLibrary.DeviceTypeIos)
+                    else if (registration.UserId == userId && deviceType != PushRegisterService.DeviceTypeIos)
                     {
                         //Droid and WP8 could have multiple device IDs linking user & device - its generated each time
                         //NB this code is identical to the base case below but we may vary for other devices

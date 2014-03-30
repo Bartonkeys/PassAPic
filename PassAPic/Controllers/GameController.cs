@@ -23,11 +23,14 @@ namespace PassAPic.Controllers
     [RoutePrefix("api/Game")]
     public class GameController : BaseController
     {
+        protected PushRegisterService PushRegisterService;
+
         [Inject]
-        public GameController(IUnitOfWork unitOfWork)
+        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider)
         {
             UnitOfWork = unitOfWork;
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
+            PushRegisterService = new PushRegisterService(pushProvider);
         }
 
         // POST /api/game/start
@@ -104,7 +107,7 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, PushRegisterLibrary.ImageGuessPushString);
+                SendPushMessage(nextUser.Id, PushRegisterService.ImageGuessPushString);
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -157,7 +160,7 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, PushRegisterLibrary.WordGuessPushString);
+                SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -411,12 +414,8 @@ namespace PassAPic.Controllers
             var listOfPushDevices = UnitOfWork.PushRegister.SearchFor(x => x.UserId == userId).ToList();
 
             //Check user has any devices registered for push
-            if (listOfPushDevices.Count > 0)
-            {
-                //TODO: Prob should interface this - may change Push provider
-                PushRegisterLibrary.SendPush(userId, messageToPush, listOfPushDevices);
-            }
-            
+            if (listOfPushDevices.Count > 0) PushRegisterService.SendPush(userId, messageToPush, listOfPushDevices);
+           
         }
 
 
