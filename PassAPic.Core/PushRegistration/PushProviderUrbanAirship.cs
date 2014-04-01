@@ -45,7 +45,7 @@ namespace PassAPic.Core.PushRegistration
 
             var urbanAirshipPushObject = new UrbanAirshipPushObject(
                 deviceArray,
-                new UrbanAirshipPushObject.UAMessage(UaMessageContentType, pushMessageToSend, "It's your turn..."),
+                new UrbanAirshipPushObject.UAMessage(UaMessageContentType,"It's your turn...", pushMessageToSend),
                 new UrbanAirshipPushObject.UAOptions("2015-04-01T12:00:00"),
                 new UrbanAirshipPushObject.UANotification(
                     new UrbanAirshipPushObject.UANotificationIos(
