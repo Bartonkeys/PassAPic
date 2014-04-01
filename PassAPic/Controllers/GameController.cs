@@ -107,7 +107,8 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, PushRegisterService.ImageGuessPushString);
+                //SendPushMessage(nextUser.Id, PushRegisterService.ImageGuessPushString);
+                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username)); 
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -160,7 +161,8 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
+                //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
+                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }

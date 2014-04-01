@@ -30,6 +30,6 @@ namespace PassAPic.Core.PushRegistration
         {
             PushProvider.PushToDevices(listOfPushDevices, pushMessageToSend);
         }
-        
+
     }
 }
