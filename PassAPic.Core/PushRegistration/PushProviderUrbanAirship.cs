@@ -45,12 +45,12 @@ namespace PassAPic.Core.PushRegistration
 
             var urbanAirshipPushObject = new UrbanAirshipPushObject(
                 deviceArray,
-                new UrbanAirshipPushObject.UAMessage(UaMessageContentType,"It's your turn...", pushMessageToSend),
+                new UrbanAirshipPushObject.UAMessage(UaMessageContentType, pushMessageToSend, pushMessageToSend),
                 new UrbanAirshipPushObject.UAOptions("2015-04-01T12:00:00"),
                 new UrbanAirshipPushObject.UANotification(
                     new UrbanAirshipPushObject.UANotificationIos(
                         new UrbanAirshipPushObject.UAUANotificationIosExtra("http://www.passapic.com")),
-                    "It's your turn..."),
+                    pushMessageToSend),
                 new UrbanAirshipPushObject.UAAudience(deviceTokenOptionList.ToArray()));
 
             //Try calling the Urban Airship API
