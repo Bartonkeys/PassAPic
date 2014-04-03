@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using HgCo.WindowsLive.SkyDrive;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
@@ -399,8 +400,8 @@ namespace PassAPic.Controllers
                         Stream stream = content.ReadAsStreamAsync().Result;
                         Image image = Image.FromStream(stream);
 
-                        var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
-
+                        //var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
+                        var imageUrl = SaveImageOneDrive(image, imageName);
                         SetPreviousGuessAsComplete(game, userId);
 
                         var order = game.Guesses.Count + 1;
@@ -432,7 +433,34 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
-        
+
+        private string SaveImageOneDrive(Image image, string imageName)
+        {
+            var client = new SkyDriveServiceClient();
+
+            client.LogOn("michaelcbarr@hotmail.com", "W)bb9l87f1");
+            WebFolderInfo wfInfo = new WebFolderInfo();
+
+            WebFolderInfo[] wfInfoArray = client.ListRootWebFolders();
+
+            wfInfo = wfInfoArray[0];
+            client.Timeout = 1000000000;
+
+            var serverUploadFolder = Path.GetTempPath();
+            image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
+
+            var localFilePath = Path.Combine(serverUploadFolder, "Placeholder2.jpg");
+
+
+            //string fn = @"test.txt";
+            if (File.Exists(localFilePath))
+            {
+                client.UploadWebFile(localFilePath, wfInfo);
+            }
+
+            return "test";
+        }
+
         #region "Helper methods"
 
         private string SaveImage(Image image, string imageName)
