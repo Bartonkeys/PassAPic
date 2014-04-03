@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -174,5 +175,49 @@ namespace PassAPic.Tests
 
             }
         }
+
+        [TestMethod]
+        public async Task SendImageGuessTask()
+        {
+            const int BufferSize = 1024;
+            string _filename = @"C:\Users\graha_000\Pictures\graham.jpg";
+
+            using (var client = new HttpClient())
+            {
+                using (FileStream fileStream = new FileStream(_filename, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize,
+                useAsync: true))
+                {
+                    // Create a stream content for the file
+                    var content = new StreamContent(fileStream, BufferSize);
+
+                    // Create Multipart form data content, add our submitter data and our stream content
+                    var formData = new MultipartFormDataContent();
+                    formData.Add(content, "filename", _filename);
+
+                    var address = new Uri("http://localhost/PassAPic.Web/api/game/imageGuessTask");
+
+                    var request = new HttpRequestMessage()
+                    {
+                        RequestUri = address,
+                        Method = HttpMethod.Post,
+                        Content = formData
+                    };
+
+                    request.Headers.Add("userId", "2");
+                    request.Headers.Add("gameId", "1");
+                    request.Headers.Add("nextUserId", "2");
+                    request.Headers.Add("image", "SomeName");
+
+                    var response = await client.SendAsync(request);
+
+                    if (!response.IsSuccessStatusCode) Assert.Fail();
+
+                    Assert.IsTrue(true);
+
+                }
+            }
+
+        }
+
     }
 }

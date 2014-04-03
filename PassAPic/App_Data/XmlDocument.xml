@@ -501,5 +501,19 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.ImageGuessTask">
+            POST /api/game/imageGuessTask
+             <summary>
+             Please see test project for how to hit this api. Here are the steps:
+             1. Turn image into FileStream.
+             2. Create a StreamContent using FileStream.
+             3. Create a multipart form data and add StreamContent.
+             4. Create http request and add form data as content.
+             5. Add these headers to the request: gameId, userId, nextUserId, image (this is image name).
+             6. Send request to this api.
+             </summary>
+             <returns></returns>
+             <exception cref="T:System.Web.Http.HttpResponseException"></exception>
+        </member>
     </members>
 </doc>

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using Ninject;
@@ -356,15 +357,92 @@ namespace PassAPic.Controllers
             }
         }
 
+        ///POST /api/game/imageGuessTask
+        /// <summary>
+        /// Please see test project for how to hit this api. Here are the steps:
+        /// 1. Turn image into FileStream.
+        /// 2. Create a StreamContent using FileStream.
+        /// 3. Create a multipart form data and add StreamContent.
+        /// 4. Create http request and add form data as content.
+        /// 5. Add these headers to the request: gameId, userId, nextUserId, image (this is image name).
+        /// 6. Send request to this api.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="HttpResponseException"></exception>
+        [HttpPost]
+        [Route("imageGuessTask")]
+        public async Task<HttpResponseMessage> ImageGuessTask()
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.UnsupportedMediaType));
 
+            try
+            {
+                await Request.Content.ReadAsMultipartAsync(new MultipartMemoryStreamProvider()).ContinueWith(task =>
+                {
+                    MultipartMemoryStreamProvider streamProvider = task.Result;
+                    foreach (HttpContent content in streamProvider.Contents)
+                    {
+                        var userId = int.Parse(Request.Headers.GetValues("userId").First());
+                        var gameId = int.Parse(Request.Headers.GetValues("gameId").First());
+                        var nextUserId = int.Parse(Request.Headers.GetValues("nextUserId").First());
+                        var imageName = Request.Headers.GetValues("image").First();
 
-        
-        
-        
-        
+                        var user = UnitOfWork.User.GetById(userId);
+                        var nextUser = UnitOfWork.User.GetById(nextUserId);
+                        var game = UnitOfWork.Game.GetById(gameId);
+
+                        if (NextUserAlreadyHadAGo(game, nextUserId))
+                            return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                                String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                        Stream stream = content.ReadAsStreamAsync().Result;
+                        Image image = Image.FromStream(stream);
+
+                        var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
+
+                        SetPreviousGuessAsComplete(game, userId);
+
+                        var order = game.Guesses.Count + 1;
+
+                        var imageGuess = new ImageGuess
+                        {
+                            Order = order,
+                            User = user,
+                            Image = imageUrl
+                        };
+
+                        if (order < game.NumberOfGuesses) imageGuess.NextUser = nextUser;
+                        else game.GameOverMan = true;
+
+                        game.Guesses.Add(imageGuess);
+
+                        UnitOfWork.Commit();
+
+                        SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+
+                    }
+                    return Request.CreateResponse(HttpStatusCode.Created);
+                });
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
         
         #region "Helper methods"
 
+        private string SaveImage(Image image, string imageName)
+        {
+            //TODO Handle Image - Below is just for testing
+            var serverUploadFolder = Path.GetTempPath();
+            image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
+
+            return Path.Combine(serverUploadFolder, "Placeholder2.jpg");
+        }
 
         private void SetPreviousGuessAsComplete(Game game, int userId)
         {
