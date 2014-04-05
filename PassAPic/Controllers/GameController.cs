@@ -11,10 +11,10 @@ using System.Web;
 using System.Web.Http;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using HgCo.WindowsLive.SkyDrive;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
+using PassAPic.Core.CloudImage;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
@@ -28,14 +28,16 @@ namespace PassAPic.Controllers
     public class GameController : BaseController
     {
         protected PushRegisterService PushRegisterService;
+        protected CloudImageService CloudImageService;
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
-        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider)
+        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider)
         {
             UnitOfWork = unitOfWork;
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
+            CloudImageService = new CloudImageService(cloudImageProvider);
         }
 
         // POST /api/game/start
@@ -266,7 +268,6 @@ namespace PassAPic.Controllers
                     //Create new folder
                     Directory.CreateDirectory(filePathTemp);
 
-
                     foreach (var guess in game.Guesses.OrderBy(x => x.Order))
                     {
                         if (guess is WordGuess)
@@ -288,10 +289,8 @@ namespace PassAPic.Controllers
                                 Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
                                 wordImage.Save(filePathServer, ImageFormat.Png);
 
-                                imageFilePaths[wordGuess.Order - 1] = filePathServer;
-                         
+                                imageFilePaths[wordGuess.Order - 1] = filePathServer;                       
                             }
-                            
 
                         }
                         else if (guess is ImageGuess)
@@ -309,17 +308,28 @@ namespace PassAPic.Controllers
 
                             if (!animationExists)
                             {
-                                String imageStr = imageGuess.Image;
+                                String imageUrl = imageGuess.Image;
 
                                 //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
 
-                                byte[] byteBuffer = Convert.FromBase64String(imageStr);
-                                MemoryStream memoryStream = new MemoryStream(byteBuffer);
+                                //byte[] byteBuffer = Convert.FromBase64String(imageStr);
+                                //MemoryStream memoryStream = new MemoryStream(byteBuffer);
+                                //memoryStream.Position = 0;
+                                //Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
+                                Bitmap bmpFromUrl = null;
+                                Stream responseStream = null;
+                                try
+                                {
+                                    WebRequest request =  System.Net.WebRequest.Create(imageUrl);
+                                    WebResponse response = request.GetResponse();
+                                    responseStream = response.GetResponseStream();
+                                    bmpFromUrl = new Bitmap(responseStream);
+                                   
+                                }
+                                catch (Exception e)
+                                {  }
 
-                                memoryStream.Position = 0;
-
-                                Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
-                                var resizedBitmap = ResizeBitmap(bmpFromString, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
+                                var resizedBitmap = ResizeBitmap(bmpFromUrl, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
                                 //memoryStream.Close();
 
                                 filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
@@ -327,7 +337,7 @@ namespace PassAPic.Controllers
                                 resizedBitmap.Save(filePathServer, ImageFormat.Png);
                                 imageFilePaths[imageGuess.Order - 1] = filePathServer;
 
-                                memoryStream.Close(); 
+                                responseStream.Close(); 
                             }
                             
                         }
@@ -436,6 +446,18 @@ namespace PassAPic.Controllers
             }
         }
 
+        ///POST /api/game/imageGuessMultiPart
+        /// <summary>
+        /// Please see test project for how to hit this api. Here are the steps:
+        /// 1. Turn image into FileStream.
+        /// 2. Create a StreamContent using FileStream.
+        /// 3. Create a multipart form data and add StreamContent.
+        /// 4. Add these values as StringContent to form data as well: gameId, userId, nextUserId, image (this is image name).
+        /// 6. Post request to this api.
+        /// 7. Server will use MultipartFormDataStreamProvider to save file to temp directory and then call SaveImageCloudinary()
+        /// with just image path. I;ve sorted it out in ICloudImageProvider and concrete implmentations too.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Route("imageGuessMultiPart")]
         public async Task<HttpResponseMessage> ImageGuessMultiPart()
@@ -465,7 +487,8 @@ namespace PassAPic.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
 
-                var imageUrl = SaveImageCloudinary(imageName);
+                var imagePath = Path.Combine(ServerUploadFolder, imageName);
+                var imageUrl = SaveImageCloudinary(imagePath);
                 SetPreviousGuessAsComplete(game, userId);
 
                 var order = game.Guesses.Count + 1;
@@ -499,94 +522,14 @@ namespace PassAPic.Controllers
 
         #region "Helper methods"
 
-        //private string SaveImageOneDrive(Image image, string imageName)
-        //{
-        //    var client = new SkyDriveServiceClient();
-
-        //    client.LogOn("michaelcbarr@hotmail.com", "W)bb9l87f1");
-        //    WebFolderInfo wfInfo = new WebFolderInfo();
-
-        //    WebFolderInfo[] wfInfoArray = client.ListRootWebFolders();
-
-        //    wfInfo = wfInfoArray[0];
-        //    client.Timeout = 1000000000;
-
-        //    var serverUploadFolder = Path.GetTempPath();
-        //    image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
-
-        //    var localFilePath = Path.Combine(serverUploadFolder, "Placeholder2.jpg");
-
-
-        //    //string fn = @"test.txt";
-        //    if (File.Exists(localFilePath))
-        //    {
-        //        client.UploadWebFile(localFilePath, wfInfo);
-        //    }
-
-        //    return "test";
-        //}
-
         private string SaveImageCloudinary(Image image, string imageName)
         {
-            String urlToReturn = "";
-
-            Account account = new Account(
-              "yerma",
-              "416993185845278",
-              "yNhkrrPZlG5BxZIoqsN67E5yKmw");
-
-            Cloudinary cloudinary = new Cloudinary(account);
-
-            var serverUploadFolder = Path.GetTempPath();
-            image.Save(Path.Combine(serverUploadFolder, imageName));
-
-            var localFilePath = Path.Combine(serverUploadFolder, imageName);
-
-            if (File.Exists(localFilePath))
-            {
-                var uploadParams = new ImageUploadParams()
-                {
-                    File = new FileDescription(localFilePath)
-                };
-                var uploadResult = cloudinary.Upload(uploadParams);
-
-                urlToReturn = uploadResult.Uri.AbsoluteUri;
-            }
-
-            if (File.Exists(localFilePath))
-            { File.Delete(localFilePath);}
-
-            return urlToReturn;
+            return CloudImageService.SaveImageToCloud(image, imageName);
         }
 
-        private string SaveImageCloudinary(string imageName)
+        private string SaveImageCloudinary(string imagePath)
         {
-            String urlToReturn = "";
-
-            Account account = new Account(
-              "yerma",
-              "416993185845278",
-              "yNhkrrPZlG5BxZIoqsN67E5yKmw");
-
-            Cloudinary cloudinary = new Cloudinary(account);
-
-            var localFilePath = Path.Combine(ServerUploadFolder, imageName);
-
-            if (File.Exists(localFilePath))
-            {
-                var uploadParams = new ImageUploadParams()
-                {
-                    File = new FileDescription(localFilePath)
-                };
-                var uploadResult = cloudinary.Upload(uploadParams);
-
-                urlToReturn = uploadResult.Uri.AbsoluteUri;
-            }
-
-            if (File.Exists(localFilePath))
-            { File.Delete(localFilePath); }
-
-            return urlToReturn;
+            return CloudImageService.SaveImageToCloud(imagePath);
         }
 
         private void SetPreviousGuessAsComplete(Game game, int userId)

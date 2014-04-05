@@ -2,6 +2,7 @@ using System.Web.Http;
 using JPassAPic.Core.Repositories.Helpers;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
+using PassAPic.Core.CloudImage;
 using PassAPic.Core.Repositories;
 using PassAPic.Repositories.Helpers;
 
@@ -67,6 +68,7 @@ namespace PassAPic.App_Start
             kernel.Bind<IRepositoryProvider>().To<RepositoryProvider>();
             kernel.Bind<IUnitOfWork>().To<EFUnitOfWork>();
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
+            kernel.Bind<ICloudImageProvider>().To<CloudImageProviderCloudinary>();
         }        
     }
 }

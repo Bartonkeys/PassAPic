@@ -240,7 +240,14 @@ namespace PassAPic.Tests
 
                     var address = new Uri("http://localhost/PassAPic.Web/api/game/imageGuessMultiPart");
 
-                    HttpResponseMessage response = await client.PostAsync(address, formData);
+                    var request = new HttpRequestMessage()
+                    {
+                        RequestUri = address,
+                        Method = HttpMethod.Post,
+                        Content = formData
+                    };
+
+                    HttpResponseMessage response = await client.SendAsync(request);
 
                     if (!response.IsSuccessStatusCode) Assert.Fail();
 
