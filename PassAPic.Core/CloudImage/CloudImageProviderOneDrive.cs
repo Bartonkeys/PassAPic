@@ -49,7 +49,26 @@ namespace PassAPic.Core.CloudImage
 
         public string SaveImageToCloud(string imagePath)
         {
-            throw new NotImplementedException();
+            String urlToReturn = null;
+
+            var client = new SkyDriveServiceClient();
+
+            client.LogOn("yermalimited@hotmail.com", "Y)rm91234");
+            WebFolderInfo wfInfo = new WebFolderInfo();
+
+            WebFolderInfo[] wfInfoArray = client.ListRootWebFolders();
+
+            wfInfo = wfInfoArray[0];
+            client.Timeout = 1000000000;
+
+            //string fn = @"test.txt";
+            if (File.Exists(imagePath))
+            {
+                var webFileInfo = client.UploadWebFile(imagePath, wfInfo);
+                urlToReturn = webFileInfo.Path;
+            }
+
+            return urlToReturn;
         }
     }
 }
