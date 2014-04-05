@@ -265,7 +265,6 @@ namespace PassAPic.Controllers
                     //Create new folder
                     Directory.CreateDirectory(filePathTemp);
 
-
                     foreach (var guess in game.Guesses.OrderBy(x => x.Order))
                     {
                         if (guess is WordGuess)
@@ -287,10 +286,8 @@ namespace PassAPic.Controllers
                                 Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
                                 wordImage.Save(filePathServer, ImageFormat.Png);
 
-                                imageFilePaths[wordGuess.Order - 1] = filePathServer;
-                         
+                                imageFilePaths[wordGuess.Order - 1] = filePathServer;                       
                             }
-                            
 
                         }
                         else if (guess is ImageGuess)
@@ -308,17 +305,28 @@ namespace PassAPic.Controllers
 
                             if (!animationExists)
                             {
-                                String imageStr = imageGuess.Image;
+                                String imageUrl = imageGuess.Image;
 
                                 //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
 
-                                byte[] byteBuffer = Convert.FromBase64String(imageStr);
-                                MemoryStream memoryStream = new MemoryStream(byteBuffer);
+                                //byte[] byteBuffer = Convert.FromBase64String(imageStr);
+                                //MemoryStream memoryStream = new MemoryStream(byteBuffer);
+                                //memoryStream.Position = 0;
+                                //Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
+                                Bitmap bmpFromUrl = null;
+                                Stream responseStream = null;
+                                try
+                                {
+                                    WebRequest request =  System.Net.WebRequest.Create(imageUrl);
+                                    WebResponse response = request.GetResponse();
+                                    responseStream = response.GetResponseStream();
+                                    bmpFromUrl = new Bitmap(responseStream);
+                                   
+                                }
+                                catch (Exception e)
+                                {  }
 
-                                memoryStream.Position = 0;
-
-                                Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
-                                var resizedBitmap = ResizeBitmap(bmpFromString, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
+                                var resizedBitmap = ResizeBitmap(bmpFromUrl, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
                                 //memoryStream.Close();
 
                                 filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
@@ -326,7 +334,7 @@ namespace PassAPic.Controllers
                                 resizedBitmap.Save(filePathServer, ImageFormat.Png);
                                 imageFilePaths[imageGuess.Order - 1] = filePathServer;
 
-                                memoryStream.Close(); 
+                                responseStream.Close(); 
                             }
                             
                         }
