@@ -219,5 +219,37 @@ namespace PassAPic.Tests
 
         }
 
+        [TestMethod]
+        public async Task SendImageGuessMultiPart()
+        {
+            const int BufferSize = 1024;
+            string _filename = @"C:\Users\graha_000\Pictures\graham.jpg";
+
+            using (var client = new HttpClient())
+            {
+                using (var fileStream = new FileStream(_filename, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize,
+                useAsync: true))
+                {
+                    var content = new StreamContent(fileStream, BufferSize);
+
+                    var formData = new MultipartFormDataContent();
+                    formData.Add(new StringContent("2"), "userId");
+                    formData.Add(new StringContent("1"), "gameId");
+                    formData.Add(new StringContent("1"), "nextUserId");
+                    formData.Add(content, "filename", _filename);
+
+                    var address = new Uri("http://localhost/PassAPic.Web/api/game/imageGuessMultiPart");
+
+                    HttpResponseMessage response = await client.PostAsync(address, formData);
+
+                    if (!response.IsSuccessStatusCode) Assert.Fail();
+
+                    Assert.IsTrue(true);
+
+                }
+            }
+
+        }
+
     }
 }

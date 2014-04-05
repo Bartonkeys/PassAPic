@@ -28,6 +28,7 @@ namespace PassAPic.Controllers
     public class GameController : BaseController
     {
         protected PushRegisterService PushRegisterService;
+        static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
         public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider)
@@ -402,7 +403,6 @@ namespace PassAPic.Controllers
                         Stream stream = content.ReadAsStreamAsync().Result;
                         Image image = Image.FromStream(stream);
 
-                        //var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
                         var imageUrl = SaveImageCloudinary(image, imageName);
                         SetPreviousGuessAsComplete(game, userId);
 
@@ -436,18 +436,68 @@ namespace PassAPic.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("imageGuessMultiPart")]
+        public async Task<HttpResponseMessage> ImageGuessMultiPart()
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.UnsupportedMediaType));
+            }
+
+            try
+            {
+                var streamProvider = new MultipartFormDataStreamProvider(ServerUploadFolder);
+
+                // Read the MIME multipart asynchronously content using the stream provider we just created.
+                await Request.Content.ReadAsMultipartAsync(streamProvider); 
+
+                var userId = int.Parse(streamProvider.FormData["userId"]);
+                var gameId = int.Parse(streamProvider.FormData["gameId"]);
+                var nextUserId = int.Parse(streamProvider.FormData["nextUserId"]);
+                var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();            
+              
+                var user = UnitOfWork.User.GetById(userId);
+                var nextUser = UnitOfWork.User.GetById(nextUserId);
+                var game = UnitOfWork.Game.GetById(gameId);
+
+                if (NextUserAlreadyHadAGo(game, nextUserId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                var imageUrl = SaveImageCloudinary(imageName);
+                SetPreviousGuessAsComplete(game, userId);
+
+                var order = game.Guesses.Count + 1;
+
+                var imageGuess = new ImageGuess
+                {
+                    Order = order,
+                    User = user,
+                    Image = imageUrl
+                };
+
+                if (order < game.NumberOfGuesses) imageGuess.NextUser = nextUser;
+                else game.GameOverMan = true;
+
+                game.Guesses.Add(imageGuess);
+
+                UnitOfWork.Commit();
+
+                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
 
         #region "Helper methods"
-
-        private string SaveImage(Image image, string imageName)
-        {
-            //TODO Handle Image - Below is just for testing
-            var serverUploadFolder = Path.GetTempPath();
-            image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
-
-            return Path.Combine(serverUploadFolder, "Placeholder2.jpg");
-        }
 
         //private string SaveImageOneDrive(Image image, string imageName)
         //{
@@ -505,6 +555,36 @@ namespace PassAPic.Controllers
 
             if (File.Exists(localFilePath))
             { File.Delete(localFilePath);}
+
+            return urlToReturn;
+        }
+
+        private string SaveImageCloudinary(string imageName)
+        {
+            String urlToReturn = "";
+
+            Account account = new Account(
+              "yerma",
+              "416993185845278",
+              "yNhkrrPZlG5BxZIoqsN67E5yKmw");
+
+            Cloudinary cloudinary = new Cloudinary(account);
+
+            var localFilePath = Path.Combine(ServerUploadFolder, imageName);
+
+            if (File.Exists(localFilePath))
+            {
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(localFilePath)
+                };
+                var uploadResult = cloudinary.Upload(uploadParams);
+
+                urlToReturn = uploadResult.Uri.AbsoluteUri;
+            }
+
+            if (File.Exists(localFilePath))
+            { File.Delete(localFilePath); }
 
             return urlToReturn;
         }
