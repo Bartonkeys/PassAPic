@@ -9,12 +9,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using CloudinaryDotNet;
-using CloudinaryDotNet.Actions;
-using HgCo.WindowsLive.SkyDrive;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
+using PassAPic.Core.CloudImage;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
@@ -28,13 +26,15 @@ namespace PassAPic.Controllers
     public class GameController : BaseController
     {
         protected PushRegisterService PushRegisterService;
+        protected CloudImageService CloudImageService;
 
         [Inject]
-        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider)
+        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider)
         {
             UnitOfWork = unitOfWork;
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
+            CloudImageService = new CloudImageService(cloudImageProvider);
         }
 
         // POST /api/game/start
@@ -403,7 +403,7 @@ namespace PassAPic.Controllers
                         Image image = Image.FromStream(stream);
 
                         //var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
-                        var imageUrl = SaveImageCloudinary(image, imageName);
+                        var imageUrl = SaveImageToCloud(image, imageName);
                         SetPreviousGuessAsComplete(game, userId);
 
                         var order = game.Guesses.Count + 1;
@@ -449,64 +449,10 @@ namespace PassAPic.Controllers
             return Path.Combine(serverUploadFolder, "Placeholder2.jpg");
         }
 
-        //private string SaveImageOneDrive(Image image, string imageName)
-        //{
-        //    var client = new SkyDriveServiceClient();
-
-        //    client.LogOn("michaelcbarr@hotmail.com", "W)bb9l87f1");
-        //    WebFolderInfo wfInfo = new WebFolderInfo();
-
-        //    WebFolderInfo[] wfInfoArray = client.ListRootWebFolders();
-
-        //    wfInfo = wfInfoArray[0];
-        //    client.Timeout = 1000000000;
-
-        //    var serverUploadFolder = Path.GetTempPath();
-        //    image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
-
-        //    var localFilePath = Path.Combine(serverUploadFolder, "Placeholder2.jpg");
-
-
-        //    //string fn = @"test.txt";
-        //    if (File.Exists(localFilePath))
-        //    {
-        //        client.UploadWebFile(localFilePath, wfInfo);
-        //    }
-
-        //    return "test";
-        //}
-
-        private string SaveImageCloudinary(Image image, string imageName)
+       
+        private string SaveImageToCloud(Image image, string imageName)
         {
-            String urlToReturn = "";
-
-            Account account = new Account(
-              "yerma",
-              "416993185845278",
-              "yNhkrrPZlG5BxZIoqsN67E5yKmw");
-
-            Cloudinary cloudinary = new Cloudinary(account);
-
-            var serverUploadFolder = Path.GetTempPath();
-            image.Save(Path.Combine(serverUploadFolder, imageName));
-
-            var localFilePath = Path.Combine(serverUploadFolder, imageName);
-
-            if (File.Exists(localFilePath))
-            {
-                var uploadParams = new ImageUploadParams()
-                {
-                    File = new FileDescription(localFilePath)
-                };
-                var uploadResult = cloudinary.Upload(uploadParams);
-
-                urlToReturn = uploadResult.Uri.AbsoluteUri;
-            }
-
-            if (File.Exists(localFilePath))
-            { File.Delete(localFilePath);}
-
-            return urlToReturn;
+            return CloudImageService.SaveImageToCloud(image, imageName);
         }
 
         private void SetPreviousGuessAsComplete(Game game, int userId)
