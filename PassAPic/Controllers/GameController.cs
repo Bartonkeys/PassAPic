@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
@@ -27,6 +29,7 @@ namespace PassAPic.Controllers
     {
         protected PushRegisterService PushRegisterService;
         protected CloudImageService CloudImageService;
+        static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
         public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider)
@@ -403,8 +406,7 @@ namespace PassAPic.Controllers
                         Stream stream = content.ReadAsStreamAsync().Result;
                         Image image = Image.FromStream(stream);
 
-                        //var imageUrl = SaveImage(image, imageName); //TODO Save image to Sky Drive
-                        var imageUrl = SaveImageToCloud(image, imageName);
+                        var imageUrl = SaveImageCloudinary(image, imageName);
                         SetPreviousGuessAsComplete(game, userId);
 
                         var order = game.Guesses.Count + 1;
@@ -437,23 +439,90 @@ namespace PassAPic.Controllers
             }
         }
 
+        ///POST /api/game/imageGuessMultiPart
+        /// <summary>
+        /// Please see test project for how to hit this api. Here are the steps:
+        /// 1. Turn image into FileStream.
+        /// 2. Create a StreamContent using FileStream.
+        /// 3. Create a multipart form data and add StreamContent.
+        /// 4. Add these values as StringContent to form data as well: gameId, userId, nextUserId, image (this is image name).
+        /// 6. Post request to this api.
+        /// 7. Server will use MultipartFormDataStreamProvider to save file to temp directory and then call SaveImageCloudinary()
+        /// with just image path. I;ve sorted it out in ICloudImageProvider and concrete implmentations too.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("imageGuessMultiPart")]
+        public async Task<HttpResponseMessage> ImageGuessMultiPart()
+        {
+            if (!Request.Content.IsMimeMultipartContent("form-data"))
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.UnsupportedMediaType));
+            }
+
+            try
+            {
+                var streamProvider = new MultipartFormDataStreamProvider(ServerUploadFolder);
+
+                // Read the MIME multipart asynchronously content using the stream provider we just created.
+                await Request.Content.ReadAsMultipartAsync(streamProvider); 
+
+                var userId = int.Parse(streamProvider.FormData["userId"]);
+                var gameId = int.Parse(streamProvider.FormData["gameId"]);
+                var nextUserId = int.Parse(streamProvider.FormData["nextUserId"]);
+                var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();            
+              
+                var user = UnitOfWork.User.GetById(userId);
+                var nextUser = UnitOfWork.User.GetById(nextUserId);
+                var game = UnitOfWork.Game.GetById(gameId);
+
+                if (NextUserAlreadyHadAGo(game, nextUserId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                var imagePath = Path.Combine(ServerUploadFolder, imageName);
+                var imageUrl = SaveImageCloudinary(imagePath);
+                SetPreviousGuessAsComplete(game, userId);
+
+                var order = game.Guesses.Count + 1;
+
+                var imageGuess = new ImageGuess
+                {
+                    Order = order,
+                    User = user,
+                    Image = imageUrl
+                };
+
+                if (order < game.NumberOfGuesses) imageGuess.NextUser = nextUser;
+                else game.GameOverMan = true;
+
+                game.Guesses.Add(imageGuess);
+
+                UnitOfWork.Commit();
+
+                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
 
         #region "Helper methods"
 
-        private string SaveImage(Image image, string imageName)
-        {
-            //TODO Handle Image - Below is just for testing
-            var serverUploadFolder = Path.GetTempPath();
-            image.Save(Path.Combine(serverUploadFolder, "Placeholder2.jpg"));
-
-            return Path.Combine(serverUploadFolder, "Placeholder2.jpg");
-        }
-
-       
-        private string SaveImageToCloud(Image image, string imageName)
+        private string SaveImageCloudinary(Image image, string imageName)
         {
             return CloudImageService.SaveImageToCloud(image, imageName);
+        }
+
+        private string SaveImageCloudinary(string imagePath)
+        {
+            return CloudImageService.SaveImageToCloud(imagePath);
         }
 
         private void SetPreviousGuessAsComplete(Game game, int userId)

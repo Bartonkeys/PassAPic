@@ -10,5 +10,6 @@ namespace PassAPic.Core.CloudImage
     public interface ICloudImageProvider
     {
         string SaveImageToCloud(Image image, string imageName);
+        string SaveImageToCloud(string imagePath);
     }
 }

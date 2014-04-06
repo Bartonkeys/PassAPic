@@ -44,6 +44,35 @@ namespace PassAPic.Core.CloudImage
 
             return urlToReturn;
         }
+
+
+        public string SaveImageToCloud(string imagePath)
+        {
+            String urlToReturn = "";
+
+            Account account = new Account(
+              "yerma",
+              "416993185845278",
+              "yNhkrrPZlG5BxZIoqsN67E5yKmw");
+
+            Cloudinary cloudinary = new Cloudinary(account);
+
+            if (File.Exists(imagePath))
+            {
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(imagePath)
+                };
+                var uploadResult = cloudinary.Upload(uploadParams);
+
+                urlToReturn = uploadResult.Uri.AbsoluteUri;
+            }
+
+            if (File.Exists(imagePath))
+            { File.Delete(imagePath); }
+
+            return urlToReturn;
+        }
     }
    
 }

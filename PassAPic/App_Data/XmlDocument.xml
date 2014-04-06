@@ -515,5 +515,19 @@
              <returns></returns>
              <exception cref="T:System.Web.Http.HttpResponseException"></exception>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.ImageGuessMultiPart">
+            POST /api/game/imageGuessMultiPart
+             <summary>
+             Please see test project for how to hit this api. Here are the steps:
+             1. Turn image into FileStream.
+             2. Create a StreamContent using FileStream.
+             3. Create a multipart form data and add StreamContent.
+             4. Add these values as StringContent to form data as well: gameId, userId, nextUserId, image (this is image name).
+             6. Post request to this api.
+             7. Server will use MultipartFormDataStreamProvider to save file to temp directory and then call SaveImageCloudinary()
+             with just image path. I;ve sorted it out in ICloudImageProvider and concrete implmentations too.
+             </summary>
+             <returns></returns>
+        </member>
     </members>
 </doc>

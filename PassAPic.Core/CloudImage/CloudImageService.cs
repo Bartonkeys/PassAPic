@@ -22,5 +22,10 @@ namespace PassAPic.Core.CloudImage
             return CloudProvider.SaveImageToCloud(image, imageName);
         }
 
+        public string SaveImageToCloud(string imagePath)
+        {
+            return CloudProvider.SaveImageToCloud(imagePath);
+        }
+
     }
 }
