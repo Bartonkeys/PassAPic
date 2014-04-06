@@ -500,9 +500,18 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
-
-                return Request.CreateResponse(HttpStatusCode.Created);
+                var responseText = "";
+                try
+                {
+                    SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+                    responseText = "Push message sent successfully";
+                }
+                catch (Exception ex)
+                {
+                    responseText = "Error with push message";
+                }
+                
+                return Request.CreateResponse(HttpStatusCode.Created, responseText);
             }
             catch (Exception ex)
             {
