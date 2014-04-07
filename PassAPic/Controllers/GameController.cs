@@ -348,12 +348,6 @@ namespace PassAPic.Controllers
                             {
                                 String imageUrl = imageGuess.Image;
 
-                                //Bitmap bmpFromString = imageStr.Base64StringToBitmap();
-
-                                //byte[] byteBuffer = Convert.FromBase64String(imageStr);
-                                //MemoryStream memoryStream = new MemoryStream(byteBuffer);
-                                //memoryStream.Position = 0;
-                                //Bitmap bmpFromString = (Bitmap)Bitmap.FromStream(memoryStream);
                                 Bitmap bmpFromUrl = null;
                                 Stream responseStream = null;
                                 try
@@ -368,8 +362,7 @@ namespace PassAPic.Controllers
                                 {  }
 
                                 var resizedBitmap = ResizeBitmap(bmpFromUrl, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
-                                //memoryStream.Close();
-
+                               
                                 filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
 
                                 resizedBitmap.Save(filePathServer, ImageFormat.Png);
@@ -480,7 +473,7 @@ namespace PassAPic.Controllers
             catch (Exception ex)
             {
                 _log.Error(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -545,9 +538,18 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
-
-                return Request.CreateResponse(HttpStatusCode.Created);
+                var responseText = "";
+                try
+                {
+                    SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+                    responseText = "Push message sent successfully";
+                }
+                catch (Exception ex)
+                {
+                    responseText = "Error with push message";
+                }
+                
+                return Request.CreateResponse(HttpStatusCode.Created, responseText);
             }
             catch (Exception ex)
             {
