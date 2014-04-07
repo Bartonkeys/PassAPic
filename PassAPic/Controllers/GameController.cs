@@ -77,6 +77,44 @@ namespace PassAPic.Controllers
             }
         }
 
+        /// <summary>
+        /// The game creator can call this API to get a new word for their just started game. 
+        /// Only game creator can change and it can only happen at start of game
+        /// </summary>
+        /// <param name="gameId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Route("NewWord/{gameId}/{userId}")]
+        public HttpResponseMessage GetNewWord(int gameId, int userId)
+        {
+            try
+            {
+                var game = UnitOfWork.Game.GetById(gameId);
+
+                if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
+                if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
+
+                game.StartingWord = Words[random.Next(Words.Count)];
+
+                UnitOfWork.Game.Update(game);
+                UnitOfWork.Commit();
+
+                var wordModel = new WordModel
+                {
+                    GameId = game.Id,
+                    UserId = game.Creator.Id,
+                    Word = game.StartingWord 
+                };
+
+                return Request.CreateResponse(HttpStatusCode.Created, wordModel);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         // POST /api/game/guessimage
         /// <summary>
         /// Post up image guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
