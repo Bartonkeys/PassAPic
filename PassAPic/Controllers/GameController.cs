@@ -234,7 +234,7 @@ namespace PassAPic.Controllers
 
                 foreach (var guess in guesses)
                 {
-                    var isLastTurn = guess.Game.Guesses.Count() + 1 == guess.Game.NumberOfGuesses;
+                    var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
 
                     if (guess is WordGuess)
                     {
