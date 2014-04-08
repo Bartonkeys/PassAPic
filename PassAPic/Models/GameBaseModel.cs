@@ -13,5 +13,8 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "gameId")]
         public int GameId { get; set; }
+
+        [JsonProperty(PropertyName = "order")]
+        public int Order { get; set; }
     }
 }

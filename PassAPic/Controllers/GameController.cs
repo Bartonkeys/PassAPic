@@ -364,6 +364,84 @@ namespace PassAPic.Controllers
             }
         }
 
+        // GET /api/game/CompletedGames
+        /// <summary>
+        /// Returns collection of finished games for user
+        /// </summary>
+        /// <returns></returns>
+        [Route("CompletedGames/{userId}")]
+        public HttpResponseMessage GetCompletedGames(int userId)
+        {
+            var completedGameModelList = new List<CompletedGamesModel>();
+            try
+            {
+                var results = UnitOfWork.Guess
+                    .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
+                    .Select(y => new CompletedGamesModel
+                    {
+                        GameId = y.Game.Id,
+                        StartingWord = y.Game.StartingWord,
+                        NumberOfGuesses = y.Game.NumberOfGuesses,
+                        GameOverMan = y.Game.GameOverMan
+                    }).ToList();
+
+                foreach (var result in results)
+                {
+                    var game = UnitOfWork.Game.GetById(result.GameId);
+                    var wordModelList = new List<WordModel>();
+                    var imageModelList = new List<ImageModel>();
+               
+                    foreach (var guess in game.Guesses.OrderBy(x => x.Order))
+                    {
+                        if (guess is WordGuess)
+                        {
+                            var wordGuess = (WordGuess)guess;
+                            var wordModel = new WordModel
+                            {
+                                GameId = wordGuess.Game.Id,
+                                UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
+                                Word = wordGuess.Word,
+                                Order = wordGuess.Order
+                                
+                            };
+
+                            wordModelList.Add(wordModel);
+                           
+                        }
+                        else if (guess is ImageGuess)
+                        {
+                            var imageGuess = (ImageGuess)guess;
+
+                            var imageModel = new ImageModel
+                            {
+                                GameId = imageGuess.Game.Id,
+                                UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
+                                Image = imageGuess.Image,
+                                Order = imageGuess.Order
+                            };
+
+                            imageModelList.Add(imageModel);
+
+                        }
+
+                    }
+
+                    result.ImageModelList = imageModelList;;
+                    result.WordModelList = wordModelList;
+                    completedGameModelList.Add(result);
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, completedGameModelList);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
+
         ///POST /api/game/imageGuessTask
         /// <summary>
         /// Please see test project for how to hit this api. Here are the steps:
