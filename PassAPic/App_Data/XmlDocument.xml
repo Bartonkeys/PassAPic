@@ -510,6 +510,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetCompletedGames(System.Int32)">
+            <summary>
+            Returns collection of finished games for user
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.ImageGuessTask">
             POST /api/game/imageGuessTask
              <summary>

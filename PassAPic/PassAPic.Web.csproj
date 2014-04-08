@@ -221,6 +221,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\CompletedGamesModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\OpenGamesModel.cs" />
