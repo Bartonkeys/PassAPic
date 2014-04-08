@@ -13,5 +13,8 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "gameId")]
         public int GameId { get; set; }
+
+        [JsonProperty(PropertyName = "isLastTurn")]
+        public bool IsLastTurn { get; set; }
     }
 }

@@ -145,15 +145,14 @@ namespace PassAPic.Controllers
                     Image = model.Image
                 };
 
-                if (order < game.NumberOfGuesses) imageGuess.NextUser = nextUser;
-                else game.GameOverMan = true;
+                if (model.IsLastTurn) game.GameOverMan = true;
+                else imageGuess.NextUser = nextUser;
 
                 game.Guesses.Add(imageGuess);
 
                 UnitOfWork.Commit();
 
-                //SendPushMessage(nextUser.Id, PushRegisterService.ImageGuessPushString);
-                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username)); 
+                if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username)); 
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -199,15 +198,15 @@ namespace PassAPic.Controllers
                     Word = model.Word
                 };
 
-                if (order < game.NumberOfGuesses) wordGuess.NextUser = nextUser;
-                else game.GameOverMan = true;
+                if (model.IsLastTurn) game.GameOverMan = true;
+                else wordGuess.NextUser = nextUser;
 
                 game.Guesses.Add(wordGuess);
 
                 UnitOfWork.Commit();
 
                 //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
-                SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
+                if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
 
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -235,6 +234,8 @@ namespace PassAPic.Controllers
 
                 foreach (var guess in guesses)
                 {
+                    var isLastTurn = guess.Game.Guesses.Count() + 1 == guess.Game.NumberOfGuesses;
+
                     if (guess is WordGuess)
                     {
                         var wordGuess = (WordGuess) guess;
@@ -242,7 +243,8 @@ namespace PassAPic.Controllers
                         {
                             GameId = wordGuess.Game.Id,
                             UserId = wordGuess.NextUser.Id,
-                            Word = wordGuess.Word
+                            Word = wordGuess.Word,
+                            IsLastTurn = isLastTurn
                         };
 
                         wordModelList.Add(wordModel);
@@ -255,7 +257,8 @@ namespace PassAPic.Controllers
                         {
                             GameId = imageGuess.Game.Id,
                             UserId = imageGuess.NextUser.Id,
-                            Image = imageGuess.Image
+                            Image = imageGuess.Image,
+                            IsLastTurn = isLastTurn
                         };
 
                         imageModelList.Add(imageModel);
@@ -503,13 +506,14 @@ namespace PassAPic.Controllers
                 var streamProvider = new MultipartFormDataStreamProvider(ServerUploadFolder);
 
                 // Read the MIME multipart asynchronously content using the stream provider we just created.
-                await Request.Content.ReadAsMultipartAsync(streamProvider); 
+                await Request.Content.ReadAsMultipartAsync(streamProvider);
 
                 var userId = int.Parse(streamProvider.FormData["userId"]);
                 var gameId = int.Parse(streamProvider.FormData["gameId"]);
                 var nextUserId = int.Parse(streamProvider.FormData["nextUserId"]);
-                var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();            
-              
+                var isLastTurn = Boolean.Parse(streamProvider.FormData["isLastTurn"]);
+                var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();
+
                 var user = UnitOfWork.User.GetById(userId);
                 var nextUser = UnitOfWork.User.GetById(nextUserId);
                 var game = UnitOfWork.Game.GetById(gameId);
@@ -531,25 +535,24 @@ namespace PassAPic.Controllers
                     Image = imageUrl
                 };
 
-                if (order < game.NumberOfGuesses) imageGuess.NextUser = nextUser;
+                if (!isLastTurn) imageGuess.NextUser = nextUser;
                 else game.GameOverMan = true;
 
                 game.Guesses.Add(imageGuess);
 
                 UnitOfWork.Commit();
 
-                var responseText = "";
-                try
+                if (!isLastTurn)
                 {
                     SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
-                    responseText = "Push message sent successfully";
                 }
-                catch (Exception ex)
-                {
-                    responseText = "Error with push message";
-                }
-                
-                return Request.CreateResponse(HttpStatusCode.Created, responseText);
+
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch(WebException webEx)
+            {
+                _log.Error(webEx);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, webEx.Message);
             }
             catch (Exception ex)
             {
