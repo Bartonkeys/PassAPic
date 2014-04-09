@@ -75,6 +75,7 @@
     <Compile Include="CloudImage\ICloudImageProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushRegistration\IPushProvider.cs" />
+    <Compile Include="PushRegistration\PushMessageException.cs" />
     <Compile Include="PushRegistration\PushProviderUrbanAirship.cs" />
     <Compile Include="PushRegistration\PushRegisterService.cs" />
     <Compile Include="PushRegistration\UrbanAirshipPushObject.cs" />

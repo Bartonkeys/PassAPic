@@ -208,7 +208,14 @@ namespace PassAPic.Controllers
                 //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
                 if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
 
-                return Request.CreateResponse(HttpStatusCode.Created);
+                return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
+            }
+            catch (PushMessageException pushEx)
+            {
+                //Push Message Exception is NOT fatal to the client so we hide the exception
+                //Response body could be checked if required
+                _log.Error(pushEx);
+                return Request.CreateResponse(HttpStatusCode.Created, pushEx.Message);
             }
             catch (Exception ex)
             {
@@ -625,12 +632,14 @@ namespace PassAPic.Controllers
                     SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
                 }
 
-                return Request.CreateResponse(HttpStatusCode.Created);
+                return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
             }
-            catch(WebException webEx)
+            catch (PushMessageException pushEx)
             {
-                _log.Error(webEx);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, webEx.Message);
+                //Push Message Exception is NOT fatal to the client so we hide the exception
+                //Response body could be checked if required
+                _log.Error(pushEx);
+                return Request.CreateResponse(HttpStatusCode.Created, pushEx.Message);
             }
             catch (Exception ex)
             {
@@ -703,8 +712,16 @@ namespace PassAPic.Controllers
             var listOfPushDevices = UnitOfWork.PushRegister.SearchFor(x => x.UserId == userId).ToList();
 
             //Check user has any devices registered for push
-            if (listOfPushDevices.Count > 0) PushRegisterService.SendPush(userId, messageToPush, listOfPushDevices);
+            try
+            {
+                if (listOfPushDevices.Count > 0) PushRegisterService.SendPush(userId, messageToPush, listOfPushDevices);
            
+            }
+            catch (Exception ex)
+            {
+                throw new PushMessageException("There has been an error while trying to send Push Message", ex);
+            }
+            
         }
 
 
