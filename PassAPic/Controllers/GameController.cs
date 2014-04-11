@@ -235,6 +235,7 @@ namespace PassAPic.Controllers
             try
             {
                 var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);
+               
                 var gameModelList = new OpenGamesModel();
                 var wordModelList = new List<WordModel>();
                 var imageModelList = new List<ImageModel>();
@@ -272,6 +273,8 @@ namespace PassAPic.Controllers
                     }
                 }
 
+                wordModelList.AddRange(GetGamesCreatedButNotStarted(userId));
+
                 gameModelList.WordModelList = wordModelList;
                 gameModelList.ImageModelList = imageModelList;
 
@@ -282,6 +285,26 @@ namespace PassAPic.Controllers
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+        private IEnumerable<WordModel> GetGamesCreatedButNotStarted(int userId)
+        {
+            var gamesCreatedButNotStarted =
+                UnitOfWork.Game.SearchFor(x => x.Creator.Id == userId && x.Guesses.Count == 0);
+
+            var wordModelList = new List<WordModel>();
+
+            foreach (var game in gamesCreatedButNotStarted)
+            {
+                var wordModel = new WordModel
+                {
+                    GameId = game.Id,
+                    UserId = userId,
+                    Word = game.StartingWord
+                };
+                wordModelList.Add(wordModel);
+            }
+            return wordModelList;
         }
 
         // GET /api/game/Results
