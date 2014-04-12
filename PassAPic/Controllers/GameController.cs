@@ -208,7 +208,7 @@ namespace PassAPic.Controllers
                 //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
                 if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
 
-                return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
+                return Request.CreateResponse(HttpStatusCode.Created);
             }
             catch (PushMessageException pushEx)
             {
@@ -632,7 +632,7 @@ namespace PassAPic.Controllers
                     SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
                 }
 
-                return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
+                return Request.CreateResponse(HttpStatusCode.Created);
             }
             catch (PushMessageException pushEx)
             {
