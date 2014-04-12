@@ -443,6 +443,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.AccountController.GetAllUsers">
+            <summary>
+            This API will return a list of all registered users.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
             <summary>
             POST this baby up to let server know user is online.

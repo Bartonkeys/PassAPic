@@ -109,6 +109,30 @@ namespace PassAPic.Controllers
             }
         }
 
+        // GET api/Account/AllUsers
+        /// <summary>
+        /// This API will return a list of all registered users.
+        /// </summary>
+        /// <returns></returns>
+        [Route("AllUsers")]
+        [AllowAnonymous]
+        public HttpResponseMessage GetAllUsers()
+        {
+            try
+            {
+                var users =
+                    UnitOfWork.User.SearchFor(x => x.Id>0)
+                        .Select(y => new AccountModel { UserId = y.Id, Username = y.Username })
+                        .ToList();
+                return Request.CreateResponse(HttpStatusCode.OK, users);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         // POST api/Account/Login
         /// <summary>
         /// POST this baby up to let server know user is online.
