@@ -208,14 +208,16 @@ namespace PassAPic.Controllers
                 //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
                 if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
 
-                return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
+                //return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
+                return Request.CreateResponse(HttpStatusCode.Created);
             }
             catch (PushMessageException pushEx)
             {
                 //Push Message Exception is NOT fatal to the client so we hide the exception
                 //Response body could be checked if required
                 _log.Error(pushEx);
-                return Request.CreateResponse(HttpStatusCode.Created, pushEx.Message);
+                //return Request.CreateResponse(HttpStatusCode.Created, pushEx.Message);
+                return Request.CreateResponse(HttpStatusCode.Created);
             }
             catch (Exception ex)
             {
