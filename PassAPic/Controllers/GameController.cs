@@ -226,7 +226,7 @@ namespace PassAPic.Controllers
 
         // GET /api/game/Guesses
         /// <summary>
-        /// Returns collection of guesses for user
+        /// Returns collection of guesses for user and any games a user created but didnt start.
         /// </summary>
         /// <returns></returns>
         [Route("Guesses/{userId}")]
@@ -292,19 +292,10 @@ namespace PassAPic.Controllers
             var gamesCreatedButNotStarted =
                 UnitOfWork.Game.SearchFor(x => x.Creator.Id == userId && x.Guesses.Count == 0);
 
-            var wordModelList = new List<WordModel>();
-
-            foreach (var game in gamesCreatedButNotStarted)
+            return gamesCreatedButNotStarted.Select(game => new WordModel
             {
-                var wordModel = new WordModel
-                {
-                    GameId = game.Id,
-                    UserId = userId,
-                    Word = game.StartingWord
-                };
-                wordModelList.Add(wordModel);
-            }
-            return wordModelList;
+                GameId = game.Id, UserId = userId, Word = game.StartingWord
+            }).ToList();
         }
 
         // GET /api/game/Results
