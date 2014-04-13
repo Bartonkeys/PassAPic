@@ -212,6 +212,7 @@ namespace PassAPic.Controllers
                     //DO We want to send a push here too?
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
                     game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
+                    UnitOfWork.Commit();
                 }
                 else
                 {
