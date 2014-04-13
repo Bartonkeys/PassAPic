@@ -210,7 +210,8 @@ namespace PassAPic.Controllers
                 if (model.IsLastTurn)
                 {
                     //DO We want to send a push here too?
-                    game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game);
+                    var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
+                    game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
                 }
                 else
                 {

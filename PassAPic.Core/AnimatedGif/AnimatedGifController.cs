@@ -72,12 +72,11 @@ namespace PassAPic.Core.AnimatedGif
         }
 
 
-        public String CreateAnimatedGif(Game game)
+        public String CreateAnimatedGif(Game game, string tempAnimatedGif)
         {
             try
             {
-                var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-
+             
                 _animatedGifEncoder.Start(tempAnimatedGif);
                 _animatedGifEncoder.SetDelay(3000);
                 _animatedGifEncoder.SetRepeat(0);
