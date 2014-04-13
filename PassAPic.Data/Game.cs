@@ -23,6 +23,7 @@ namespace PassAPic.Data
         public int NumberOfGuesses { get; set; }
         public string StartingWord { get; set; }
         public bool GameOverMan { get; set; }
+        public string AnimatedResult { get; set; }
     
         public virtual ICollection<Guess> Guesses { get; set; }
         public virtual User Creator { get; set; }

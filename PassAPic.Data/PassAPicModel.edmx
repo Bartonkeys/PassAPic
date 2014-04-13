@@ -14,6 +14,7 @@
           <Property Name="StartingWord" Type="nvarchar(max)" Nullable="false" />
           <Property Name="GameOverMan" Type="bit" Nullable="false" />
           <Property Name="Creator_Id" Type="int" />
+          <Property Name="AnimatedResult" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Guesses">
           <Key>
@@ -231,6 +232,7 @@
           <Property Name="NumberOfGuesses" Type="Int32" Nullable="false" />
           <Property Name="StartingWord" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="GameOverMan" Type="Boolean" Nullable="false" />
+          <Property Name="AnimatedResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -316,7 +318,8 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="NumberOfGuesses" ColumnName="NumberOfGuesses" />
           <ScalarProperty Name="StartingWord" ColumnName="StartingWord" />
           <ScalarProperty Name="GameOverMan" ColumnName="GameOverMan" />

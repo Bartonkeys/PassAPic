@@ -29,6 +29,7 @@ namespace PassAPic.Controllers
     {
         protected PushRegisterService PushRegisterService;
         protected CloudImageService CloudImageService;
+        protected AnimatedGifController AnimatedGifController;
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
@@ -38,6 +39,7 @@ namespace PassAPic.Controllers
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
+            AnimatedGifController = new AnimatedGifController(CloudImageService);
         }
 
         // POST /api/game/start
@@ -205,8 +207,15 @@ namespace PassAPic.Controllers
 
                 UnitOfWork.Commit();
 
-                //SendPushMessage(nextUser.Id, PushRegisterService.WordGuessPushString);
-                if (!model.IsLastTurn) SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username)); 
+                if (model.IsLastTurn)
+                {
+                    //DO We want to send a push here too?
+                    game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game);
+                }
+                else
+                {
+                    SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username));
+                } 
 
                 return Request.CreateResponse(HttpStatusCode.Created, "Push message sent successfully");
             }
@@ -318,17 +327,6 @@ namespace PassAPic.Controllers
                 {
                     var game = UnitOfWork.Game.GetById(result.GameId);
                     result.Guesses = new List<GameBaseModel>();
-                    var imageFilePaths = new String[result.NumberOfGuesses];
-                    var filePathServer = "";
-                    var filePathServerAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + result.GameId + ".gif");
-
-                    bool animationExists = File.Exists(filePathServerAnimatedGif);
-
-                    var tempDirName = "temp_" + Guid.NewGuid();
-                    var filePathTemp = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName);
-                    
-                    //Create new folder
-                    Directory.CreateDirectory(filePathTemp);
 
                     foreach (var guess in game.Guesses.OrderBy(x => x.Order))
                     {
@@ -344,16 +342,6 @@ namespace PassAPic.Controllers
 
                             result.Guesses.Add(wordModel);
 
-                            if (!animationExists)
-                            {
-                                filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + wordGuess.Order + ".png");
-
-                                Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
-                                wordImage.Save(filePathServer, ImageFormat.Png);
-
-                                imageFilePaths[wordGuess.Order - 1] = filePathServer;                       
-                            }
-
                         }
                         else if (guess is ImageGuess)
                         {
@@ -367,56 +355,23 @@ namespace PassAPic.Controllers
                             };
 
                             result.Guesses.Add(imageModel);
-
-                            if (!animationExists)
-                            {
-                                String imageUrl = imageGuess.Image;
-
-                                Bitmap bmpFromUrl = null;
-                                Stream responseStream = null;
-                                try
-                                {
-                                    WebRequest request =  System.Net.WebRequest.Create(imageUrl);
-                                    WebResponse response = request.GetResponse();
-                                    responseStream = response.GetResponseStream();
-                                    bmpFromUrl = new Bitmap(responseStream);
-                                   
-                                }
-                                catch (Exception e)
-                                {  }
-
-                                var resizedBitmap = ResizeBitmap(bmpFromUrl, MyGlobals.ImageWidth, MyGlobals.ImageHeight);
-                               
-                                filePathServer = HttpContext.Current.Server.MapPath("~/App_Data/temp/" + tempDirName + "/" + imageGuess.Order + ".png");
-
-                                resizedBitmap.Save(filePathServer, ImageFormat.Png);
-                                imageFilePaths[imageGuess.Order - 1] = filePathServer;
-
-                                responseStream.Close(); 
-                            }
                             
                         }
                        
                     }
 
-                    //Add the new Animated Gif to this Result object
-                    string animatedGifAsbase64;
-                    if (animationExists)
+                    Image animatedGifImage;
+                    using (var webClient = new WebClient())
                     {
-                        animatedGifAsbase64 = ImageToBase64(new Bitmap(filePathServerAnimatedGif), ImageFormat.Gif);
+                        animatedGifImage = Image.FromStream(webClient.OpenRead(game.AnimatedResult));
                     }
-                    else
-                    {
-                        Image animatedGif = AnimatedGifController.CreateAnimatedGifFromBitmapArray(imageFilePaths, false,
-                                                                                               filePathServerAnimatedGif);
-                        animatedGifAsbase64 = ImageToBase64(animatedGif, ImageFormat.Gif);
-                    }
-                    
+
+                    var animatedGifAsbase64 = ImageToBase64(animatedGifImage, ImageFormat.Gif);
+                 
                     result.Animation = animatedGifAsbase64;  
                    
                 }
-
-               
+             
                 return Request.CreateResponse(HttpStatusCode.OK, results);
             }
             catch (Exception ex)
@@ -593,7 +548,7 @@ namespace PassAPic.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("imageGuessMultiPart")]
-        public async Task<HttpResponseMessage> ImageGuessMultiPart()
+        public async Task<HttpResponseMessage> PostImageGuessMultiPart()
         {
             if (!Request.Content.IsMimeMultipartContent("form-data"))
             {

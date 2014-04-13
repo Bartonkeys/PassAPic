@@ -1,6 +1,11 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Net;
+using System.Web;
+using PassAPic.Core.CloudImage;
+using PassAPic.Data;
 
 
 namespace PassAPic.Core.AnimatedGif
@@ -13,23 +18,28 @@ namespace PassAPic.Core.AnimatedGif
         //private static String filePathLocal = "C:\\YerMA\\Pass-a-pic\\Server\\Gif\\Example\\Res\\";
         //private static String [] imageFilePaths = new String[]{filePathLocal+"01.png",filePathLocal+"02.png",filePathLocal+"03.png"}; 
 		//private static readonly String outputFilePath = filePathLocal+"test.gif";
-        private static readonly AnimatedGifEncoder e = new AnimatedGifEncoder();
+        private static readonly AnimatedGifEncoder _animatedGifEncoder = new AnimatedGifEncoder();
+        private CloudImageService _cloudImageService;
 
+        public AnimatedGifController(CloudImageService cloudImageService)
+        {
+            _cloudImageService = cloudImageService;
+        }
        
 
         public static Image CreateAnimatedGifFromBitmapArray(String [] imageFilePaths, Boolean setRepeat, String outputFilePath) 
         {
             try
             {
-                e.Start(outputFilePath);
-                e.SetDelay(1000);
+                _animatedGifEncoder.Start(outputFilePath);
+                _animatedGifEncoder.SetDelay(1000);
                 //-1:no repeat,0:always repeat
-                e.SetRepeat(setRepeat ? 0 : -1);
+                _animatedGifEncoder.SetRepeat(setRepeat ? 0 : -1);
                 for (int i = 0, count = imageFilePaths.Length; i < count; i++)
                 {
-                    e.AddFrame(Image.FromFile(imageFilePaths[i]));
+                    _animatedGifEncoder.AddFrame(Image.FromFile(imageFilePaths[i]));
                 }
-                e.Finish();
+                _animatedGifEncoder.Finish();
                 return new Bitmap(outputFilePath);
             }
 
@@ -60,8 +70,48 @@ namespace PassAPic.Core.AnimatedGif
 
             return frames;
         }
-		
-		
-		
+
+
+        public String CreateAnimatedGif(Game game)
+        {
+            try
+            {
+                var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
+
+                _animatedGifEncoder.Start(tempAnimatedGif);
+                _animatedGifEncoder.SetDelay(3000);
+                _animatedGifEncoder.SetRepeat(0);
+
+                foreach (var guess in game.Guesses)
+                {
+                    if (guess is WordGuess)
+                    {
+                        var wordGuess = (WordGuess) guess;
+                        Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
+                        _animatedGifEncoder.AddFrame(wordImage);
+                    }
+                    else if (guess is ImageGuess)
+                    {
+                        var imageGuess = (ImageGuess) guess;
+                        Image image;
+                        using (var webClient = new WebClient())
+                        {
+                            image = Image.FromStream(webClient.OpenRead(imageGuess.Image));
+                        }
+                        _animatedGifEncoder.AddFrame(image);
+                    }
+                }
+
+                _animatedGifEncoder.Finish();
+
+                var gifUrl = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
+                File.Delete(tempAnimatedGif);
+                return gifUrl;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
     }
 }

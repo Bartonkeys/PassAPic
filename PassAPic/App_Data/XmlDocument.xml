@@ -500,7 +500,7 @@
         </member>
         <member name="M:PassAPic.Controllers.GameController.GetGuesses(System.Int32)">
             <summary>
-            Returns collection of guesses for user
+            Returns collection of guesses for user and any games a user created but didnt start.
             </summary>
             <returns></returns>
         </member>
@@ -530,7 +530,7 @@
              <returns></returns>
              <exception cref="T:System.Web.Http.HttpResponseException"></exception>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.ImageGuessMultiPart">
+        <member name="M:PassAPic.Controllers.GameController.PostImageGuessMultiPart">
             POST /api/game/imageGuessMultiPart
              <summary>
              Please see test project for how to hit this api. Here are the steps:
