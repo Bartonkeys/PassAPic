@@ -355,7 +355,7 @@ namespace PassAPic.Controllers
                             animatedGifImage = Image.FromStream(webClient.OpenRead(game.AnimatedResult));
                     }
 
-                    var animatedGifAsbase64 = ImageToBase64(animatedGifImage, ImageFormat.Gif);
+                    var animatedGifAsbase64 = game.AnimatedResult != null ? ImageToBase64(animatedGifImage, ImageFormat.Gif) : string.Empty;
                  
                     result.Animation = animatedGifAsbase64;  
                    
