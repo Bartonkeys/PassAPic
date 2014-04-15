@@ -138,6 +138,10 @@ namespace PassAPic.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
 
+                if (CurrentUserAlreadyHadAGo(game, model.UserId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("You have already submitted this guess"));
+
                 SetPreviousGuessAsComplete(game, model.UserId);
 
                 var order = game.Guesses.Count + 1;
@@ -165,6 +169,11 @@ namespace PassAPic.Controllers
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+        private bool CurrentUserAlreadyHadAGo(Game game, int userId)
+        {
+            return game.Guesses.Any(x => x.User.Id == userId);
         }
 
         private bool NextUserAlreadyHadAGo(Game game, int nextUserId)
