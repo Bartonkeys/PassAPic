@@ -81,12 +81,23 @@ namespace PassAPic.Core.AnimatedGif
                 _animatedGifEncoder.SetDelay(3000);
                 _animatedGifEncoder.SetRepeat(0);
 
+                Image startingWordImage = TextToImageConversion.CreateBitmapImage("Start: " + game.StartingWord);
+                _animatedGifEncoder.AddFrame(startingWordImage);
+
+                var count = 1;
                 foreach (var guess in game.Guesses)
                 {
                     if (guess is WordGuess)
                     {
                         var wordGuess = (WordGuess) guess;
-                        Image wordImage = TextToImageConversion.CreateBitmapImage(wordGuess.Word);
+
+                        String word;
+                        if (game.Guesses.Count == count)
+                            word = "Final: " + wordGuess.Word;
+                        else
+                            word = wordGuess.Word;
+
+                        Image wordImage = TextToImageConversion.CreateBitmapImage(word);
                         _animatedGifEncoder.AddFrame(wordImage);
                     }
                     else if (guess is ImageGuess)
@@ -99,6 +110,7 @@ namespace PassAPic.Core.AnimatedGif
                         }
                         _animatedGifEncoder.AddFrame(image);
                     }
+                    count++;
                 }
 
                 _animatedGifEncoder.Finish();

@@ -354,7 +354,7 @@ namespace PassAPic.Controllers
                        
                     }
 
-                    result.Animation = game.AnimatedResult;  
+                    result.Animation = game.AnimatedResult;                    
                    
                 }
              
