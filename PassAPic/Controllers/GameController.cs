@@ -29,7 +29,7 @@ namespace PassAPic.Controllers
     {
         protected PushRegisterService PushRegisterService;
         protected CloudImageService CloudImageService;
-        protected AnimatedGifController AnimatedGifController;
+        protected AnimatedGifService AnimatedGifService;
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
@@ -39,7 +39,7 @@ namespace PassAPic.Controllers
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
-            AnimatedGifController = new AnimatedGifController(CloudImageService);
+            AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
         }
 
         // POST /api/game/start
@@ -213,8 +213,7 @@ namespace PassAPic.Controllers
                 {
                     //DO We want to send a push here too?
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                    game.AnimatedResult = await AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
-                    UnitOfWork.Commit();
+                    Task.Run(() => AnimatedGifService.CreateAnimatedGif(game, tempAnimatedGif));                   
                 }
                 else
                 {

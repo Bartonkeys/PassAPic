@@ -5,13 +5,14 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using PassAPic.Contracts;
 using PassAPic.Core.CloudImage;
 using PassAPic.Data;
 
 
 namespace PassAPic.Core.AnimatedGif
 {
-    public class AnimatedGifController
+    public class AnimatedGifService
     {
         
 		/* create Gif */
@@ -20,11 +21,13 @@ namespace PassAPic.Core.AnimatedGif
         //private static String [] imageFilePaths = new String[]{filePathLocal+"01.png",filePathLocal+"02.png",filePathLocal+"03.png"}; 
 		//private static readonly String outputFilePath = filePathLocal+"test.gif";
         private static readonly AnimatedGifEncoder _animatedGifEncoder = new AnimatedGifEncoder();
-        private CloudImageService _cloudImageService;
+        private readonly CloudImageService _cloudImageService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AnimatedGifController(CloudImageService cloudImageService)
+        public AnimatedGifService(CloudImageService cloudImageService, IUnitOfWork unitOfWork)
         {
             _cloudImageService = cloudImageService;
+            _unitOfWork = unitOfWork;
         }
        
 
@@ -73,7 +76,7 @@ namespace PassAPic.Core.AnimatedGif
         }
 
 
-        public async Task<String> CreateAnimatedGif(Game game, string tempAnimatedGif)
+        public void CreateAnimatedGif(Game game, string tempAnimatedGif)
         {
             try
             {
@@ -116,9 +119,9 @@ namespace PassAPic.Core.AnimatedGif
 
                 _animatedGifEncoder.Finish();
 
-                var gifUrl = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
+                game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
+                _unitOfWork.Commit();
                 File.Delete(tempAnimatedGif);
-                return gifUrl;
             }
             catch (Exception e)
             {

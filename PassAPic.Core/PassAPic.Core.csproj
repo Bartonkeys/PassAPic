@@ -63,7 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimatedGif\AnimatedGifController.cs" />
+    <Compile Include="AnimatedGif\AnimatedGifService.cs" />
     <Compile Include="AnimatedGif\AnimatedGifEncoder.cs" />
     <Compile Include="AnimatedGif\ExtensionMethods.cs" />
     <Compile Include="AnimatedGif\GifDecoder.cs" />
