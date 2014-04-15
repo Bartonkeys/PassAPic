@@ -213,7 +213,7 @@ namespace PassAPic.Controllers
                 {
                     //DO We want to send a push here too?
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                    await Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));                   
+                    Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));                   
                 }
                 else
                 {

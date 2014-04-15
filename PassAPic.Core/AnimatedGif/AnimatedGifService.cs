@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
@@ -80,7 +81,9 @@ namespace PassAPic.Core.AnimatedGif
         {
             try
             {
-                var game = _unitOfWork.Game.GetById(gameId);
+                var model = new PassAPicModelContainer();
+                var game = model.Games.FirstOrDefault(x => x.Id == gameId);
+
                 _animatedGifEncoder.Start(tempAnimatedGif);
                 _animatedGifEncoder.SetDelay(3000);
                 _animatedGifEncoder.SetRepeat(0);
@@ -99,7 +102,7 @@ namespace PassAPic.Core.AnimatedGif
                         if (game.Guesses.Count == count)
                             word = "Final: " + wordGuess.Word;
                         else
-                            word = wordGuess.Word;
+                            word = count + ": " + wordGuess.Word;
 
                         Image wordImage = TextToImageConversion.CreateBitmapImage(word);
                         _animatedGifEncoder.AddFrame(wordImage);
@@ -120,8 +123,7 @@ namespace PassAPic.Core.AnimatedGif
                 _animatedGifEncoder.Finish();
 
                 game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
-                _unitOfWork.Game.Update(game);
-                _unitOfWork.Commit();
+                model.SaveChanges();
                 File.Delete(tempAnimatedGif);
             }
             catch (Exception e)
