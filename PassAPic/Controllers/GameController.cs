@@ -67,7 +67,8 @@ namespace PassAPic.Controllers
                 {
                     GameId = game.Id,
                     UserId = user.Id,
-                    Word = game.StartingWord
+                    Word = game.StartingWord,
+                    CreatorId = game.Creator.Id
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);
@@ -105,7 +106,8 @@ namespace PassAPic.Controllers
                 {
                     GameId = game.Id,
                     UserId = game.Creator.Id,
-                    Word = game.StartingWord 
+                    Word = game.StartingWord,
+                    CreatorId = game.Creator.Id
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);
@@ -262,7 +264,8 @@ namespace PassAPic.Controllers
                             GameId = wordGuess.Game.Id,
                             UserId = wordGuess.NextUser.Id,
                             Word = wordGuess.Word,
-                            IsLastTurn = isLastTurn
+                            IsLastTurn = isLastTurn,
+                            CreatorId = guess.Game.Creator.Id
                         };
 
                         wordModelList.Add(wordModel);
@@ -276,7 +279,8 @@ namespace PassAPic.Controllers
                             GameId = imageGuess.Game.Id,
                             UserId = imageGuess.NextUser.Id,
                             Image = imageGuess.Image,
-                            IsLastTurn = isLastTurn
+                            IsLastTurn = isLastTurn,
+                            CreatorId = guess.Game.Creator.Id
                         };
 
                         imageModelList.Add(imageModel);
@@ -325,7 +329,8 @@ namespace PassAPic.Controllers
                             {
                                 GameId = wordGuess.Game.Id,
                                 UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
-                                Word = wordGuess.Word
+                                Word = wordGuess.Word,
+                                CreatorId = game.Creator.Id
                             };
 
                             result.Guesses.Add(wordModel);
@@ -339,7 +344,8 @@ namespace PassAPic.Controllers
                             {
                                 GameId = imageGuess.Game.Id,
                                 UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
-                                Image = imageGuess.Image
+                                Image = imageGuess.Image,
+                                CreatorId = game.Creator.Id
                             };
 
                             result.Guesses.Add(imageModel);
@@ -348,16 +354,7 @@ namespace PassAPic.Controllers
                        
                     }
 
-                    Image animatedGifImage = null;
-                    using (var webClient = new WebClient())
-                    {
-                        if(game.AnimatedResult != null)
-                            animatedGifImage = Image.FromStream(webClient.OpenRead(game.AnimatedResult));
-                    }
-
-                    var animatedGifAsbase64 = game.AnimatedResult != null ? ImageToBase64(animatedGifImage, ImageFormat.Gif) : string.Empty;
-                 
-                    result.Animation = animatedGifAsbase64;  
+                    result.Animation = game.AnimatedResult;  
                    
                 }
              
@@ -407,7 +404,8 @@ namespace PassAPic.Controllers
                                 GameId = wordGuess.Game.Id,
                                 UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
                                 Word = wordGuess.Word,
-                                Order = wordGuess.Order
+                                Order = wordGuess.Order,
+                                CreatorId = game.Creator.Id
                                 
                             };
 
@@ -423,7 +421,8 @@ namespace PassAPic.Controllers
                                 GameId = imageGuess.Game.Id,
                                 UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
                                 Image = imageGuess.Image,
-                                Order = imageGuess.Order
+                                Order = imageGuess.Order,
+                                CreatorId = game.Creator.Id
                             };
 
                             imageModelList.Add(imageModel);
