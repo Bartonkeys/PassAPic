@@ -76,11 +76,11 @@ namespace PassAPic.Core.AnimatedGif
         }
 
 
-        public void CreateAnimatedGif(Game game, string tempAnimatedGif)
+        public void CreateAnimatedGif(int gameId, string tempAnimatedGif)
         {
             try
             {
-             
+                var game = _unitOfWork.Game.GetById(gameId);
                 _animatedGifEncoder.Start(tempAnimatedGif);
                 _animatedGifEncoder.SetDelay(3000);
                 _animatedGifEncoder.SetRepeat(0);
@@ -120,6 +120,7 @@ namespace PassAPic.Core.AnimatedGif
                 _animatedGifEncoder.Finish();
 
                 game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
+                _unitOfWork.Game.Update(game);
                 _unitOfWork.Commit();
                 File.Delete(tempAnimatedGif);
             }
