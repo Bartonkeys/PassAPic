@@ -73,7 +73,7 @@ namespace PassAPic.Core.AnimatedGif
         }
 
 
-        public Task<String> CreateAnimatedGif(Game game, string tempAnimatedGif)
+        public async Task<String> CreateAnimatedGif(Game game, string tempAnimatedGif)
         {
             try
             {
