@@ -179,7 +179,7 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("GuessWord")]
-        public HttpResponseMessage PostWordGuess(WordModel model)
+        public async Task<HttpResponseMessage> PostWordGuess(WordModel model)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace PassAPic.Controllers
                 {
                     //DO We want to send a push here too?
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                    game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
+                    game.AnimatedResult = await AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
                     UnitOfWork.Commit();
                 }
                 else
