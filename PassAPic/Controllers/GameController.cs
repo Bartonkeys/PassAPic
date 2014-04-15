@@ -211,20 +211,10 @@ namespace PassAPic.Controllers
 
                 if (model.IsLastTurn)
                 {
-                    new System.Threading.Thread(delegate()
-                    {
-                        try
-                        {
-                            //DO We want to send a push here too?
-                            var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                            game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
-                            UnitOfWork.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.Error(ex);
-                        }
-                    }).Start();
+                    //DO We want to send a push here too?
+                    var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
+                    game.AnimatedResult = AnimatedGifController.CreateAnimatedGif(game, tempAnimatedGif);
+                    UnitOfWork.Commit();
                 }
                 else
                 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using PassAPic.Core.CloudImage;
 using PassAPic.Data;
@@ -72,7 +73,7 @@ namespace PassAPic.Core.AnimatedGif
         }
 
 
-        public String CreateAnimatedGif(Game game, string tempAnimatedGif)
+        public Task<String> CreateAnimatedGif(Game game, string tempAnimatedGif)
         {
             try
             {
