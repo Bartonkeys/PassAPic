@@ -201,6 +201,10 @@ namespace PassAPic.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
 
+                if (CurrentUserAlreadyHadAGo(game, model.UserId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("You have already submitted this guess"));
+
                 SetPreviousGuessAsComplete(game, model.UserId);
 
                 var order = game.Guesses.Count + 1;
@@ -611,6 +615,10 @@ namespace PassAPic.Controllers
                 if (NextUserAlreadyHadAGo(game, nextUserId))
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
                         String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                if (CurrentUserAlreadyHadAGo(game, userId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("You have already submitted this guess"));
 
                 var imagePath = Path.Combine(ServerUploadFolder, imageName);
                 var imageUrl = SaveImageCloudinary(imagePath);
