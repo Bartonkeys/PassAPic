@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Routing;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Ninject;
@@ -377,17 +378,33 @@ namespace PassAPic.Controllers
 
         // GET /api/game/CompletedGames
         /// <summary>
-        /// Returns collection of finished games for user
+        /// Returns a Paginated collection of finished games for user, latest game at top.
+        /// 
+        /// Call as follows: /api/game/completedGames/{userId}/{page}/{pageSze}
+        /// 
+        /// page and pageSize are optional so if left out will return first 10 results.
+        /// 
+        /// Now listen up , this is important: You will get a new Response Header - X-Pagination
+        /// 
+        /// It will have the following format:
+        /// 
+        /// {"TotalCount":78,"TotalPages":8,"PrevPageLink":"thePreviousLink","NextPageLink":"theNextLink"}
+        /// 
+        /// Use wisely my brothers of the Watch!
         /// </summary>
         /// <returns></returns>
-        [Route("CompletedGames/{userId}")]
-        public HttpResponseMessage GetCompletedGames(int userId)
+        [System.Web.Http.ActionName("completedGames")]
+        [HttpGet]
+        public HttpResponseMessage GetCompletedGames(int userId, int page = 0, int pageSize = 10)
         {
             var completedGameModelList = new List<CompletedGamesModel>();
             try
             {
                 var results = UnitOfWork.Guess
                     .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
+                    .OrderByDescending(x => x.Id)
+                    .Skip(pageSize * page)
+                    .Take(pageSize)
                     .Select(y => new CompletedGamesModel
                     {
                         GameId = y.Game.Id,
@@ -395,6 +412,8 @@ namespace PassAPic.Controllers
                         NumberOfGuesses = y.Game.NumberOfGuesses,
                         GameOverMan = y.Game.GameOverMan
                     }).ToList();
+
+                PopulatePaginationHeaderForAction(userId, page, pageSize, "CompletedGames");
 
                 foreach (var result in results)
                 {
@@ -453,6 +472,27 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
 
+        }
+
+        private void PopulatePaginationHeaderForAction(int userId, int page, int pageSize, string action)
+        {
+            var totalCount = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Game.GameOverMan).Count();
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var urlHelper = new UrlHelper(Request);
+            var prevLink = page > 0 ? urlHelper.Link(action, new { userId, page = page - 1, pageSize = pageSize }) : "";
+            var nextLink = page < totalPages - 1 ? urlHelper.Link(action, new { userId, page = page + 1, pageSize = pageSize }) : "";
+
+            var paginationHeader = new
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                PrevPageLink = prevLink,
+                NextPageLink = nextLink
+            };
+
+            HttpContext.Current.Response.Headers.Add("X-Pagination",
+                                                                Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
         }
 
         ///POST /api/game/imageGuessTask

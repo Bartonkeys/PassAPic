@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
+using PassAPic.Models;
 
 namespace PassAPic
 {
@@ -19,6 +20,12 @@ namespace PassAPic
 
             // Web API routes
             config.MapHttpAttributeRoutes();
+
+            config.Routes.MapHttpRoute(
+                name: "CompletedGames",
+                routeTemplate: "api/{controller}/{action}/{userId}/{page}/{pageSize}",
+                defaults: new {controller = "game", action = "completedGames", page = RouteParameter.Optional, pageSize  = RouteParameter.Optional }
+            );
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

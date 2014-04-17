@@ -516,7 +516,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.GetCompletedGames(System.Int32)">
+        <member name="M:PassAPic.Controllers.GameController.GetCompletedGames(System.Int32,System.Int32,System.Int32)">
             <summary>
             Returns collection of finished games for user
             </summary>
