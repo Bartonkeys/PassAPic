@@ -38,6 +38,7 @@ namespace PassAPic.Controllers
         {
             UnitOfWork = unitOfWork;
             Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
+            EasyWords = UnitOfWork.EasyWord.GetAll().Select(x => x.Word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
             AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
@@ -45,7 +46,7 @@ namespace PassAPic.Controllers
 
         // POST /api/game/start
         /// <summary>
-        /// Lets play. Set up game, generate first word and return to user.
+        /// Lets play. Set up game, generate first word and return to user. Remember to set whether easy mode or not
         /// </summary>
         /// <returns></returns>
         [Route("Start")]
@@ -56,7 +57,7 @@ namespace PassAPic.Controllers
                 var user = UnitOfWork.User.GetById(model.UserId);
                 var game = new Game
                 {
-                    StartingWord = Words[random.Next(Words.Count)],
+                    StartingWord = model.IsEasyMode ? EasyWords[random.Next(EasyWords.Count)] : Words[random.Next(Words.Count)],
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user
                 };
@@ -87,9 +88,10 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <param name="gameId"></param>
         /// <param name="userId"></param>
+        /// <param name="isEasyMode"></param>
         /// <returns></returns>
-        [Route("NewWord/{gameId}/{userId}")]
-        public HttpResponseMessage GetNewWord(int gameId, int userId)
+        [Route("NewWord/{gameId}/{userId}/{isEasyMode?}")]
+        public HttpResponseMessage GetNewWord(int gameId, int userId, bool isEasyMode = false)
         {
             try
             {
@@ -98,7 +100,9 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                game.StartingWord = Words[random.Next(Words.Count)];
+                game.StartingWord = isEasyMode
+                    ? EasyWords[random.Next(EasyWords.Count)]
+                    : Words[random.Next(Words.Count)];
 
                 UnitOfWork.Game.Update(game);
                 UnitOfWork.Commit();
@@ -398,8 +402,7 @@ namespace PassAPic.Controllers
         /// Use wisely my brothers of the Watch!
         /// </summary>
         /// <returns></returns>
-        [System.Web.Http.ActionName("completedGames")]
-        [HttpGet]
+        [Route("completedGames/{userId}/{page?}/{pageSize?}", Name="CompletedGames")]
         public HttpResponseMessage GetCompletedGames(int userId, int page = 0, int pageSize = 10)
         {
             var completedGameModelList = new List<CompletedGamesModel>();

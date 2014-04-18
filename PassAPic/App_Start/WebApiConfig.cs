@@ -22,12 +22,6 @@ namespace PassAPic
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "CompletedGames",
-                routeTemplate: "api/{controller}/{action}/{userId}/{page}/{pageSize}",
-                defaults: new {controller = "game", action = "completedGames", page = RouteParameter.Optional, pageSize  = RouteParameter.Optional }
-            );
-
-            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }

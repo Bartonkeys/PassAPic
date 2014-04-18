@@ -11,6 +11,7 @@ namespace PassAPic.Contracts
         IRepository<Game> Game { get; }
         IRepository<Guess> Guess { get; }
         IRepository<Word> Word { get; }
+        IRepository<EasyWord> EasyWord { get; }
         IRepository<PushRegister> PushRegister { get; }
         void Commit();
     }
