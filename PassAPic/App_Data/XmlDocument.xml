@@ -518,7 +518,19 @@
         </member>
         <member name="M:PassAPic.Controllers.GameController.GetCompletedGames(System.Int32,System.Int32,System.Int32)">
             <summary>
-            Returns collection of finished games for user
+            Returns a Paginated collection of finished games for user, latest game at top.
+            
+            Call as follows: /api/game/completedGames/{userId}/{page}/{pageSze}
+            
+            page and pageSize are optional so if left out will return first 10 results.
+            
+            Now listen up , this is important: You will get a new Response Header - X-Pagination
+            
+            It will have the following format:
+            
+            {"TotalCount":78,"TotalPages":8,"PrevPageLink":"thePreviousLink","NextPageLink":"theNextLink"}
+            
+            Use wisely my brothers of the Watch!
             </summary>
             <returns></returns>
         </member>

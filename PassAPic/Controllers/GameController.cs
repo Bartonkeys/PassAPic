@@ -225,9 +225,10 @@ namespace PassAPic.Controllers
 
                 if (model.IsLastTurn)
                 {
-                    //DO We want to send a push here too?
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                    Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));                   
+                    Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));
+
+                    foreach (var guess in game.Guesses) SendPushMessage(guess.User.Id, "PassAPic Complete!!! - check your Completed Games now");
                 }
                 else
                 {
