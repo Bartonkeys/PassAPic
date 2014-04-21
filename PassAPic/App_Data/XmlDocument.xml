@@ -477,17 +477,18 @@
         </member>
         <member name="M:PassAPic.Controllers.GameController.PostStart(PassAPic.Models.GameSetupModel)">
             <summary>
-            Lets play. Set up game, generate first word and return to user.
+            Lets play. Set up game, generate first word and return to user. Remember to set whether easy mode or not
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32)">
+        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32,System.Boolean)">
             <summary>
             The game creator can call this API to get a new word for their just started game. 
             Only game creator can change and it can only happen at start of game
             </summary>
             <param name="gameId"></param>
             <param name="userId"></param>
+            <param name="isEasyMode"></param>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.GameController.PostImageGuess(PassAPic.Models.ImageModel)">

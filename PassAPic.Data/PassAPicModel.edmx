@@ -5,6 +5,13 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="PassAPicModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EasyWords">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Word" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="Games">
           <Key>
             <PropertyRef Name="Id" />
@@ -155,6 +162,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="PassAPicModelStoreContainer">
+          <EntitySet Name="EasyWords" EntityType="Self.EasyWords" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
@@ -221,6 +229,7 @@
             <End Role="User" EntitySet="Users" />
             <End Role="PushRegister" EntitySet="PushRegisters" />
           </AssociationSet>
+          <EntitySet Name="EasyWords" EntityType="PassAPicModel.EasyWord" />
         </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -309,6 +318,13 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="EasyWord">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -406,6 +422,14 @@
                 <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
                 <ScalarProperty Name="DeviceToken" ColumnName="DeviceToken" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EasyWords">
+            <EntityTypeMapping TypeName="PassAPicModel.EasyWord">
+              <MappingFragment StoreEntitySet="EasyWords">
+                <ScalarProperty Name="Word" ColumnName="Word" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
