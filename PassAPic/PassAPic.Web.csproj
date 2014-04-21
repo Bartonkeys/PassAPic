@@ -226,6 +226,7 @@
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\OpenGamesModel.cs" />
     <Compile Include="Models\RegisterItem.cs" />
+    <Compile Include="Models\ReturnMessage.cs" />
     <Compile Include="Models\WordModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

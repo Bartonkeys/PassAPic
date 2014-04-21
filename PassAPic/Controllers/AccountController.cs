@@ -275,7 +275,7 @@ namespace PassAPic.Controllers
             }
 
 
-            return Request.CreateResponse(HttpStatusCode.Created, msg);
+            return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage(msg));
        
         }
 
