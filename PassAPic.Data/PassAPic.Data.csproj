@@ -68,7 +68,6 @@
     <Compile Include="ImageGuess.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PassAPicModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
