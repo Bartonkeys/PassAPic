@@ -12,16 +12,11 @@ namespace PassAPic.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Guess
+    public partial class Guesses_ImageGuess
     {
+        public string Image { get; set; }
         public int Id { get; set; }
-        public int Order { get; set; }
-        public bool Complete { get; set; }
-        public Nullable<double> Latitude { get; set; }
-        public Nullable<double> Longitude { get; set; }
     
-        public virtual Game Game { get; set; }
-        public virtual User User { get; set; }
-        public virtual User NextUser { get; set; }
+        public virtual Guess Guess { get; set; }
     }
 }

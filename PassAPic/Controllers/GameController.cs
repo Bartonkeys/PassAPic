@@ -70,7 +70,7 @@ namespace PassAPic.Controllers
                     GameId = game.Id,
                     UserId = user.Id,
                     Word = game.StartingWord,
-                    CreatorId = game.Creator.Id
+                    CreatorId = game.Creator.Id,
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);
@@ -217,7 +217,9 @@ namespace PassAPic.Controllers
                 {
                     Order = order,
                     User = user,
-                    Word = model.Word
+                    Word = model.Word,
+                    Latitude = model.Latitude,
+                    Longitude = model.Longitude
                 };
 
                 if (model.IsLastTurn) game.GameOverMan = true;
@@ -230,7 +232,7 @@ namespace PassAPic.Controllers
                 if (model.IsLastTurn)
                 {
                     var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + game.Id + ".gif");
-                    Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));
+                    await Task.Run(() => AnimatedGifService.CreateAnimatedGif(game.Id, tempAnimatedGif));
 
                     foreach (var guess in game.Guesses) SendPushMessage(guess.User.Id, "PassAPic Complete!!! - check your Completed Games now");
                 }
@@ -636,8 +638,10 @@ namespace PassAPic.Controllers
                 var gameId = int.Parse(streamProvider.FormData["gameId"]);
                 var nextUserId = int.Parse(streamProvider.FormData["nextUserId"]);
                 var isLastTurn = Boolean.Parse(streamProvider.FormData["isLastTurn"]);
+                var latitude = streamProvider.FormData["latitude"] == null ? 0.0 : double.Parse(streamProvider.FormData["latitude"]);
+                var longitude = streamProvider.FormData["longitude"] == null ? 0.0 : double.Parse(streamProvider.FormData["longitude"]);
                 var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();
-
+                
                 var user = UnitOfWork.User.GetById(userId);
                 var nextUser = UnitOfWork.User.GetById(nextUserId);
                 var game = UnitOfWork.Game.GetById(gameId);
@@ -660,7 +664,9 @@ namespace PassAPic.Controllers
                 {
                     Order = order,
                     User = user,
-                    Image = imageUrl
+                    Image = imageUrl,
+                    Latitude = latitude,
+                    Longitude = longitude
                 };
 
                 if (!isLastTurn) imageGuess.NextUser = nextUser;
