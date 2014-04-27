@@ -70,7 +70,7 @@ namespace PassAPic.Controllers
                     GameId = game.Id,
                     UserId = user.Id,
                     Word = game.StartingWord,
-                    CreatorId = game.Creator.Id
+                    CreatorId = game.Creator.Id,
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);

@@ -26,7 +26,7 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "latitude")]
         public double Latitude { get; set; }
 
-        [JsonProperty(PropertyName = "longitute")]
+        [JsonProperty(PropertyName = "longitude")]
         public double Longitude { get; set; }
 
 
