@@ -423,6 +423,24 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="F:PassAPic.Content.GuessesMap.form1">
+            <summary>
+            form1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:PassAPic.Content.GuessesMap.rptMarkers">
+            <summary>
+            rptMarkers control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
         <member name="T:PassAPic.Controllers.AccountController">
             <summary>
             Responsible for registering users, logging in and out and letting client know who is online.
