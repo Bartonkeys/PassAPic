@@ -511,6 +511,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetNotCompletedGuesses(System.Int32)">
+            <summary>
+            Get games where user is the last completed guess. This will be used for nudge facility.
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.GetResults(System.Int32)">
             <summary>
             Returns collection of finished games for user

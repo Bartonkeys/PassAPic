@@ -265,50 +265,9 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);
-                var gameModelList = new OpenGamesModel();
-                var wordModelList = new List<WordModel>();
-                var imageModelList = new List<ImageModel>();
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);             
 
-                foreach (var guess in guesses)
-                {
-                    var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
-
-                    if (guess is WordGuess)
-                    {
-                        var wordGuess = (WordGuess) guess;
-                        var wordModel = new WordModel
-                        {
-                            GameId = wordGuess.Game.Id,
-                            UserId = wordGuess.NextUser.Id,
-                            Word = wordGuess.Word,
-                            IsLastTurn = isLastTurn,
-                            CreatorId = guess.Game.Creator.Id
-                        };
-
-                        wordModelList.Add(wordModel);
-                    }
-                    else if (guess is ImageGuess)
-                    {
-                        var imageGuess = (ImageGuess) guess;
-
-                        var imageModel = new ImageModel
-                        {
-                            GameId = imageGuess.Game.Id,
-                            UserId = imageGuess.NextUser.Id,
-                            Image = imageGuess.Image,
-                            IsLastTurn = isLastTurn,
-                            CreatorId = guess.Game.Creator.Id
-                        };
-
-                        imageModelList.Add(imageModel);
-                    }
-                }
-
-                gameModelList.WordModelList = wordModelList;
-                gameModelList.ImageModelList = imageModelList;
-
-                return Request.CreateResponse(HttpStatusCode.OK, gameModelList);
+                return Request.CreateResponse(HttpStatusCode.OK, PopulateOpenGamesModel(guesses));
             }
             catch (Exception ex)
             {
@@ -317,7 +276,74 @@ namespace PassAPic.Controllers
             }
         }
 
-        // GET /api/game/Results
+        /// <summary>
+        /// Get games where user is the last completed guess. This will be used for nudge facility.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [Route("notCompletedGuess/{userId}")]
+        public HttpResponseMessage GetNotCompletedGuesses(int userId)
+        {
+            try
+            {
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Complete && !x.Game.GameOverMan && x.Order == x.Game.Guesses.Max(y => y.Order) - 1);             
+                return Request.CreateResponse(HttpStatusCode.OK, PopulateOpenGamesModel(guesses));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        private OpenGamesModel PopulateOpenGamesModel(IEnumerable<Guess> guesses)
+        {
+            var gameModelList = new OpenGamesModel();
+            var wordModelList = new List<WordModel>();
+            var imageModelList = new List<ImageModel>();
+
+            foreach (var guess in guesses)
+            {
+                var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
+
+                if (guess is WordGuess)
+                {
+                    var wordGuess = (WordGuess)guess;
+                    var wordModel = new WordModel
+                    {
+                        GameId = wordGuess.Game.Id,
+                        UserId = wordGuess.NextUser.Id,
+                        Word = wordGuess.Word,
+                        IsLastTurn = isLastTurn,
+                        CreatorId = guess.Game.Creator.Id
+                    };
+
+                    wordModelList.Add(wordModel);
+                }
+                else if (guess is ImageGuess)
+                {
+                    var imageGuess = (ImageGuess)guess;
+
+                    var imageModel = new ImageModel
+                    {
+                        GameId = imageGuess.Game.Id,
+                        UserId = imageGuess.NextUser.Id,
+                        Image = imageGuess.Image,
+                        IsLastTurn = isLastTurn,
+                        CreatorId = guess.Game.Creator.Id
+                    };
+
+                    imageModelList.Add(imageModel);
+                }
+            }
+
+            gameModelList.WordModelList = wordModelList;
+            gameModelList.ImageModelList = imageModelList;
+
+            return gameModelList;
+        }
+
+            // GET /api/game/Results
         /// <summary>
         /// Returns collection of finished games for user
         /// </summary>
@@ -664,6 +690,8 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+
 
 
 
