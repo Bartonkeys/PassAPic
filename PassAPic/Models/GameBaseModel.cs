@@ -19,7 +19,16 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "order")]
         public int Order { get; set; }
+
         [JsonProperty(PropertyName = "isLastTurn")]
         public bool IsLastTurn { get; set; }
+
+        [JsonProperty(PropertyName = "latitude")]
+        public double Latitude { get; set; }
+
+        [JsonProperty(PropertyName = "longitute")]
+        public double Longitude { get; set; }
+
+
     }
 }
