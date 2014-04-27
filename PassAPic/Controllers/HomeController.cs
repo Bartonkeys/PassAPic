@@ -15,11 +15,5 @@ namespace PassAPic.Controllers
             return View();
         }
 
-        public ActionResult MapOfGuesses()
-        {
-            ViewBag.Title = "Map of Guesses";
-
-            return View();
-        }
     }
 }
