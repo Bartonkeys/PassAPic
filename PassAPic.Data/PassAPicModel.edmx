@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="PassAPicModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="PassAPicModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="EasyWords">
           <Key>
             <PropertyRef Name="Id" />
@@ -22,6 +22,8 @@
           <Property Name="GameOverMan" Type="bit" Nullable="false" />
           <Property Name="Creator_Id" Type="int" />
           <Property Name="AnimatedResult" Type="varchar(max)" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="DateCompleted" Type="datetime" />
         </EntityType>
         <EntityType Name="Guesses">
           <Key>
@@ -244,6 +246,8 @@
           <Property Name="StartingWord" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="GameOverMan" Type="Boolean" Nullable="false" />
           <Property Name="AnimatedResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateCompleted" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -338,7 +342,9 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
-          <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />
+          <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="NumberOfGuesses" ColumnName="NumberOfGuesses" />
           <ScalarProperty Name="StartingWord" ColumnName="StartingWord" />

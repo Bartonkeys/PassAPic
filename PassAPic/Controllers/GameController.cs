@@ -59,7 +59,8 @@ namespace PassAPic.Controllers
                 {
                     StartingWord = model.IsEasyMode ? EasyWords[random.Next(EasyWords.Count)] : Words[random.Next(Words.Count)],
                     NumberOfGuesses = model.NumberOfPlayers,
-                    Creator = user
+                    Creator = user,
+                    DateCreated = DateTime.UtcNow
                 };
 
                 UnitOfWork.Game.Insert(game);
@@ -222,7 +223,11 @@ namespace PassAPic.Controllers
                     Longitude = model.Longitude
                 };
 
-                if (model.IsLastTurn) game.GameOverMan = true;
+                if (model.IsLastTurn)
+                {
+                    game.GameOverMan = true;
+                    game.DateCompleted = DateTime.UtcNow;
+                }
                 else wordGuess.NextUser = nextUser;
 
                 game.Guesses.Add(wordGuess);
@@ -438,7 +443,7 @@ namespace PassAPic.Controllers
             {
                 var results = UnitOfWork.Guess
                     .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
-                    .OrderByDescending(x => x.Id)
+                    .OrderByDescending(x => x.Game.DateCompleted)
                     .Skip(pageSize * page)
                     .Take(pageSize)
                     .Select(y => new CompletedGamesModel
@@ -670,7 +675,11 @@ namespace PassAPic.Controllers
                 };
 
                 if (!isLastTurn) imageGuess.NextUser = nextUser;
-                else game.GameOverMan = true;
+                else
+                {
+                    game.GameOverMan = true;
+                    game.DateCompleted = DateTime.UtcNow;
+                }
 
                 game.Guesses.Add(imageGuess);
 
