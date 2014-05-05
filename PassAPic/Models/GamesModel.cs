@@ -25,7 +25,13 @@ namespace PassAPic.Models
         public List<GameBaseModel> Guesses { get; set; }
 
         [JsonProperty(PropertyName = "animation")]
-        public string Animation { get; set; } 
+        public string Animation { get; set; }
+
+        [JsonProperty(PropertyName = "dateCreated")]
+        public DateTime DateCreated { get; set; }
+
+        [JsonProperty(PropertyName = "dateCompleted")]
+        public DateTime? DateCompleted { get; set; }
 
     }
 }
