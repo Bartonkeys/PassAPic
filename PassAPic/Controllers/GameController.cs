@@ -57,7 +57,7 @@ namespace PassAPic.Controllers
                 var user = UnitOfWork.User.GetById(model.UserId);
                 var game = new Game
                 {
-                    StartingWord = model.IsEasyMode ? EasyWords[random.Next(EasyWords.Count)] : Words[random.Next(Words.Count)],
+                    StartingWord = model.Mode == Mode.Easy ? EasyWords[random.Next(EasyWords.Count)] : Words[random.Next(Words.Count)],
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user,
                     DateCreated = DateTime.UtcNow
@@ -72,6 +72,7 @@ namespace PassAPic.Controllers
                     UserId = user.Id,
                     Word = game.StartingWord,
                     CreatorId = game.Creator.Id,
+                    Mode = model.Mode
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);
@@ -91,8 +92,8 @@ namespace PassAPic.Controllers
         /// <param name="userId"></param>
         /// <param name="isEasyMode"></param>
         /// <returns></returns>
-        [Route("NewWord/{gameId}/{userId}/{isEasyMode?}")]
-        public HttpResponseMessage GetNewWord(int gameId, int userId, bool isEasyMode = false)
+        [Route("NewWord/{gameId}/{userId}/{mode?}")]
+        public HttpResponseMessage GetNewWord(int gameId, int userId, Mode mode = Mode.Normal)
         {
             try
             {
@@ -101,7 +102,7 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                game.StartingWord = isEasyMode
+                game.StartingWord = mode == Mode.Easy
                     ? EasyWords[random.Next(EasyWords.Count)]
                     : Words[random.Next(Words.Count)];
 
@@ -113,7 +114,8 @@ namespace PassAPic.Controllers
                     GameId = game.Id,
                     UserId = game.Creator.Id,
                     Word = game.StartingWord,
-                    CreatorId = game.Creator.Id
+                    CreatorId = game.Creator.Id,
+                    Mode = mode
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);
@@ -293,7 +295,10 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Complete && !x.Game.GameOverMan && x.Order == x.Game.Guesses.Max(y => y.Order) - 1);             
+                var guesses = UnitOfWork.Guess
+                    .SearchFor(x => x.User.Id == userId && !x.Complete 
+                        && !x.Game.GameOverMan);  
+           
                 return Request.CreateResponse(HttpStatusCode.OK, PopulateOpenGamesModel(guesses));
             }
             catch (Exception ex)

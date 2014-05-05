@@ -29,6 +29,9 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "longitude")]
         public double Longitude { get; set; }
 
+        [JsonProperty(PropertyName = "mode")]
+        public Mode Mode { get; set; }
+
 
     }
 }

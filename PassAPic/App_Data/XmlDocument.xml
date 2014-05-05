@@ -499,7 +499,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32,System.Boolean)">
+        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32,PassAPic.Models.Mode)">
             <summary>
             The game creator can call this API to get a new word for their just started game. 
             Only game creator can change and it can only happen at start of game
