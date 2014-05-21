@@ -55,9 +55,9 @@ namespace PassAPic
             //    consumerKey: "",
             //    consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //    appId: "",
-            //    appSecret: "");
+            app.UseFacebookAuthentication(
+                appId: "249336071934882",
+                appSecret: "de73d13fab8e8db7e4bd164b7f2f60b3");
 
             //app.UseGoogleAuthentication();
         }
