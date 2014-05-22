@@ -31,5 +31,9 @@ namespace PassAPic.Data
         public virtual DbSet<Word> Words { get; set; }
         public virtual DbSet<PushRegister> PushRegisters { get; set; }
         public virtual DbSet<EasyWord> EasyWords { get; set; }
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
     }
 }

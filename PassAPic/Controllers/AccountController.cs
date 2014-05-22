@@ -297,7 +297,9 @@ namespace PassAPic.Controllers
             {
                 UserName = User.Identity.GetUserName(),
                 HasRegistered = externalLogin == null,
-                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
+                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
+                UserId = UnitOfWork.User
+                .SearchFor(x => x.AspNetUserId == User.Identity.GetUserId()).Select(y => y.Id).FirstOrDefault()
             };
         }
 
@@ -618,7 +620,16 @@ namespace PassAPic.Controllers
                 return errorResult;
             }
 
-            return Ok();
+            var passAPicUser = new User
+            {
+                Username = user.UserName,
+                AspNetUserId = user.Id
+            };
+
+            UnitOfWork.User.Insert(passAPicUser);
+            UnitOfWork.Commit();
+
+            return Ok(passAPicUser.Id);
         }
 
         protected override void Dispose(bool disposing)

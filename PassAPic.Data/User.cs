@@ -25,10 +25,12 @@ namespace PassAPic.Data
         public int Id { get; set; }
         public string Username { get; set; }
         public bool IsOnline { get; set; }
+        public string AspNetUserId { get; set; }
     
         public virtual ICollection<Game> Games { get; set; }
         public virtual ICollection<Guess> CompletedGuesses { get; set; }
         public virtual ICollection<Guess> NextGuesses { get; set; }
         public virtual ICollection<PushRegister> PushRegisters { get; set; }
+        public virtual AspNetUser AspNetUser { get; set; }
     }
 }

@@ -32,6 +32,8 @@ namespace PassAPic.Models
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }
+
+        public int? UserId { get; set; }
     }
 
     public class UserLoginInfoViewModel
