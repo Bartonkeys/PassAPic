@@ -291,15 +291,16 @@ namespace PassAPic.Controllers
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
-            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-
+            var externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
+            var aspNetUserId = User.Identity.GetUserId();
+            
             return new UserInfoViewModel
             {
                 UserName = User.Identity.GetUserName(),
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
                 UserId = UnitOfWork.User
-                .SearchFor(x => x.AspNetUserId == User.Identity.GetUserId()).Select(y => y.Id).FirstOrDefault()
+                .SearchFor(x => x.AspNetUserId == aspNetUserId).Select(y => y.Id).FirstOrDefault()
             };
         }
 
