@@ -286,20 +286,20 @@ namespace PassAPic.Controllers
 
 
 
-        //// GET api/Account/UserInfo
-        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        //[Route("UserInfo")]
-        //public UserInfoViewModel GetUserInfo()
-        //{
-        //    ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
+        // GET api/Account/UserInfo
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        [Route("UserInfo")]
+        public UserInfoViewModel GetUserInfo()
+        {
+            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
-        //    return new UserInfoViewModel
-        //    {
-        //        UserName = User.Identity.GetUserName(),
-        //        HasRegistered = externalLogin == null,
-        //        LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
-        //    };
-        //}
+            return new UserInfoViewModel
+            {
+                UserName = User.Identity.GetUserName(),
+                HasRegistered = externalLogin == null,
+                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
+            };
+        }
 
         //// POST api/Account/Logout
         //[Route("Logout")]
@@ -557,79 +557,79 @@ namespace PassAPic.Controllers
             return logins;
         }
 
-        //// POST api/Account/Register
-        //[AllowAnonymous]
-        //[Route("Register")]
-        //public async Task<IHttpActionResult> Register(RegisterBindingModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        // POST api/Account/Register
+        [AllowAnonymous]
+        [Route("Register")]
+        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    IdentityUser user = new IdentityUser
-        //    {
-        //        UserName = model.UserName
-        //    };
+            IdentityUser user = new IdentityUser
+            {
+                UserName = model.UserName
+            };
 
-        //    IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-        //    IHttpActionResult errorResult = GetErrorResult(result);
+            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+            IHttpActionResult errorResult = GetErrorResult(result);
 
-        //    if (errorResult != null)
-        //    {
-        //        return errorResult;
-        //    }
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
-        //// POST api/Account/RegisterExternal
-        //[OverrideAuthentication]
-        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        //[Route("RegisterExternal")]
-        //public async Task<IHttpActionResult> RegisterExternal(RegisterExternalBindingModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        // POST api/Account/RegisterExternal
+        [OverrideAuthentication]
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        [Route("RegisterExternal")]
+        public async Task<IHttpActionResult> RegisterExternal(RegisterExternalBindingModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
+            ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
-        //    if (externalLogin == null)
-        //    {
-        //        return InternalServerError();
-        //    }
+            if (externalLogin == null)
+            {
+                return InternalServerError();
+            }
 
-        //    IdentityUser user = new IdentityUser
-        //    {
-        //        UserName = model.UserName
-        //    };
-        //    user.Logins.Add(new IdentityUserLogin
-        //    {
-        //        LoginProvider = externalLogin.LoginProvider,
-        //        ProviderKey = externalLogin.ProviderKey
-        //    });
-        //    IdentityResult result = await UserManager.CreateAsync(user);
-        //    IHttpActionResult errorResult = GetErrorResult(result);
+            IdentityUser user = new IdentityUser
+            {
+                UserName = model.UserName
+            };
+            user.Logins.Add(new IdentityUserLogin
+            {
+                LoginProvider = externalLogin.LoginProvider,
+                ProviderKey = externalLogin.ProviderKey
+            });
+            IdentityResult result = await UserManager.CreateAsync(user);
+            IHttpActionResult errorResult = GetErrorResult(result);
 
-        //    if (errorResult != null)
-        //    {
-        //        return errorResult;
-        //    }
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        UserManager.Dispose();
-        //    }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                UserManager.Dispose();
+            }
 
-        //    base.Dispose(disposing);
-        //}
+            base.Dispose(disposing);
+        }
         #endregion
 
         #region Helpers
