@@ -23,25 +23,27 @@ using PassAPic.Results;
 
 namespace PassAPic.Controllers
 {
-    ////If user is registed it will return as follows, note the UserId, device needs to store this.
     /// <summary>
-    ///     Facebook Login:
-    ///     Responsible for registering users, logging in and out and letting client know who is online.
+    ///     Facebook Login
     ///     GET http://passapic.apphb.com/api/Account/ExternalLogins?returnUrl=http://passapic.apphb.com&generateState=true
     ///     which will return something like this:
+    /// 
     ///     {
     ///     Name: "Facebook"
     ///     Url: "/api/Account/ExternalLogin?provider=Facebook&response_type=token&client_id=self&redirect_uri
     ///     =http%3A%2F%2Fpassapic.apphb.com%2F&state=ZrU27TzJS0YPkdjWoB7Wh19FyKaeblBOkrkYZmTzTro1"
     ///     State: "ZrU27TzJS0YPkdjWoB7Wh19FyKaeblBOkrkYZmTzTro1"
     ///     }
+    /// 
     ///     N.B State changes every time.
+    /// 
     ///     Hit the Url, user logs in on facebook and an access token is returned.
     ///     take that access token and hit UserInfo:
     ///     GET: http://passapic.apphb.com/api/Account/UserInfo
     ///     with this header:
-    ///     Authorization: Bearer
-    ///     <access token>
+    ///     Authorization: Bearer 'access token'
+    /// 
+    ///     If user is registred it will return as follows, note the UserId, device needs to store this.
     ///         {
     ///         UserName: "Graham"
     ///         HasRegistered: true
@@ -49,11 +51,13 @@ namespace PassAPic.Controllers
     ///         UserId: 3
     ///         }
     ///     And you're done.
-    ///     If not hasRegistered returns false and device needs to call:
+    /// 
+    ///     If not, hasRegistered returns false and device needs to call:
     ///     POST: http://passapic.apphb.com/api/Account/RegisterExternal
-    ///     with this header: Authorization: Bearer <access token>
+    ///     with this header: Authorization: Bearer 'access token'
     ///     and this in body: {"UserName":"Username"}
     ///     and this returns 200 with userId
+    /// 
     /// </summary>
     [Authorize]
     [RoutePrefix("api/Account")]
