@@ -625,7 +625,16 @@ namespace PassAPic.Controllers
                 return errorResult;
             }
 
-            return Ok();
+            var passAPicUser = new User
+            {
+                Username = user.UserName,
+                AspNetUserId = user.Id
+            };
+
+            UnitOfWork.User.Insert(passAPicUser);
+            UnitOfWork.Commit();
+
+            return Ok(passAPicUser.Id);
         }
 
         // POST api/Account/RegisterExternal
