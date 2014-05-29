@@ -21,15 +21,7 @@
         <EntityTypeShape EntityType="PassAPicModel.PushRegister" Width="1.5" PointX="10.625" PointY="1.25" />
         <AssociationConnector Association="PassAPicModel.FK_PushRegister_Users" />
         <EntityTypeShape EntityType="PassAPicModel.EasyWord" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="PassAPicModel.AspNetRole" Width="1.5" PointX="4" PointY="7.25" />
-        <EntityTypeShape EntityType="PassAPicModel.AspNetUserClaim" Width="1.5" PointX="0.5" PointY="7.875" />
-        <EntityTypeShape EntityType="PassAPicModel.AspNetUserLogin" Width="1.5" PointX="2.125" PointY="8.375" />
-        <EntityTypeShape EntityType="PassAPicModel.AspNetUser" Width="1.5" PointX="1.625" PointY="4.875" />
-        <AssociationConnector Association="PassAPicModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_User_Id" />
-        <AssociationConnector Association="PassAPicModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="PassAPicModel.FK_Users_AspNetUsers" />
-        <AssociationConnector Association="PassAPicModel.AspNetUserRoles" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

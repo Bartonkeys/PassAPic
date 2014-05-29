@@ -441,51 +441,57 @@
             To modify move field declaration from designer file to code-behind file.
             </remarks>
         </member>
-        <member name="T:PassAPic.Controllers.AccountController">
-            <summary>
-            Responsible for registering users, logging in and out and letting client know who is online.
-            </summary>
-        </member>
         <member name="M:PassAPic.Controllers.AccountController.RegisterAnon(PassAPic.Models.AccountModel)">
             <summary>
-            This is registration to get us started, so very simply. POST with JSON in the body with just username 
-            and API will return username and userId, which can be stored in device. 
-            Leave the username blank and API will generate a random 8 character username.
+                This is registration to get us started, so very simply. POST with JSON in the body with just username
+                and API will return username and userId, which can be stored in device.
+                Leave the username blank and API will generate a random 8 character username.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.GetUsersOnline">
             <summary>
-            This API will return a list of online users.
+                This API will return a list of online users.
             </summary>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.GetAllUsers">
             <summary>
-            This API will return a list of all registered users.
+                This API will return a list of all registered users.
             </summary>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
             <summary>
-            POST this baby up to let server know user is online.
+                POST this baby up to let server know user is online.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.LogOut(System.Int32)">
             <summary>
-            POST this bitch up to let server know user has fucked off.
+                POST this bitch up to let server know user has fucked off.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.RegisterPush(PassAPic.Models.RegisterItem)">
             <summary>
-            POST a JObject up to register a device
+                POST a JObject up to register a device
             </summary>
             <param name="jsonData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.AccountController.GetFacebookLogin(System.String)">
+            <summary>
+            Verify Facebook access token.
+            If not authorised fire back a 403.
+            If authorised and not registered, then register and return 201 with empty list of games and userID
+            If authorised and registered return 200 with list of games and UserID
+            Forget about ASP .Net identity.
+            </summary>
+            <param name="accessToken"></param>
             <returns></returns>
         </member>
         <member name="T:PassAPic.Controllers.GameController">

@@ -56,18 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspNetRole.cs">
-      <DependentUpon>PassAPicModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="AspNetUser.cs">
-      <DependentUpon>PassAPicModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="AspNetUserClaim.cs">
-      <DependentUpon>PassAPicModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="AspNetUserLogin.cs">
-      <DependentUpon>PassAPicModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="EasyWord.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>

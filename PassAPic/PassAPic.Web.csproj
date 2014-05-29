@@ -229,6 +229,7 @@
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\CompletedGamesModel.cs" />
+    <Compile Include="Models\FacebookUserViewModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\Mode.cs" />
