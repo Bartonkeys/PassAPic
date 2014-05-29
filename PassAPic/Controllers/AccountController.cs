@@ -297,6 +297,7 @@ namespace PassAPic.Controllers
         /// If authorised and not registered, then register and return 201 with empty list of games and userID
         /// If authorised and registered return 200 with list of games and UserID
         /// Forget about ASP .Net identity.
+        /// Uses email address as username.
         /// </summary>
         /// <param name="accessToken"></param>
         /// <returns></returns>
@@ -321,7 +322,9 @@ namespace PassAPic.Controllers
             {
                 var papUser = new User
                     {
-                        Username = String.Format("{0} {1}",fbUser.FirstName, fbUser.LastName),
+                        Username = String.IsNullOrEmpty(fbUser.Email) ? 
+                            String.Format("{0} {1}",fbUser.FirstName, fbUser.LastName)
+                            : fbUser.Email,
                         FacebookId = int.Parse(fbUser.ID),
                         IsOnline = true
                     };
