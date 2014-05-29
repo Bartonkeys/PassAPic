@@ -28,8 +28,6 @@ namespace PassAPic.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : BaseController
     {
-        private const string LocalLoginProvider = "Local";
-
 
         [Inject]
         public AccountController(IUnitOfWork unitOfWork)
@@ -52,24 +50,26 @@ namespace PassAPic.Controllers
         /// <summary>
         ///     This is registration to get us started, so very simply. POST with JSON in the body with just username
         ///     and API will return username and userId, which can be stored in device.
-        ///     Leave the username blank and API will generate a random 8 character username.
+        ///     Username should be an email. Can device check that valid email address?
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Route("Anon")]
+        [Route("Register")]
         [AllowAnonymous]
-        public HttpResponseMessage RegisterAnon(AccountModel model)
+        public HttpResponseMessage PostRegisterAnon(AccountModel model)
         {
             try
             {
+                if (String.IsNullOrEmpty(model.Username)) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
                 var newUser = new User
                 {
-                    Username = String.IsNullOrEmpty(model.Username) ? GenerateRandomUsername() : model.Username,
+                    Username = model.Username,
                 };
                 UnitOfWork.User.Insert(newUser);
                 UnitOfWork.Commit();
                 model.UserId = newUser.Id;
                 model.Username = newUser.Username;
+                model.OpenGames = new List<GamesModel>();
                 return Request.CreateResponse(HttpStatusCode.Created, model);
             }
             catch (Exception ex)
