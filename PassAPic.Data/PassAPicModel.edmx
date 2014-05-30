@@ -69,7 +69,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
           <Property Name="IsOnline" Type="bit" Nullable="false" />
-          <Property Name="FacebookId" Type="long" />
+          <Property Name="FacebookId" Type="int" />
         </EntityType>
         <EntityType Name="Words">
           <Key>
