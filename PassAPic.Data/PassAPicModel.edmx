@@ -69,7 +69,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
           <Property Name="IsOnline" Type="bit" Nullable="false" />
-          <Property Name="FacebookId" Type="int" />
+          <Property Name="FacebookId" Type="long" />
         </EntityType>
         <EntityType Name="Words">
           <Key>
@@ -278,7 +278,7 @@
           <NavigationProperty Name="CompletedGuesses" Relationship="PassAPicModel.GuessUser" FromRole="User" ToRole="Guess" />
           <NavigationProperty Name="NextGuesses" Relationship="PassAPicModel.NextGuesses" FromRole="User" ToRole="Guess" />
           <NavigationProperty Name="PushRegisters" Relationship="PassAPicModel.FK_PushRegister_Users" FromRole="User" ToRole="PushRegister" />
-          <Property Name="FacebookId" Type="Int32" />
+          <Property Name="FacebookId" Type="Int64" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
