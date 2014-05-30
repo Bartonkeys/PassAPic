@@ -312,11 +312,12 @@ namespace PassAPic.Controllers
             var response = await client.GetAsync(uri);
 
             if (!response.IsSuccessStatusCode) return Request.CreateResponse(HttpStatusCode.Unauthorized);
-
+            
             var content = await response.Content.ReadAsStringAsync();
             fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookUserViewModel>(content);
+            var fbUserId = long.Parse(fbUser.ID);
 
-            var user = UnitOfWork.User.SearchFor(x => x.FacebookId == int.Parse(fbUser.ID)).FirstOrDefault();
+            var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
 
             if (user == null)
             {
