@@ -326,7 +326,7 @@ namespace PassAPic.Controllers
                         Username = String.IsNullOrEmpty(fbUser.Email) ? 
                             String.Format("{0} {1}",fbUser.FirstName, fbUser.LastName)
                             : fbUser.Email,
-                        FacebookId = int.Parse(fbUser.ID),
+                        FacebookId = long.Parse(fbUser.ID),
                         IsOnline = true
                     };
                     UnitOfWork.User.Insert(papUser);
