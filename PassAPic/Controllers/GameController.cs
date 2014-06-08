@@ -458,7 +458,9 @@ namespace PassAPic.Controllers
                         NumberOfGuesses = y.Game.NumberOfGuesses,
                         GameOverMan = y.Game.GameOverMan,
                         DateCreated = y.Game.DateCreated,
-                        DateCompleted = y.Game.DateCompleted
+                        DateCompleted = y.Game.DateCompleted,
+                        Animation = y.Game.AnimatedResult
+                        
                     }).ToList();
 
                 PopulatePaginationHeaderForAction(userId, page, pageSize, "CompletedGames");
