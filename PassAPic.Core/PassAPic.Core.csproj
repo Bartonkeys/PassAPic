@@ -44,6 +44,9 @@
     <Reference Include="HgCo.WindowsLive.SkyDriveServiceClient">
       <HintPath>..\PassAPic\Libs\HgCo.WindowsLive.SkyDriveServiceClient.dll</HintPath>
     </Reference>
+    <Reference Include="Magick.NET-AnyCPU">
+      <HintPath>..\packages\Magick.NET-Q8-AnyCPU.6.8.9.101\lib\net40-client\Magick.NET-AnyCPU.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>

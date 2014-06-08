@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using ImageMagick;
 using PassAPic.Contracts;
 using PassAPic.Core.CloudImage;
 using PassAPic.Data;
@@ -81,50 +82,61 @@ namespace PassAPic.Core.AnimatedGif
         {
             try
             {
-                var model = new PassAPicModelContainer();
-                var game = model.Games.FirstOrDefault(x => x.Id == gameId);
+                var game = _unitOfWork.Game.SearchFor(x => x.Id == gameId).FirstOrDefault();
 
-                _animatedGifEncoder.Start(tempAnimatedGif);
-                _animatedGifEncoder.SetDelay(3000);
-                _animatedGifEncoder.SetRepeat(0);
-
-                Image startingWordImage = TextToImageConversion.CreateBitmapImage("Start: " + game.StartingWord);
-                _animatedGifEncoder.AddFrame(startingWordImage);
-
-                var count = 1;
-                foreach (var guess in game.Guesses)
+                using (var collection = new MagickImageCollection())
                 {
-                    if (guess is WordGuess)
-                    {
-                        var wordGuess = (WordGuess) guess;
+                    var startingWordImage = TextToImageConversion.CreateBitmapImage("Start: " + game.StartingWord);
+                    var startingMagickImage = new MagickImage(startingWordImage) {AnimationDelay = 300};
+                    collection.Add(startingMagickImage);
 
-                        String word;
-                        if (game.Guesses.Count == count)
-                            word = "Final: " + wordGuess.Word;
-                        else
-                            word = count + ": " + wordGuess.Word;
-
-                        Image wordImage = TextToImageConversion.CreateBitmapImage(word);
-                        _animatedGifEncoder.AddFrame(wordImage);
-                    }
-                    else if (guess is ImageGuess)
+                    var count = 1;
+                    foreach (var guess in game.Guesses)
                     {
-                        var imageGuess = (ImageGuess) guess;
-                        Image image;
-                        using (var webClient = new WebClient())
+                        if (guess is WordGuess)
                         {
-                            image = Image.FromStream(webClient.OpenRead(imageGuess.Image));
+                            var wordGuess = (WordGuess)guess;
+
+                            String word;
+                            if (game.Guesses.Count == count)
+                                word = "Final: " + wordGuess.Word;
+                            else
+                                word = count + ": " + wordGuess.Word;
+
+                            var magickWordImage = new MagickImage(TextToImageConversion.CreateBitmapImage(word))
+                            {
+                                AnimationDelay = 300
+                            };
+                            collection.Add(magickWordImage);
                         }
-                        _animatedGifEncoder.AddFrame(image);
+                        else if (guess is ImageGuess)
+                        {
+                            var imageGuess = (ImageGuess)guess;
+                            Image image;
+                            using (var webClient = new WebClient())
+                            {
+                                image = Image.FromStream(webClient.OpenRead(imageGuess.Image));
+                            }
+
+                            var magickImage = new MagickImage((Bitmap) image)
+                            {
+                                AnimationDelay = 300
+                            };
+                            collection.Add(magickImage);
+                        }
+                        count++;
                     }
-                    count++;
+
+                    var settings = new QuantizeSettings {Colors = 256};
+                    collection.Quantize(settings);
+
+                    collection.Optimize();
+
+                    collection.Write(tempAnimatedGif);
                 }
 
-                _animatedGifEncoder.Finish();
-
                 game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
-                model.SaveChanges();
-                File.Delete(tempAnimatedGif);
+                _unitOfWork.Commit();
             }
             catch (Exception e)
             {

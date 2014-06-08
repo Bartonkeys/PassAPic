@@ -441,11 +441,11 @@
             To modify move field declaration from designer file to code-behind file.
             </remarks>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.RegisterAnon(PassAPic.Models.AccountModel)">
+        <member name="M:PassAPic.Controllers.AccountController.PostRegisterAnon(PassAPic.Models.AccountModel)">
             <summary>
                 This is registration to get us started, so very simply. POST with JSON in the body with just username
                 and API will return username and userId, which can be stored in device.
-                Leave the username blank and API will generate a random 8 character username.
+                Username should be an email. Can device check that valid email address?
             </summary>
             <param name="model"></param>
             <returns></returns>
@@ -490,6 +490,7 @@
             If authorised and not registered, then register and return 201 with empty list of games and userID
             If authorised and registered return 200 with list of games and UserID
             Forget about ASP .Net identity.
+            Uses email address as username.
             </summary>
             <param name="accessToken"></param>
             <returns></returns>

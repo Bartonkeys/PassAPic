@@ -1,7 +1,9 @@
 ﻿using System;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace PassAPic.Core.AnimatedGif
 {
@@ -346,47 +348,75 @@ namespace PassAPic.Core.AnimatedGif
         }
 
         /**
-         * Extracts image pixels into byte array "pixels"
-         */
-        protected void GetImagePixels()
+        * Extracts image pixels into byte array "pixels"
+        */
+        private void GetImagePixels()
         {
             int w = image.Width;
             int h = image.Height;
-            //		int type = image.GetType().;
-            if ((w != width)
-                || (h != height)
-                )
+            if ((w != width) || (h != height))
             {
                 // create new image with right size/format
-                Image temp =
-                    new Bitmap(width, height);
-                Graphics g = Graphics.FromImage(temp);
-                g.DrawImage(image, 0, 0);
-                image = temp;
-                g.Dispose();
-            }
-            /*
-                ToDo:
-                improve performance: use unsafe code 
-            */
-            pixels = new Byte[3 * image.Width * image.Height];
-            int count = 0;
-            Bitmap tempBitmap = new Bitmap(image);
-            for (int th = 0; th < image.Height; th++)
-            {
-                for (int tw = 0; tw < image.Width; tw++)
+                using (Image temp = new Bitmap(width, height))
                 {
-                    Color color = tempBitmap.GetPixel(tw, th);
-                    pixels[count] = color.R;
-                    count++;
-                    pixels[count] = color.G;
-                    count++;
-                    pixels[count] = color.B;
-                    count++;
+                    using (Graphics g = Graphics.FromImage(temp))
+                    {
+                        g.DrawImage(image, 0, 0);
+                        image = temp;
+                    }
                 }
             }
-
-            //		pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+            //
+            // improved performance
+            Bitmap tempBitmap = (Bitmap)image;
+            BitmapData bitmapData = null;
+            try
+            {
+                bitmapData = tempBitmap.LockBits(
+                      new Rectangle(0, 0, tempBitmap.Width, tempBitmap.Height)
+                    , ImageLockMode.ReadOnly
+                    , PixelFormat.Format24bppRgb
+                    );
+                IntPtr pixelAddress = bitmapData.Scan0;
+                int physicalLineLength = bitmapData.Stride;
+                byte[] sourcePixels
+                    = new byte[physicalLineLength * tempBitmap.Height];
+                Marshal.Copy(
+                      pixelAddress
+                    , sourcePixels
+                    , 0
+                    , sourcePixels.Length
+                    );
+                int sourceIndex = 0;
+                int targetIndex = 0;
+                int logicalLineLength = 3 * tempBitmap.Width;
+                pixels = new Byte[logicalLineLength * tempBitmap.Height];
+                for (int th = 0; th < tempBitmap.Height; th++)
+                {
+                    Array.Copy(
+                          sourcePixels
+                        , sourceIndex
+                        , pixels
+                        , targetIndex
+                        , logicalLineLength
+                        );
+                    sourceIndex += bitmapData.Stride;
+                    targetIndex += logicalLineLength;
+                }
+                for (int tw = 0; tw <= pixels.Length - 3; tw += 3)
+                {
+                    byte tempColor = pixels[tw];
+                    pixels[tw] = pixels[tw + 2];
+                    pixels[tw + 2] = tempColor;
+                }
+            }
+            finally
+            {
+                if (bitmapData != null)
+                {
+                    tempBitmap.UnlockBits(bitmapData);
+                }
+            }
         }
 
         /**
