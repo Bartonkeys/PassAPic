@@ -10,8 +10,8 @@ namespace PassAPic.Core.AnimatedGif
 {
     public static class MyGlobals
     {
-        public const int ImageWidth = 512;
-        public const int ImageHeight = 512;
+        public const int ImageWidth = 640;
+        public const int ImageHeight = 616;
     }
 
     public class TextToImageConversion

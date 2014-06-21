@@ -40,10 +40,19 @@
     <Reference Include="CloudinaryDotNet">
       <HintPath>..\packages\CloudinaryDotNet.1.0.14\lib\net40\CloudinaryDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
@@ -63,8 +72,17 @@
     <Compile Include="AccountControllerShouldBeAbleTo.cs" />
     <Compile Include="GameControllerShouldBeAbleTo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AnimatedGifServiceShouldBeAbleTo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PassAPic.Contracts\PassAPic.Contracts.csproj">
+      <Project>{9829536C-B05A-4430-B6A0-EA3A3E42861C}</Project>
+      <Name>PassAPic.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PassAPic.Core\PassAPic.Core.csproj">
+      <Project>{09318371-A58A-41CA-BDD5-20B460E6A2BE}</Project>
+      <Name>PassAPic.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PassAPic.Data\PassAPic.Data.csproj">
       <Project>{47D67790-5496-4905-9785-9A281F5F818F}</Project>
       <Name>PassAPic.Data</Name>
