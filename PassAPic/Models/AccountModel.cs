@@ -16,5 +16,9 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "games")]
         public List<GamesModel> OpenGames { get; set; }
+
+         [JsonProperty(PropertyName = "facebookFriends")]
+        public List<FacebookFriendModel> FacebookFriends { get; set; }
+
     }
 }
