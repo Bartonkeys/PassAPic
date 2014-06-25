@@ -317,6 +317,8 @@ namespace PassAPic.Controllers
             fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookUserViewModel>(content);
             var fbUserId = long.Parse(fbUser.ID);
 
+            var friends = GetFacebookFriends(accessToken);
+
             var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
 
             if (user == null)
@@ -335,7 +337,8 @@ namespace PassAPic.Controllers
                 {
                     UserId = papUser.Id,
                     Username = papUser.Username,
-                    OpenGames = new List<GamesModel>()
+                    OpenGames = new List<GamesModel>(),
+                    FacebookFriends = friends.Result
                 };
                     return Request.CreateResponse(HttpStatusCode.Created, accountModel);
             }
@@ -353,14 +356,37 @@ namespace PassAPic.Controllers
                 {
                     UserId = user.Id,
                     Username = user.Username,
-                    OpenGames = openGames
+                    OpenGames = openGames,
+                    FacebookFriends = friends.Result
                 };
 
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
         }
 
+        private async Task<List<FacebookFriendModel>> GetFacebookFriends(string accessToken)
+        {
+            var path = "https://graph.facebook.com/me/friends?access_token=" + accessToken;
+            var client = new HttpClient();
+            var uri = new Uri(path);
+            var response = await client.GetAsync(uri);
 
+            if (!response.IsSuccessStatusCode) return new List<FacebookFriendModel>();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var friends = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookFriendsModel>(content);
+
+            foreach (var friend in friends.data)
+            {
+                var fbUserId = int.Parse(friend.Id);
+                var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
+                if (user == null) continue;
+                friend.IsPaPUser = true;
+                friend.PaPUserId = user.Id;
+            }
+
+            return friends.data;
+        }
 
         #region Helpers
 
