@@ -317,7 +317,7 @@ namespace PassAPic.Controllers
             fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookUserViewModel>(content);
             var fbUserId = long.Parse(fbUser.ID);
 
-            var friends = GetFacebookFriends(accessToken);
+            //var friends = GetFacebookFriends(accessToken);
 
             var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
 
@@ -338,7 +338,7 @@ namespace PassAPic.Controllers
                     UserId = papUser.Id,
                     Username = papUser.Username,
                     OpenGames = new List<GamesModel>(),
-                    FacebookFriends = friends.Result
+                    //FacebookFriends = friends.Result
                 };
                     return Request.CreateResponse(HttpStatusCode.Created, accountModel);
             }
@@ -357,7 +357,7 @@ namespace PassAPic.Controllers
                     UserId = user.Id,
                     Username = user.Username,
                     OpenGames = openGames,
-                    FacebookFriends = friends.Result
+                    //FacebookFriends = friends.Result
                 };
 
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
