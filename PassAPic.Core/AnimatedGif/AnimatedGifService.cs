@@ -25,7 +25,7 @@ namespace PassAPic.Core.AnimatedGif
             _unitOfWork = unitOfWork;
         }     
 
-        public void CreateAnimatedGif(int gameId, string tempAnimatedGif)
+        public string CreateAnimatedGif(int gameId, string tempAnimatedGif)
         {
             try
             {
@@ -84,6 +84,7 @@ namespace PassAPic.Core.AnimatedGif
 
                 game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
                 _unitOfWork.Commit();
+                return game.AnimatedResult;
             }
             catch (Exception e)
             {

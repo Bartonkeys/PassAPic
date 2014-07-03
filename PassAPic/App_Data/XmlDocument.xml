@@ -595,5 +595,12 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
+            GET /api/gif
+            <summary>
+            Create animated Gif for game and return url
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

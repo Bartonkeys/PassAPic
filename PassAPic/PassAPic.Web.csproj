@@ -227,6 +227,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\GameController.cs" />
+    <Compile Include="Controllers\GifController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\CompletedGamesModel.cs" />
     <Compile Include="Models\FacebookFriendModel.cs" />
