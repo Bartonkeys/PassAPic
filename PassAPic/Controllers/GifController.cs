@@ -23,10 +23,11 @@ namespace PassAPic.Controllers
         protected AnimatedGifService AnimatedGifService;
 
         [Inject]
-        public GifController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider)
+        public GifController(IUnitOfWork unitOfWork, ICloudImageProvider cloudImageProvider)
         {
             CloudImageService = new CloudImageService(cloudImageProvider);
             AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
+            UnitOfWork = unitOfWork;
         }
 
         /// GET /api/gif
@@ -34,10 +35,14 @@ namespace PassAPic.Controllers
         /// Create animated Gif for game and return url
         /// </summary>
         /// <returns></returns>
+        [Route("{gameId}")]
         public async Task<HttpResponseMessage> GetAnimatedGif(int gameId)
         {
             try
             {
+                var game = UnitOfWork.Game.GetById(gameId);
+                if (game.AnimatedResult != null) return Request.CreateResponse(HttpStatusCode.OK, game.AnimatedResult);
+
                 var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + gameId + ".gif");
                 var animatedGifPath = await Task.Run(() => AnimatedGifService.CreateAnimatedGif(gameId, tempAnimatedGif));
                 return Request.CreateResponse(HttpStatusCode.OK, animatedGifPath);
