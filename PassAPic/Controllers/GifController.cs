@@ -15,7 +15,7 @@ using PassAPic.Core.PushRegistration;
 
 namespace PassAPic.Controllers
 {
-    [RoutePrefix("/api/gif")]
+    [RoutePrefix("api/gif")]
     public class GifController : BaseController
     {
 
