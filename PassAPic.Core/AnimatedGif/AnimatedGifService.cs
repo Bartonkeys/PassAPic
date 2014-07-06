@@ -82,7 +82,7 @@ namespace PassAPic.Core.AnimatedGif
                     magickImageCollection.Write(tempAnimatedGif);
                 }
 
-                game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif);
+                game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif, gameId.ToString());
                 _unitOfWork.Commit();
                 return game.AnimatedResult;
             }

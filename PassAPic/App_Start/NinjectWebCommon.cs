@@ -68,7 +68,7 @@ namespace PassAPic.App_Start
             kernel.Bind<IRepositoryProvider>().To<RepositoryProvider>();
             kernel.Bind<IUnitOfWork>().To<EFUnitOfWork>();
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
-            kernel.Bind<ICloudImageProvider>().To<CloudImageProviderCloudinary>();
+            kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
         }        
     }
 }

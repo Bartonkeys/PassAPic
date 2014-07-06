@@ -47,7 +47,7 @@ namespace PassAPic.Core.CloudImage
 
 
 
-        public string SaveImageToCloud(string imagePath)
+        public string SaveImageToCloud(string imagePath, string imageName)
         {
             String urlToReturn = null;
 
