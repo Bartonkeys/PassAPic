@@ -584,7 +584,7 @@ namespace PassAPic.Controllers
                         Stream stream = content.ReadAsStreamAsync().Result;
                         Image image = Image.FromStream(stream);
 
-                        var imageUrl = SaveImageCloudinary(image, imageName);
+                        var imageUrl = SaveImageToCloud(image, imageName);
                         SetPreviousGuessAsComplete(game, userId);
 
                         var order = game.Guesses.Count + 1;
@@ -666,7 +666,7 @@ namespace PassAPic.Controllers
                         String.Format("You have already submitted this guess"));
 
                 var imagePath = Path.Combine(ServerUploadFolder, imageName);
-                 var imageUrl = SaveImageCloudinary(imagePath, imageName.Split('\\').Last());
+                 var imageUrl = SaveImageToCloud(imagePath, imageName.Split('\\').Last());
                 SetPreviousGuessAsComplete(game, userId);
 
                 var order = game.Guesses.Count + 1;
@@ -718,12 +718,12 @@ namespace PassAPic.Controllers
 
         #region "Helper methods"
 
-        private string SaveImageCloudinary(Image image, string imageName)
+        private string SaveImageToCloud(Image image, string imageName)
         {
             return CloudImageService.SaveImageToCloud(image, imageName);
         }
 
-        private string SaveImageCloudinary(string imagePath, string imageName)
+        private string SaveImageToCloud(string imagePath, string imageName)
         {
             return CloudImageService.SaveImageToCloud(imagePath, imageName);
         }
