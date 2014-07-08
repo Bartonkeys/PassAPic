@@ -1,0 +1,475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PassAPicModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EasyWords">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Word" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Games">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NumberOfGuesses" Type="int" Nullable="false" />
+          <Property Name="StartingWord" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="GameOverMan" Type="bit" Nullable="false" />
+          <Property Name="Creator_Id" Type="int" />
+          <Property Name="AnimatedResult" Type="varchar(max)" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="DateCompleted" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Guesses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Order" Type="int" Nullable="false" />
+          <Property Name="Complete" Type="bit" Nullable="false" />
+          <Property Name="Game_Id" Type="int" Nullable="false" />
+          <Property Name="User_Id" Type="int" />
+          <Property Name="NextUser_Id" Type="int" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+        </EntityType>
+        <EntityType Name="Guesses_ImageGuess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Image" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Guesses_WordGuess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Word" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PushRegister">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="DeviceToken" Type="nvarchar(max)" />
+          <Property Name="DeviceType" Type="int" />
+          <Property Name="Timestamp" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsOnline" Type="bit" Nullable="false" />
+          <Property Name="FacebookId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="Words">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="word" Type="varchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_GameTurn">
+          <End Role="Games" Type="Self.Games" Multiplicity="1" />
+          <End Role="Guesses" Type="Self.Guesses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Games">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Guesses">
+              <PropertyRef Name="Game_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GuessUser">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Guesses" Type="Self.Guesses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Guesses">
+              <PropertyRef Name="User_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ImageGuess_inherits_Guess">
+          <End Role="Guesses" Type="Self.Guesses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Guesses_ImageGuess" Type="Self.Guesses_ImageGuess" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Guesses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Guesses_ImageGuess">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NextGuesses">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Guesses" Type="Self.Guesses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Guesses">
+              <PropertyRef Name="NextUser_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PushRegister_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="PushRegister" Type="Self.PushRegister" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PushRegister">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserGame">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Games" Type="Self.Games" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Games">
+              <PropertyRef Name="Creator_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_WordGuess_inherits_Guess">
+          <End Role="Guesses" Type="Self.Guesses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Guesses_WordGuess" Type="Self.Guesses_WordGuess" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Guesses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Guesses_WordGuess">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PassAPicModelStoreContainer">
+          <EntitySet Name="EasyWords" EntityType="Self.EasyWords" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Guesses_WordGuess" EntityType="Self.Guesses_WordGuess" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PushRegister" EntityType="Self.PushRegister" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Words" EntityType="Self.Words" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_GameTurn" Association="Self.FK_GameTurn">
+            <End Role="Games" EntitySet="Games" />
+            <End Role="Guesses" EntitySet="Guesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GuessUser" Association="Self.FK_GuessUser">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Guesses" EntitySet="Guesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ImageGuess_inherits_Guess" Association="Self.FK_ImageGuess_inherits_Guess">
+            <End Role="Guesses" EntitySet="Guesses" />
+            <End Role="Guesses_ImageGuess" EntitySet="Guesses_ImageGuess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NextGuesses" Association="Self.FK_NextGuesses">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Guesses" EntitySet="Guesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PushRegister_Users" Association="Self.FK_PushRegister_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="PushRegister" EntitySet="PushRegister" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserGame" Association="Self.FK_UserGame">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Games" EntitySet="Games" />
+          </AssociationSet>
+          <AssociationSet Name="FK_WordGuess_inherits_Guess" Association="Self.FK_WordGuess_inherits_Guess">
+            <End Role="Guesses" EntitySet="Guesses" />
+            <End Role="Guesses_WordGuess" EntitySet="Guesses_WordGuess" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="PassAPicModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="PassAPicModelContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Games" EntityType="PassAPicModel.Game" />
+          <EntitySet Name="Guesses" EntityType="PassAPicModel.Guess" />
+          <AssociationSet Name="GameTurn" Association="PassAPicModel.GameTurn">
+            <End EntitySet="Games" Role="Game" />
+            <End EntitySet="Guesses" Role="Turn" />
+          </AssociationSet>
+          <EntitySet Name="Users" EntityType="PassAPicModel.User" />
+          <AssociationSet Name="UserGame" Association="PassAPicModel.UserGame">
+            <End EntitySet="Users" Role="User" />
+            <End EntitySet="Games" Role="Game" />
+          </AssociationSet>
+          <AssociationSet Name="GuessUser" Association="PassAPicModel.GuessUser">
+            <End EntitySet="Guesses" Role="Guess" />
+            <End EntitySet="Users" Role="User" />
+          </AssociationSet>
+          <EntitySet Name="Words" EntityType="PassAPicModel.Word" />
+          <AssociationSet Name="GuessNextUser" Association="PassAPicModel.NextGuesses">
+            <End Role="Guess" EntitySet="Guesses" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <EntitySet Name="PushRegisters" EntityType="PassAPicModel.PushRegister" />
+          <AssociationSet Name="FK_PushRegister_Users" Association="PassAPicModel.FK_PushRegister_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="PushRegister" EntitySet="PushRegisters" />
+          </AssociationSet>
+          <EntitySet Name="EasyWords" EntityType="PassAPicModel.EasyWord" />
+          </EntityContainer>
+        <EntityType Name="Game">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Guesses" Relationship="PassAPicModel.GameTurn" FromRole="Game" ToRole="Turn" />
+          <NavigationProperty Name="Creator" Relationship="PassAPicModel.UserGame" FromRole="Game" ToRole="User" />
+          <Property Name="NumberOfGuesses" Type="Int32" Nullable="false" />
+          <Property Name="StartingWord" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="GameOverMan" Type="Boolean" Nullable="false" />
+          <Property Name="AnimatedResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateCompleted" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Guess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+          <NavigationProperty Name="Game" Relationship="PassAPicModel.GameTurn" FromRole="Turn" ToRole="Game" />
+          <NavigationProperty Name="User" Relationship="PassAPicModel.GuessUser" FromRole="Guess" ToRole="User" />
+          <Property Name="Order" Nullable="false" Type="Int32" />
+          <NavigationProperty Name="NextUser" Relationship="PassAPicModel.NextGuesses" FromRole="Guess" ToRole="User" />
+          <Property Name="Complete" Type="Boolean" Nullable="false" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+        </EntityType>
+        <Association Name="GameTurn">
+          <End Type="PassAPicModel.Game" Multiplicity="1" Role="Game" />
+          <End Type="PassAPicModel.Guess" Multiplicity="*" Role="Turn" />
+        </Association>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" Type="Int32" />
+          <NavigationProperty Name="Games" Relationship="PassAPicModel.UserGame" FromRole="User" ToRole="Game" />
+          <Property Name="Username" Nullable="false" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="IsOnline" Nullable="false" Type="Boolean" />
+          <NavigationProperty Name="CompletedGuesses" Relationship="PassAPicModel.GuessUser" FromRole="User" ToRole="Guess" />
+          <NavigationProperty Name="NextGuesses" Relationship="PassAPicModel.NextGuesses" FromRole="User" ToRole="Guess" />
+          <NavigationProperty Name="PushRegisters" Relationship="PassAPicModel.FK_PushRegister_Users" FromRole="User" ToRole="PushRegister" />
+          <Property Name="FacebookId" Type="Int64" />
+        </EntityType>
+        <Association Name="UserGame">
+          <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
+          <End Type="PassAPicModel.Game" Multiplicity="*" Role="Game" />
+        </Association>
+        <Association Name="GuessUser">
+          <End Type="PassAPicModel.Guess" Multiplicity="*" Role="Guess" />
+          <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
+        </Association>
+        <EntityType Name="WordGuess" BaseType="PassAPicModel.Guess" >
+          <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="ImageGuess" BaseType="PassAPicModel.Guess" >
+          <Property Name="Image" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="Word">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="word" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="NextGuesses">
+          <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="*" />
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />
+        </Association>
+        <EntityType Name="PushRegister">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="DeviceToken" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DeviceType" Type="Int32" />
+          <Property Name="Timestamp" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="User" Relationship="PassAPicModel.FK_PushRegister_Users" FromRole="PushRegister" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_PushRegister_Users">
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="PassAPicModel.PushRegister" Role="PushRegister" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PushRegister">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="EasyWord">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="PassAPicModelStoreContainer" CdmEntityContainer="PassAPicModelContainer">
+    <EntitySetMapping Name="Games">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
+        <MappingFragment StoreEntitySet="Games">
+          <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="NumberOfGuesses" ColumnName="NumberOfGuesses" />
+          <ScalarProperty Name="StartingWord" ColumnName="StartingWord" />
+          <ScalarProperty Name="GameOverMan" ColumnName="GameOverMan" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Guesses">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Guess)">
+        <MappingFragment StoreEntitySet="Guesses">
+          <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Order" ColumnName="Order" />
+          <ScalarProperty Name="Complete" ColumnName="Complete" />
+        </MappingFragment>
+      </EntityTypeMapping>
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.WordGuess)">
+        <MappingFragment StoreEntitySet="Guesses_WordGuess">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Word" ColumnName="Word" />
+        </MappingFragment>
+      </EntityTypeMapping>
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.ImageGuess)">
+        <MappingFragment StoreEntitySet="Guesses_ImageGuess">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Image" ColumnName="Image" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.User)">
+        <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="FacebookId" ColumnName="FacebookId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Username" ColumnName="Username" />
+          <ScalarProperty Name="IsOnline" ColumnName="IsOnline" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Words">
+      <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Word)">
+        <MappingFragment StoreEntitySet="Words">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="word" ColumnName="word" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="GameTurn" TypeName="PassAPicModel.GameTurn" StoreEntitySet="Guesses">
+      <EndProperty Name="Game">
+        <ScalarProperty Name="Id" ColumnName="Game_Id" />
+      </EndProperty>
+      <EndProperty Name="Turn">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="UserGame" TypeName="PassAPicModel.UserGame" StoreEntitySet="Games">
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="Creator_Id" />
+      </EndProperty>
+      <EndProperty Name="Game">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="Creator_Id" IsNull="false" />
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="GuessUser" TypeName="PassAPicModel.GuessUser" StoreEntitySet="Guesses">
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="User_Id" />
+      </EndProperty>
+      <EndProperty Name="Guess">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="User_Id" IsNull="false" />
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="GuessNextUser" TypeName="PassAPicModel.NextGuesses" StoreEntitySet="Guesses">
+      <EndProperty Name="User">
+        <ScalarProperty Name="Id" ColumnName="NextUser_Id" />
+      </EndProperty>
+      <EndProperty Name="Guess">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+      <Condition ColumnName="NextUser_Id" IsNull="false" />
+    </AssociationSetMapping>
+          <EntitySetMapping Name="PushRegisters">
+            <EntityTypeMapping TypeName="PassAPicModel.PushRegister">
+              <MappingFragment StoreEntitySet="PushRegister">
+                <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+                <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+                <ScalarProperty Name="DeviceToken" ColumnName="DeviceToken" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EasyWords">
+            <EntityTypeMapping TypeName="PassAPicModel.EasyWord">
+              <MappingFragment StoreEntitySet="EasyWords">
+                <ScalarProperty Name="Word" ColumnName="Word" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
