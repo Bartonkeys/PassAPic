@@ -61,6 +61,9 @@ namespace PassAPic.Controllers
             try
             {
                 if (String.IsNullOrEmpty(model.Username)) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
+                if (UnitOfWork.User.SearchFor(x => x.Username == model.Username).Any())
+                    return Request.CreateResponse(HttpStatusCode.Conflict);
+
                 var newUser = new User
                 {
                     Username = model.Username,
@@ -84,15 +87,25 @@ namespace PassAPic.Controllers
         ///     This API will return a list of online users.
         /// </summary>
         /// <returns></returns>
-        [Route("Online")]
+        [Route("Online/{currentUserId}/{page?}/{pageSize?}")]
         [AllowAnonymous]
-        public HttpResponseMessage GetUsersOnline()
+        public HttpResponseMessage GetUsersOnline(int currentUserId, int page = 0, int pageSize = 10)
         {
             try
             {
                 List<AccountModel> usersOnline =
                     UnitOfWork.User.SearchFor(x => x.IsOnline)
-                        .Select(y => new AccountModel {UserId = y.Id, Username = y.Username})
+                    .OrderBy(x => x.Username)
+                    .Skip(pageSize * page)
+                    .Take(pageSize)
+                        .Select(y => new AccountModel
+                        {
+                            UserId = y.Id, 
+                            Username = y.Username,
+                            LastActivity = y.Games.Max(d => d.DateCompleted),
+                            NumberOfCompletedGames = y.Games.Count(g => g.GameOverMan),
+                            HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId))
+                        })
                         .ToList();
                 return Request.CreateResponse(HttpStatusCode.OK, usersOnline);
             }
@@ -133,13 +146,14 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Route("Login/{userId}")]
+        [Route("Login/{userName}")]
         [AllowAnonymous]
-        public HttpResponseMessage Login(int userId)
+        [HttpGet]
+        public HttpResponseMessage Login(string userName)
         {
             try
             {
-                User user = UnitOfWork.User.GetById(userId);
+                User user = UnitOfWork.User.SearchFor(x => x.Username == userName).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
                 user.IsOnline = true;
@@ -147,7 +161,7 @@ namespace PassAPic.Controllers
                 UnitOfWork.User.Update(user);
                 UnitOfWork.Commit();
 
-                List<GamesModel> results = user.Games.Select(y => new GamesModel
+                var openGames = user.Games.Where(x => x.GameOverMan == false).Select(y => new GamesModel
                 {
                     GameId = y.Id,
                     StartingWord = y.StartingWord,
@@ -155,7 +169,17 @@ namespace PassAPic.Controllers
                     GameOverMan = y.GameOverMan
                 }).ToList();
 
-                return Request.CreateResponse(HttpStatusCode.OK, results);
+                var accountModel = new AccountModel
+                {
+                    UserId = user.Id,
+                    Username = user.Username,
+                    OpenGames = openGames,
+                    LastActivity = user.Games.Max(d => d.DateCompleted),
+                    NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
+                    HasPlayedWithUserBefore = true
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
             catch (Exception ex)
             {

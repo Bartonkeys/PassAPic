@@ -450,7 +450,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.GetUsersOnline">
+        <member name="M:PassAPic.Controllers.AccountController.GetUsersOnline(System.Int32,System.Int32,System.Int32)">
             <summary>
                 This API will return a list of online users.
             </summary>
@@ -462,7 +462,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
+        <member name="M:PassAPic.Controllers.AccountController.Login(System.String)">
             <summary>
                 POST this baby up to let server know user is online.
             </summary>
