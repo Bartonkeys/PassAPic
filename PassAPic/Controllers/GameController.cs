@@ -16,9 +16,11 @@ using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Core.CloudImage;
+using PassAPic.Core.WordManager;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
+using Word = PassAPic.Core.WordManager.Word;
 
 namespace PassAPic.Controllers
 {
@@ -31,17 +33,18 @@ namespace PassAPic.Controllers
         protected PushRegisterService PushRegisterService;
         protected CloudImageService CloudImageService;
         protected AnimatedGifService AnimatedGifService;
+        protected IWordManager WordManager;
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
-        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider)
+        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider, IWordManager wordManager)
         {
             UnitOfWork = unitOfWork;
-            Words = UnitOfWork.Word.GetAll().Select(x => x.word).ToList();
             EasyWords = UnitOfWork.EasyWord.GetAll().Select(x => x.Word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
             AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
+            WordManager = wordManager;
         }
 
         // POST /api/game/start
@@ -50,14 +53,17 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("Start")]
-        public HttpResponseMessage PostStart(GameSetupModel model)
+        public async Task<HttpResponseMessage> PostStart(GameSetupModel model)
         {
             try
             {
                 var user = UnitOfWork.User.GetById(model.UserId);
+
+                var startingWord = await WordManager.GetWord(model.Mode);
+
                 var game = new Game
                 {
-                    StartingWord = model.Mode == Mode.Easy ? EasyWords[random.Next(EasyWords.Count)] : Words[random.Next(Words.Count)],
+                    StartingWord = model.Mode == Mode.Easy ? EasyWords[random.Next(EasyWords.Count)] : startingWord.RandomWord,
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user,
                     DateCreated = DateTime.UtcNow

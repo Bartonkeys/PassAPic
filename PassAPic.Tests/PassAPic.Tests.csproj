@@ -73,6 +73,7 @@
     <Compile Include="GameControllerShouldBeAbleTo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AnimatedGifServiceShouldBeAbleTo.cs" />
+    <Compile Include="WordManagerShouldBeAbleTo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PassAPic.Contracts\PassAPic.Contracts.csproj">

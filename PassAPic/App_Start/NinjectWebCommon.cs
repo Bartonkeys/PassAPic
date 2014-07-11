@@ -4,7 +4,9 @@ using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Core.CloudImage;
 using PassAPic.Core.Repositories;
+using PassAPic.Core.WordManager;
 using PassAPic.Repositories.Helpers;
+using PassAPic.WordManager;
 
 [assembly: WebActivator.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWebCommon), "Start")]
 [assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(PassAPic.App_Start.NinjectWebCommon), "Stop")]
@@ -69,6 +71,7 @@ namespace PassAPic.App_Start
             kernel.Bind<IUnitOfWork>().To<EFUnitOfWork>();
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
             kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
+            kernel.Bind<IWordManager>().To<WordnikManager>();
         }        
     }
 }

@@ -234,7 +234,6 @@
     <Compile Include="Models\FacebookUserViewModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
-    <Compile Include="Models\Mode.cs" />
     <Compile Include="Models\OpenGamesModel.cs" />
     <Compile Include="Models\RegisterItem.cs" />
     <Compile Include="Models\ReturnMessage.cs" />
