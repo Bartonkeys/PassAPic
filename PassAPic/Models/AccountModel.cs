@@ -15,7 +15,7 @@ namespace PassAPic.Models
         public string Username { get; set; }
 
         [JsonProperty(PropertyName = "games")]
-        public List<GamesModel> OpenGames { get; set; }
+        public List<OpenGamesModel> OpenGames { get; set; }
 
          [JsonProperty(PropertyName = "numberOfCompletedGames")]
         public int NumberOfCompletedGames { get; set; }

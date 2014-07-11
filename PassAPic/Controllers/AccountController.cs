@@ -72,7 +72,7 @@ namespace PassAPic.Controllers
                 UnitOfWork.Commit();
                 model.UserId = newUser.Id;
                 model.Username = newUser.Username;
-                model.OpenGames = new List<GamesModel>();
+                model.OpenGames = new List<OpenGamesModel>();
                 return Request.CreateResponse(HttpStatusCode.Created, model);
             }
             catch (Exception ex)
@@ -161,23 +161,22 @@ namespace PassAPic.Controllers
                 UnitOfWork.User.Update(user);
                 UnitOfWork.Commit();
 
-                var openGames = user.Games.Where(x => x.GameOverMan == false).Select(y => new GamesModel
-                {
-                    GameId = y.Id,
-                    StartingWord = y.StartingWord,
-                    NumberOfGuesses = y.NumberOfGuesses,
-                    GameOverMan = y.GameOverMan
-                }).ToList();
 
                 var accountModel = new AccountModel
                 {
                     UserId = user.Id,
                     Username = user.Username,
-                    OpenGames = openGames,
                     LastActivity = user.Games.Max(d => d.DateCompleted),
                     NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
                     HasPlayedWithUserBefore = true
                 };
+
+                
+                foreach (var game in user.Games.Where(x => x.GameOverMan == false))
+                {
+                    var openGame = PopulateOpenGamesModel(game.Guesses);
+                    accountModel.OpenGames.Add(openGame);
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
@@ -399,7 +398,7 @@ namespace PassAPic.Controllers
                 {
                     UserId = papUser.Id,
                     Username = papUser.Username,
-                    OpenGames = new List<GamesModel>(),
+                    OpenGames = new List<OpenGamesModel>(),
                     //FacebookFriends = friends.Result
                 };
                     return Request.CreateResponse(HttpStatusCode.Created, accountModel);
@@ -418,7 +417,6 @@ namespace PassAPic.Controllers
                 {
                     UserId = user.Id,
                     Username = user.Username,
-                    OpenGames = openGames,
                     //FacebookFriends = friends.Result
                 };
 
