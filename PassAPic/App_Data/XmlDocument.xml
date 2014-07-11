@@ -469,6 +469,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
+            <summary>
+                POST this baby up to let server know user is online.
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.AccountController.LogOut(System.Int32)">
             <summary>
                 POST this bitch up to let server know user has fucked off.

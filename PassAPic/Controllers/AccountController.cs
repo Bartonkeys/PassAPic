@@ -148,7 +148,7 @@ namespace PassAPic.Controllers
         /// <returns></returns>
         [Route("Login/{userName}")]
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPost]
         public HttpResponseMessage Login(string userName)
         {
             try
@@ -189,6 +189,43 @@ namespace PassAPic.Controllers
         }
 
         // POST api/Account/Login
+        /// <summary>
+        ///     POST this baby up to let server know user is online.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("Login/{userId}")]
+        [AllowAnonymous]
+        public HttpResponseMessage Login(int userId)
+        {
+            try
+            {
+                User user = UnitOfWork.User.GetById(userId);
+                if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+
+                user.IsOnline = true;
+
+                UnitOfWork.User.Update(user);
+                UnitOfWork.Commit();
+
+                List<GamesModel> results = user.Games.Select(y => new GamesModel
+                {
+                    GameId = y.Id,
+                    StartingWord = y.StartingWord,
+                    NumberOfGuesses = y.NumberOfGuesses,
+                    GameOverMan = y.GameOverMan
+                }).ToList();
+
+                return Request.CreateResponse(HttpStatusCode.OK, results);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        // POST api/Account/Logout
         /// <summary>
         ///     POST this bitch up to let server know user has fucked off.
         /// </summary>

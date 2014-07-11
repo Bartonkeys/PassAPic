@@ -99,7 +99,7 @@ namespace PassAPic.Controllers
         /// <param name="isEasyMode"></param>
         /// <returns></returns>
         [Route("NewWord/{gameId}/{userId}/{mode?}")]
-        public HttpResponseMessage GetNewWord(int gameId, int userId, Mode mode = Mode.Normal)
+        public async Task<HttpResponseMessage> GetNewWord(int gameId, int userId, Mode mode = Mode.Normal)
         {
             try
             {
@@ -108,9 +108,11 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
+                var normalWord = await WordManager.GetWord(mode);
+
                 game.StartingWord = mode == Mode.Easy
                     ? EasyWords[random.Next(EasyWords.Count)]
-                    : Words[random.Next(Words.Count)];
+                    : normalWord.RandomWord;
 
                 UnitOfWork.Game.Update(game);
                 UnitOfWork.Commit();
