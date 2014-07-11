@@ -72,7 +72,7 @@ namespace PassAPic.Controllers
                 UnitOfWork.Commit();
                 model.UserId = newUser.Id;
                 model.Username = newUser.Username;
-                model.OpenGames = new List<OpenGamesModel>();
+                model.OpenGames = new OpenGamesModel();
                 return Request.CreateResponse(HttpStatusCode.Created, model);
             }
             catch (Exception ex)
@@ -161,6 +161,8 @@ namespace PassAPic.Controllers
                 UnitOfWork.User.Update(user);
                 UnitOfWork.Commit();
 
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
+                var openGameModel = PopulateOpenGamesModel(guesses);
 
                 var accountModel = new AccountModel
                 {
@@ -169,15 +171,8 @@ namespace PassAPic.Controllers
                     LastActivity = user.Games.Max(d => d.DateCompleted),
                     NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
                     HasPlayedWithUserBefore = true,
-                    OpenGames = new List<OpenGamesModel>()
-                };
-
-                
-                foreach (var game in user.Games.Where(x => x.GameOverMan == false))
-                {
-                    var openGame = PopulateOpenGamesModel(game.Guesses);
-                    accountModel.OpenGames.Add(openGame);
-                }
+                    OpenGames = openGameModel
+                };            
 
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
@@ -399,7 +394,7 @@ namespace PassAPic.Controllers
                 {
                     UserId = papUser.Id,
                     Username = papUser.Username,
-                    OpenGames = new List<OpenGamesModel>(),
+                    OpenGames = new OpenGamesModel(),
                     //FacebookFriends = friends.Result
                 };
                     return Request.CreateResponse(HttpStatusCode.Created, accountModel);
