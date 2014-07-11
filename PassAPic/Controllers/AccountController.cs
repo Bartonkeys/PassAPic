@@ -168,7 +168,8 @@ namespace PassAPic.Controllers
                     Username = user.Username,
                     LastActivity = user.Games.Max(d => d.DateCompleted),
                     NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
-                    HasPlayedWithUserBefore = true
+                    HasPlayedWithUserBefore = true,
+                    OpenGames = new List<OpenGamesModel>()
                 };
 
                 

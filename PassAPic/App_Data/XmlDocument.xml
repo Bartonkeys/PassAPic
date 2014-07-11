@@ -462,7 +462,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.Login(System.String)">
+        <member name="M:PassAPic.Controllers.AccountController.LoginWithUserName(System.String)">
             <summary>
                 POST this baby up to let server know user is online.
             </summary>
