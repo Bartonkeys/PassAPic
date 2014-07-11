@@ -196,6 +196,7 @@ namespace PassAPic.Controllers
         /// <returns></returns>
         [Route("Login/{userId}")]
         [AllowAnonymous]
+        [HttpPost]
         public HttpResponseMessage Login(int userId)
         {
             try
