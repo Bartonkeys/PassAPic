@@ -146,10 +146,10 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [Route("Login/{userName}")]
+        [Route("LoginWithUserName/{userName}")]
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage Login(string userName)
+        public HttpResponseMessage LoginWithUserName(string userName)
         {
             try
             {
