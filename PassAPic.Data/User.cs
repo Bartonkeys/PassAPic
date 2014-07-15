@@ -26,6 +26,8 @@ namespace PassAPic.Data
         public string Username { get; set; }
         public bool IsOnline { get; set; }
         public Nullable<long> FacebookId { get; set; }
+        public string Password { get; set; }
+        public string Email { get; set; }
     
         public virtual ICollection<Game> Games { get; set; }
         public virtual ICollection<Guess> CompletedGuesses { get; set; }

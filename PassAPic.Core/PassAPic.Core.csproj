@@ -90,6 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountManagement\EmailVerification.cs" />
+    <Compile Include="AccountManagement\PasswordHash.cs" />
     <Compile Include="AnimatedGif\AnimatedGifService.cs" />
     <Compile Include="AnimatedGif\TextToImageConversion.cs" />
     <Compile Include="CloudImage\CloudImageProviderAzureBlob.cs" />

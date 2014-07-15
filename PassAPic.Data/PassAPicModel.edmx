@@ -70,6 +70,8 @@
           <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
           <Property Name="IsOnline" Type="bit" Nullable="false" />
           <Property Name="FacebookId" Type="bigint" />
+          <Property Name="Password" Type="varchar(max)" />
+          <Property Name="Email" Type="varchar" MaxLength="200" />
         </EntityType>
         <EntityType Name="Words">
           <Key>
@@ -279,6 +281,8 @@
           <NavigationProperty Name="NextGuesses" Relationship="PassAPicModel.NextGuesses" FromRole="User" ToRole="Guess" />
           <NavigationProperty Name="PushRegisters" Relationship="PassAPicModel.FK_PushRegister_Users" FromRole="User" ToRole="PushRegister" />
           <Property Name="FacebookId" Type="Int64" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -380,6 +384,8 @@
     <EntitySetMapping Name="Users">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.User)">
         <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="FacebookId" ColumnName="FacebookId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Username" ColumnName="Username" />

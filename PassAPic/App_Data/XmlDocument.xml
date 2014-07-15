@@ -441,14 +441,20 @@
             To modify move field declaration from designer file to code-behind file.
             </remarks>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.PostRegisterAnon(PassAPic.Models.AccountModel)">
-            <summary>
-                This is registration to get us started, so very simply. POST with JSON in the body with just username
-                and API will return username and userId, which can be stored in device.
-                Username should be an email. Can device check that valid email address?
-            </summary>
-            <param name="model"></param>
-            <returns></returns>
+        <member name="M:PassAPic.Controllers.AccountController.PostRegister(PassAPic.Models.AccountModel)">
+             <summary>
+                 This is registration to get us started. POST with JSON in the body with email
+                 and password - populate AccountModel accordingly.
+             
+                 Returns a 403 if email or password are empty or username isnt an email.
+                 Returns a 409 if email already exists.
+             
+                 The only constraint on password is it is not blank.
+            
+                 API will return username and userId, which can be stored in device.
+             </summary>
+             <param name="model"></param>
+             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.GetUsersOnline(System.Int32,System.Int32,System.Int32)">
             <summary>
@@ -467,6 +473,12 @@
                 POST this baby up to let server know user is online.
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.AccountController.LoginWithPassword(System.String,System.String)">
+            <summary>
+            Login with email and password
+            </summary>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
@@ -523,13 +535,6 @@
             <param name="isEasyMode"></param>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostImageGuess(PassAPic.Models.ImageModel)">
-            <summary>
-            Post up image guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
-            If this is last guess then dont set next user and mark game as over. Im aware this wont happen on an image, but shall stick it in here anyway.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:PassAPic.Controllers.GameController.PostWordGuess(PassAPic.Models.WordModel)">
             <summary>
             Post up word guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
@@ -540,19 +545,6 @@
         <member name="M:PassAPic.Controllers.GameController.GetGuesses(System.Int32)">
             <summary>
             Returns collection of guesses for user
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:PassAPic.Controllers.GameController.GetNotCompletedGuesses(System.Int32)">
-            <summary>
-            Get games where user is the last completed guess. This will be used for nudge facility.
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:PassAPic.Controllers.GameController.GetResults(System.Int32)">
-            <summary>
-            Returns collection of finished games for user
             </summary>
             <returns></returns>
         </member>
@@ -573,20 +565,6 @@
             Use wisely my brothers of the Watch!
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:PassAPic.Controllers.GameController.ImageGuessTask">
-            POST /api/game/imageGuessTask
-             <summary>
-             Please see test project for how to hit this api. Here are the steps:
-             1. Turn image into FileStream.
-             2. Create a StreamContent using FileStream.
-             3. Create a multipart form data and add StreamContent.
-             4. Create http request and add form data as content.
-             5. Add these headers to the request: gameId, userId, nextUserId, image (this is image name).
-             6. Send request to this api.
-             </summary>
-             <returns></returns>
-             <exception cref="T:System.Web.Http.HttpResponseException"></exception>
         </member>
         <member name="M:PassAPic.Controllers.GameController.PostImageGuessMultiPart">
             POST /api/game/imageGuessMultiPart

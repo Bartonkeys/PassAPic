@@ -8,18 +8,14 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using System.Web.Security;
 using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OAuth;
 using Ninject;
 using PassAPic.Contracts;
+using PassAPic.Core.AccountManagement;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
 using PassAPic.Models;
-using PassAPic.Providers;
-using PassAPic.Results;
 
 namespace PassAPic.Controllers
 {
@@ -31,42 +27,41 @@ namespace PassAPic.Controllers
 
         [Inject]
         public AccountController(IUnitOfWork unitOfWork)
-            : this(Startup.UserManagerFactory(), Startup.OAuthOptions.AccessTokenFormat)
         {
             UnitOfWork = unitOfWork;
         }
 
-        public AccountController(UserManager<IdentityUser> userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
-        {
-            UserManager = userManager;
-            AccessTokenFormat = accessTokenFormat;
-        }
-
-        public UserManager<IdentityUser> UserManager { get; private set; }
-        public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
-
         // POST api/Account/Anon
         /// <summary>
-        ///     This is registration to get us started, so very simply. POST with JSON in the body with just username
-        ///     and API will return username and userId, which can be stored in device.
-        ///     Username should be an email. Can device check that valid email address?
+        ///     This is registration to get us started. POST with JSON in the body with email
+        ///     and password - populate AccountModel accordingly.
+        /// 
+        ///     Returns a 403 if email or password are empty or username isnt an email.
+        ///     Returns a 409 if email already exists.
+        /// 
+        ///     The only constraint on password is it is not blank.
+        ///
+        ///     API will return username and userId, which can be stored in device.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [Route("Register")]
         [AllowAnonymous]
-        public HttpResponseMessage PostRegisterAnon(AccountModel model)
+        public HttpResponseMessage PostRegister(AccountModel model)
         {
             try
             {
-                if (String.IsNullOrEmpty(model.Username)) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
+                if (String.IsNullOrEmpty(model.Email) || String.IsNullOrEmpty(model.Password) || !EmailVerification.IsValidEmail(model.Email)) 
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable);
+
                 if (UnitOfWork.User.SearchFor(x => x.Username == model.Username).Any())
-                    return Request.CreateResponse(HttpStatusCode.Conflict);
+                    return Request.CreateResponse(HttpStatusCode.Conflict);             
 
                 var newUser = new User
                 {
-                    Username = model.Username,
+                    Username = String.IsNullOrEmpty(model.Username) ? model.Email.Split('@')[0] : model.Username,
+                    Email = model.Email,
+                    Password = PasswordHash.CreateHash(model.Password)
                 };
                 UnitOfWork.User.Insert(newUser);
                 UnitOfWork.Commit();
@@ -129,7 +124,7 @@ namespace PassAPic.Controllers
             {
                 List<AccountModel> users =
                     UnitOfWork.User.SearchFor(x => x.Id > 0)
-                        .Select(y => new AccountModel {UserId = y.Id, Username = y.Username})
+                        .Select(y => new AccountModel {UserId = y.Id, Username = y.Username, Email = y.Email})
                         .ToList();
                 return Request.CreateResponse(HttpStatusCode.OK, users);
             }
@@ -182,6 +177,52 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        // POST api/Account/LoginWithPassword
+        /// <summary>
+        /// Login with email and password
+        /// </summary>
+        /// <returns></returns>
+        [Route("LoginWithPassword/{email}/{password}")]
+        [AllowAnonymous]
+        [HttpGet]
+        public HttpResponseMessage LoginWithPassword(string email, string password)
+        {
+            try
+            {
+                User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
+                if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+
+                if (!PasswordHash.ValidatePassword(password, user.Password))
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+
+                user.IsOnline = true;
+
+                UnitOfWork.User.Update(user);
+                UnitOfWork.Commit();
+
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
+                var openGameModel = PopulateOpenGamesModel(guesses);
+
+                var accountModel = new AccountModel
+                {
+                    UserId = user.Id,
+                    Username = user.Username,
+                    LastActivity = user.Games.Max(d => d.DateCompleted),
+                    NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
+                    HasPlayedWithUserBefore = true,
+                    OpenGames = openGameModel
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, accountModel);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
         // POST api/Account/Login
         /// <summary>
@@ -249,17 +290,6 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
-
-        private String GenerateRandomUsername()
-        {
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            return new string(
-                Enumerable.Repeat(chars, 8)
-                    .Select(s => s[random.Next(s.Length)])
-                    .ToArray());
-        }
-
 
         // POST api/Account/RegisterPush
         /// <summary>
@@ -374,8 +404,6 @@ namespace PassAPic.Controllers
             fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookUserViewModel>(content);
             var fbUserId = long.Parse(fbUser.ID);
 
-            //var friends = GetFacebookFriends(accessToken);
-
             var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
 
             if (user == null)
@@ -394,161 +422,25 @@ namespace PassAPic.Controllers
                 {
                     UserId = papUser.Id,
                     Username = papUser.Username,
-                    OpenGames = new OpenGamesModel(),
-                    //FacebookFriends = friends.Result
+                    OpenGames = new OpenGamesModel()
                 };
                     return Request.CreateResponse(HttpStatusCode.Created, accountModel);
             }
             else
             {
-                var openGames =  user.Games.Select(y => new GamesModel
-                {
-                    GameId = y.Id,
-                    StartingWord = y.StartingWord,
-                    NumberOfGuesses = y.NumberOfGuesses,
-                    GameOverMan = y.GameOverMan
-                }).ToList();
+
+                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
+                var openGameModel = PopulateOpenGamesModel(guesses);
 
                 var accountModel = new AccountModel
                 {
                     UserId = user.Id,
                     Username = user.Username,
-                    //FacebookFriends = friends.Result
+                    OpenGames = openGameModel
                 };
 
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
         }
-
-        private async Task<List<FacebookFriendModel>> GetFacebookFriends(string accessToken)
-        {
-            var path = "https://graph.facebook.com/me/friends?access_token=" + accessToken;
-            var client = new HttpClient();
-            var uri = new Uri(path);
-            var response = await client.GetAsync(uri);
-
-            if (!response.IsSuccessStatusCode) return new List<FacebookFriendModel>();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var friends = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookFriendsModel>(content);
-
-            foreach (var friend in friends.data)
-            {
-                var fbUserId = int.Parse(friend.Id);
-                var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
-                if (user == null) continue;
-                friend.IsPaPUser = true;
-                friend.PaPUserId = user.Id;
-            }
-
-            return friends.data;
-        }
-
-        #region Helpers
-
-        private IAuthenticationManager Authentication
-        {
-            get { return Request.GetOwinContext().Authentication; }
-        }
-
-        private IHttpActionResult GetErrorResult(IdentityResult result)
-        {
-            if (result == null)
-            {
-                return InternalServerError();
-            }
-
-            if (!result.Succeeded)
-            {
-                if (result.Errors != null)
-                {
-                    foreach (string error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error);
-                    }
-                }
-
-                if (ModelState.IsValid)
-                {
-                    // No ModelState errors are available to send, so just return an empty BadRequest.
-                    return BadRequest();
-                }
-
-                return BadRequest(ModelState);
-            }
-
-            return null;
-        }
-
-        private class ExternalLoginData
-        {
-            public string LoginProvider { get; set; }
-            public string ProviderKey { get; set; }
-            public string UserName { get; set; }
-
-            public IList<Claim> GetClaims()
-            {
-                IList<Claim> claims = new List<Claim>();
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, ProviderKey, null, LoginProvider));
-
-                if (UserName != null)
-                {
-                    claims.Add(new Claim(ClaimTypes.Name, UserName, null, LoginProvider));
-                }
-
-                return claims;
-            }
-
-            public static ExternalLoginData FromIdentity(ClaimsIdentity identity)
-            {
-                if (identity == null)
-                {
-                    return null;
-                }
-
-                Claim providerKeyClaim = identity.FindFirst(ClaimTypes.NameIdentifier);
-
-                if (providerKeyClaim == null || String.IsNullOrEmpty(providerKeyClaim.Issuer)
-                    || String.IsNullOrEmpty(providerKeyClaim.Value))
-                {
-                    return null;
-                }
-
-                if (providerKeyClaim.Issuer == ClaimsIdentity.DefaultIssuer)
-                {
-                    return null;
-                }
-
-                return new ExternalLoginData
-                {
-                    LoginProvider = providerKeyClaim.Issuer,
-                    ProviderKey = providerKeyClaim.Value,
-                    UserName = identity.FindFirstValue(ClaimTypes.Name)
-                };
-            }
-        }
-
-        private static class RandomOAuthStateGenerator
-        {
-            private static readonly RandomNumberGenerator _random = new RNGCryptoServiceProvider();
-
-            public static string Generate(int strengthInBits)
-            {
-                const int bitsPerByte = 8;
-
-                if (strengthInBits%bitsPerByte != 0)
-                {
-                    throw new ArgumentException("strengthInBits must be evenly divisible by 8.", "strengthInBits");
-                }
-
-                int strengthInBytes = strengthInBits/bitsPerByte;
-
-                var data = new byte[strengthInBytes];
-                _random.GetBytes(data);
-                return HttpServerUtility.UrlTokenEncode(data);
-            }
-        }
-
-        #endregion
     }
 }
