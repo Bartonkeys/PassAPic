@@ -54,7 +54,7 @@ namespace PassAPic.Controllers
                 if (String.IsNullOrEmpty(model.Email) || String.IsNullOrEmpty(model.Password) || !EmailVerification.IsValidEmail(model.Email)) 
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                if (UnitOfWork.User.SearchFor(x => x.Username == model.Username).Any())
+                if (UnitOfWork.User.SearchFor(x => x.Email == model.Email).Any())
                     return Request.CreateResponse(HttpStatusCode.Conflict);             
 
                 var newUser = new User
