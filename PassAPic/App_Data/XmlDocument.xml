@@ -468,22 +468,22 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.LoginWithUserName(System.String)">
-            <summary>
-                POST this baby up to let server know user is online.
-            </summary>
-            <param name="model"></param>
-            <returns></returns>
-        </member>
-        <member name="M:PassAPic.Controllers.AccountController.LoginWithPassword(System.String,System.String)">
+        <member name="M:PassAPic.Controllers.AccountController.Login(System.String,System.String)">
             <summary>
             Login with email and password
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.Login(System.Int32)">
+        <member name="M:PassAPic.Controllers.AccountController.GetForgotPassword(System.String)">
             <summary>
-                POST this baby up to let server know user is online.
+            HTTP GET to this API with email. Password will be randomly generated and emailed to user.
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.AccountController.PostResetPassword(PassAPic.Models.ResetPasswordModel)">
+            <summary>
+            HTTP POST to this API with ResetPasswordModel populated with email, password and new password. 
             </summary>
             <param name="model"></param>
             <returns></returns>
