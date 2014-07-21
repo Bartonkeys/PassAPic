@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Security;
 using Ninject;
 using PassAPic.Contracts;
+using PassAPic.Contracts.EmailService;
 using PassAPic.Core.AccountManagement;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
@@ -23,11 +24,43 @@ namespace PassAPic.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : BaseController
     {
+        private IEmailService _emailService;
 
         [Inject]
-        public AccountController(IUnitOfWork unitOfWork)
+        public AccountController(IUnitOfWork unitOfWork, IEmailService emailService)
         {
             UnitOfWork = unitOfWork;
+            _emailService = emailService;
+        }
+
+        [HttpPost]
+        [Route("NullPasswords")]
+        [AllowAnonymous]
+        public HttpResponseMessage UpdateNullPasswords()
+        {
+            var usersWithNullPasswords = UnitOfWork.User.SearchFor(x => String.IsNullOrEmpty(x.Password));
+
+            foreach (var user in usersWithNullPasswords)
+            {
+                user.Password = PasswordHash.CreateHash("password01");
+            }
+            UnitOfWork.Commit();
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        [Route("NullEmails")]
+        [AllowAnonymous]
+        public HttpResponseMessage UpdateNullEmails()
+        {
+            var usersWithNullEmails = UnitOfWork.User.SearchFor(x => String.IsNullOrEmpty(x.Email));
+
+            foreach (var user in usersWithNullEmails)
+            {
+                user.Email = user.Username + "@passapic.com";
+            }
+            UnitOfWork.Commit();
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         // POST api/Account/Anon
@@ -136,56 +169,13 @@ namespace PassAPic.Controllers
 
         // POST api/Account/Login
         /// <summary>
-        ///     POST this baby up to let server know user is online.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [Route("LoginWithUserName/{userName}")]
-        [AllowAnonymous]
-        [HttpGet]
-        public HttpResponseMessage LoginWithUserName(string userName)
-        {
-            try
-            {
-                User user = UnitOfWork.User.SearchFor(x => x.Username == userName).FirstOrDefault();
-                if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
-
-                user.IsOnline = true;
-
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
-
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
-                var openGameModel = PopulateOpenGamesModel(guesses);
-
-                var accountModel = new AccountModel
-                {
-                    UserId = user.Id,
-                    Username = user.Username,
-                    LastActivity = user.Games.Max(d => d.DateCompleted),
-                    NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
-                    HasPlayedWithUserBefore = true,
-                    OpenGames = openGameModel
-                };            
-
-                return Request.CreateResponse(HttpStatusCode.OK, accountModel);
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
-            }
-        }
-
-        // POST api/Account/LoginWithPassword
-        /// <summary>
         /// Login with email and password
         /// </summary>
         /// <returns></returns>
-        [Route("LoginWithPassword/{email}/{password}")]
+        [Route("Login/{email}/{password}")]
         [AllowAnonymous]
         [HttpGet]
-        public HttpResponseMessage LoginWithPassword(string email, string password)
+        public HttpResponseMessage Login(string email, string password)
         {
             try
             {
@@ -222,43 +212,67 @@ namespace PassAPic.Controllers
             }
         }
 
-
-        // POST api/Account/Login
         /// <summary>
-        ///     POST this baby up to let server know user is online.
+        /// HTTP GET to this API with email. Password will be randomly generated and emailed to user.
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="email"></param>
         /// <returns></returns>
-        [Route("Login/{userId}")]
-        [AllowAnonymous]
-        [HttpPost]
-        public HttpResponseMessage Login(int userId)
+        [Route("forgotPassword/{email}")]
+        public HttpResponseMessage GetForgotPassword(string email)
         {
             try
             {
-                User user = UnitOfWork.User.GetById(userId);
+                User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
-                user.IsOnline = true;
+                user.Password = PasswordHash.CreateHash(GenerateRandomPassword());
 
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
+                _emailService.SendPasswordToEmail("", email);
 
-                List<GamesModel> results = user.Games.Select(y => new GamesModel
-                {
-                    GameId = y.Id,
-                    StartingWord = y.StartingWord,
-                    NumberOfGuesses = y.NumberOfGuesses,
-                    GameOverMan = y.GameOverMan
-                }).ToList();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch(Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
 
-                return Request.CreateResponse(HttpStatusCode.OK, results);
+        /// <summary>
+        /// HTTP POST to this API with ResetPasswordModel populated with email, password and new password. 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [Route("resetPassword")]
+        public HttpResponseMessage PostResetPassword(ResetPasswordModel model)
+        {
+            try
+            {
+                User user = UnitOfWork.User.SearchFor(x => x.Email == model.Email).FirstOrDefault();
+                if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
+
+                if (!PasswordHash.ValidatePassword(model.Password, user.Password))
+                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+
+                user.Password = PasswordHash.CreateHash(model.NewPassword);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+        private String GenerateRandomPassword()
+        {
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return new string(
+                Enumerable.Repeat(chars, 5)
+                    .Select(s => s[random.Next(s.Length)])
+                    .ToArray());
         }
 
         // POST api/Account/Logout

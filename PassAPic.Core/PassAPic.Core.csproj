@@ -101,6 +101,7 @@
     <Compile Include="CloudImage\CloudImageService.cs" />
     <Compile Include="CloudImage\CloudImageProviderCloudinary.cs" />
     <Compile Include="CloudImage\ICloudImageProvider.cs" />
+    <Compile Include="Email\PlaceHolderEmailService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushRegistration\IPushProvider.cs" />
     <Compile Include="PushRegistration\PushMessageException.cs" />

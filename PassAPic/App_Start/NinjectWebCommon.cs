@@ -1,6 +1,8 @@
 using System.Web.Http;
 using JPassAPic.Core.Repositories.Helpers;
 using PassAPic.Contracts;
+using PassAPic.Contracts.EmailService;
+using PassAPic.Core.Email;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Core.CloudImage;
 using PassAPic.Core.Repositories;
@@ -72,6 +74,7 @@ namespace PassAPic.App_Start
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
             kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
             kernel.Bind<IWordManager>().To<WordnikManager>();
+            kernel.Bind<IEmailService>().To<PlaceHolderEmailService>();
         }        
     }
 }
