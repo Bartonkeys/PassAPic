@@ -215,13 +215,17 @@ namespace PassAPic.Controllers
         /// <summary>
         /// HTTP GET to this API with email. Password will be randomly generated and emailed to user.
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        [Route("forgotPassword/{email}")]
-        public HttpResponseMessage GetForgotPassword(string email)
+        [Route("forgotPassword")]
+        [AllowAnonymous]
+        [HttpPost]
+        public HttpResponseMessage PostForgotPassword(ResetPasswordModel model)
         {
+            
             try
             {
+                string email = model.Email;
                 User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 

@@ -474,11 +474,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.GetForgotPassword(System.String)">
+        <member name="M:PassAPic.Controllers.AccountController.PostForgotPassword(PassAPic.Models.ResetPasswordModel)">
             <summary>
             HTTP GET to this API with email. Password will be randomly generated and emailed to user.
             </summary>
-            <param name="email"></param>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.AccountController.PostResetPassword(PassAPic.Models.ResetPasswordModel)">
