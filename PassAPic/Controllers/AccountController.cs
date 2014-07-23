@@ -200,6 +200,7 @@ namespace PassAPic.Controllers
                 {
                     UserId = user.Id,
                     Username = user.Username,
+                    Email = user.Email,
                     LastActivity = user.Games.Max(d => d.DateCompleted),
                     NumberOfCompletedGames = user.Games.Count(g => g.GameOverMan),
                     HasPlayedWithUserBefore = true,
@@ -254,6 +255,8 @@ namespace PassAPic.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [Route("resetPassword")]
+        [AllowAnonymous]
+        [HttpPost]
         public HttpResponseMessage PostResetPassword(ResetPasswordModel model)
         {
             try
