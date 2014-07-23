@@ -468,7 +468,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.Login(System.String,System.String)">
+        <member name="M:PassAPic.Controllers.AccountController.Login(PassAPic.Models.AccountModel)">
             <summary>
             Login with email and password
             </summary>

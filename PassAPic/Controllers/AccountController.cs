@@ -172,13 +172,16 @@ namespace PassAPic.Controllers
         /// Login with email and password
         /// </summary>
         /// <returns></returns>
-        [Route("Login/{email}/{password}")]
+        [Route("Login")]
         [AllowAnonymous]
-        [HttpGet]
-        public HttpResponseMessage Login(string email, string password)
+        [HttpPost]
+        public HttpResponseMessage Login(AccountModel model)
         {
             try
             {
+                string email = model.Email;
+                string password = model.Password;
+
                 User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
@@ -258,8 +261,8 @@ namespace PassAPic.Controllers
                 User user = UnitOfWork.User.SearchFor(x => x.Email == model.Email).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
-                if (!PasswordHash.ValidatePassword(model.Password, user.Password))
-                    return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                //if (!PasswordHash.ValidatePassword(model.Password, user.Password))
+                //    return Request.CreateResponse(HttpStatusCode.Unauthorized);
 
                 user.Password = PasswordHash.CreateHash(model.NewPassword);
 
