@@ -74,7 +74,7 @@ namespace PassAPic.App_Start
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
             kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
             kernel.Bind<IWordManager>().To<WordnikManager>();
-            kernel.Bind<IEmailService>().To<PlaceHolderEmailService>();
+            kernel.Bind<IEmailService>().To<SendGridEmailService>();
         }        
     }
 }

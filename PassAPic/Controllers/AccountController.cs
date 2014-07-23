@@ -229,9 +229,12 @@ namespace PassAPic.Controllers
                 User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
-                user.Password = PasswordHash.CreateHash(GenerateRandomPassword());
-
-                _emailService.SendPasswordToEmail("", email);
+                var password = GenerateRandomPassword();
+                user.Password = PasswordHash.CreateHash(password);
+                UnitOfWork.User.Update(user);
+                UnitOfWork.Commit();
+                
+                _emailService.SendPasswordToEmail(password, email);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -259,6 +262,9 @@ namespace PassAPic.Controllers
                     return Request.CreateResponse(HttpStatusCode.Unauthorized);
 
                 user.Password = PasswordHash.CreateHash(model.NewPassword);
+
+                UnitOfWork.User.Update(user);
+                UnitOfWork.Commit();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
