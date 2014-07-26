@@ -45,6 +45,11 @@ namespace PassAPic.Controllers
 
                 var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + gameId + ".gif");
                 var animatedGifPath = await Task.Run(() => AnimatedGifService.CreateAnimatedGif(gameId, tempAnimatedGif));
+                
+                game.AnimatedResult = animatedGifPath;
+                UnitOfWork.Game.Update(game);
+                UnitOfWork.Commit();
+        
                 return Request.CreateResponse(HttpStatusCode.OK, animatedGifPath);
             }
             catch (Exception ex)
