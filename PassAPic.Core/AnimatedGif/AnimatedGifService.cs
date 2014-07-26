@@ -35,6 +35,7 @@ namespace PassAPic.Core.AnimatedGif
                 {
                     var startingWordImage = TextToImageConversion.CreateBitmapImage("Start: " + game.StartingWord);
                     var startingMagickImage = new MagickImage(startingWordImage) {AnimationDelay = 300};
+                    startingMagickImage.Resize(1024, 1024);
                     magickImageCollection.Add(startingMagickImage);
 
                     var count = 1;
@@ -54,6 +55,7 @@ namespace PassAPic.Core.AnimatedGif
                             {
                                 AnimationDelay = 300
                             };
+                            magickWordImage.Resize(1024, 1024);
                             magickImageCollection.Add(magickWordImage);
                         }
                         else if (guess is ImageGuess)
@@ -69,6 +71,7 @@ namespace PassAPic.Core.AnimatedGif
                             {
                                 AnimationDelay = 300
                             };
+                            magickImage.Resize(1024,1024);
                             magickImageCollection.Add(magickImage);
                         }
                         count++;
