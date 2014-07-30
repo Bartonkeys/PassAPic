@@ -75,10 +75,18 @@ namespace PassAPic.Core.AnimatedGif
                     }
 
                     var settings = new QuantizeSettings {Colors = 256};
+                    foreach (var magickImage in magickImageCollection)
+                    {
+                        MagickGeometry geometry = new MagickGeometry(1024, 1024);
+                        geometry.IgnoreAspectRatio = true; 
+                        magickImage.Resize(geometry);
+
+                        //magickImage.Resize(new MagickGeometry("1024x1024!"));
+                    }
                     magickImageCollection.Quantize(settings);
 
                     //We can't optimize if the images are not all the same dimensions
-                    //magickImageCollection.Optimize();
+                    magickImageCollection.Optimize();
 
                     magickImageCollection.Write(tempAnimatedGif);
                 }

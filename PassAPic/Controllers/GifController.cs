@@ -41,15 +41,11 @@ namespace PassAPic.Controllers
             try
             {
                 var game = UnitOfWork.Game.GetById(gameId);
-                if (game.AnimatedResult != null) return Request.CreateResponse(HttpStatusCode.OK, game.AnimatedResult);
+                if (game.AnimatedResult != null && !game.AnimatedResult.Equals("")) return Request.CreateResponse(HttpStatusCode.OK, game.AnimatedResult);
 
                 var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + gameId + ".gif");
                 var animatedGifPath = await Task.Run(() => AnimatedGifService.CreateAnimatedGif(gameId, tempAnimatedGif));
                 
-                //game.AnimatedResult = animatedGifPath;
-                //UnitOfWork.Game.Update(game);
-                //UnitOfWork.Commit();
-        
                 return Request.CreateResponse(HttpStatusCode.OK, animatedGifPath);
             }
             catch (Exception ex)
