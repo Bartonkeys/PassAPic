@@ -134,7 +134,11 @@ namespace PassAPic.Controllers
                             HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId))
                         })
                         .ToList();
-                return Request.CreateResponse(HttpStatusCode.OK, usersOnline);
+
+                List<AccountModel> sortedUsersOnline = usersOnline.OrderBy(o => o.HasPlayedWithUserBefore).ToList();
+                sortedUsersOnline.Reverse();
+
+                return Request.CreateResponse(HttpStatusCode.OK, sortedUsersOnline);
             }
             catch (Exception ex)
             {
@@ -471,5 +475,7 @@ namespace PassAPic.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, accountModel);
             }
         }
+
+
     }
 }
