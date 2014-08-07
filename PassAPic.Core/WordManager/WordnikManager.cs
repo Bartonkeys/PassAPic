@@ -18,7 +18,7 @@ namespace PassAPic.WordManager
                     using (var client = new HttpClient())
                     {
 
-                        var address = new Uri("http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=false&minCorpusCount=500000&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&includePartOfSpeech=noun&api_key=4d2867228c7945a20d9030f32db0adae6aa5aa8f648f10be5");
+                        var address = new Uri("http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=false&minCorpusCount=500000&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&includePartOfSpeech=noun&excludePartOfSpeech=verb&api_key=4d2867228c7945a20d9030f32db0adae6aa5aa8f648f10be5");
 
                         var response = await client.GetAsync(address);
 
