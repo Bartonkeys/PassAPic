@@ -159,7 +159,7 @@ namespace PassAPic.Controllers
             try
             {
                 List<AccountModel> users =
-                    UnitOfWork.User.SearchFor(x => x.Id > 0)
+                    UnitOfWork.User.SearchFor(x => x.Id > 0 && x.IsOnline)
                         .Select(y => new AccountModel {UserId = y.Id, Username = y.Username, Email = y.Email})
                         .ToList();
                 return Request.CreateResponse(HttpStatusCode.OK, users);
