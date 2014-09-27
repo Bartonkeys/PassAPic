@@ -1,4 +1,4 @@
-[assembly: WebActivator.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWeb), "Start")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWeb), "Start")]
 
 namespace PassAPic.App_Start
 {

@@ -106,6 +106,14 @@
             <param name="actionName">Name of the action.</param>
             <param name="parameterNames">The parameter names.</param>
         </member>
+        <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForMediaType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Sets the sample directly for all actions with the specified media type.
+            </summary>
+            <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
+            <param name="sample">The sample.</param>
+            <param name="mediaType">The media type.</param>
+        </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetSampleForType(System.Web.Http.HttpConfiguration,System.Object,System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
             <summary>
             Sets the sample directly for all actions with the specified type and media type.
@@ -117,7 +125,7 @@
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
             <summary>
-            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action. 
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
             The help page will use this information to produce more accurate request samples.
             </summary>
             <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
@@ -127,7 +135,7 @@
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualRequestType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
             <summary>
-            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action. 
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
             The help page will use this information to produce more accurate request samples.
             </summary>
             <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
@@ -138,7 +146,7 @@
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String)">
             <summary>
-            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action. 
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
             The help page will use this information to produce more accurate response samples.
             </summary>
             <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
@@ -148,7 +156,7 @@
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.SetActualResponseType(System.Web.Http.HttpConfiguration,System.Type,System.String,System.String,System.String[])">
             <summary>
-            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action. 
+            Specifies the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> returned as part of the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
             The help page will use this information to produce more accurate response samples.
             </summary>
             <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
@@ -171,6 +179,13 @@
             <param name="config">The <see cref="T:System.Web.Http.HttpConfiguration"/>.</param>
             <param name="sampleGenerator">The help page sample generator.</param>
         </member>
+        <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.GetModelDescriptionGenerator(System.Web.Http.HttpConfiguration)">
+            <summary>
+            Gets the model description generator.
+            </summary>
+            <param name="config">The configuration.</param>
+            <returns>The <see cref="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator"/></returns>
+        </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageConfigurationExtensions.GetHelpPageApiModel(System.Web.Http.HttpConfiguration,System.String)">
             <summary>
             Gets the model that represents an API displayed on the help page. The model is initialized on the first call and cached for subsequent calls.
@@ -180,6 +195,21 @@
             <returns>
             An <see cref="T:PassAPic.Areas.HelpPage.Models.HelpPageApiModel"/>
             </returns>
+        </member>
+        <member name="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescription">
+            <summary>
+            Describes a type model.
+            </summary>
+        </member>
+        <member name="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescriptionGenerator">
+            <summary>
+            Generates model descriptions for given types.
+            </summary>
+        </member>
+        <member name="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelNameAttribute">
+            <summary>
+            Use this attribute to change the name of the <see cref="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescription"/> generated for a type.
+            </summary>
         </member>
         <member name="T:PassAPic.Areas.HelpPage.Models.HelpPageApiModel">
             <summary>
@@ -194,6 +224,36 @@
         <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription">
             <summary>
             Gets or sets the <see cref="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.ApiDescription"/> that describes the API.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.UriParameters">
+            <summary>
+            Gets or sets the <see cref="T:PassAPic.Areas.HelpPage.ModelDescriptions.ParameterDescription"/> collection that describes the URI parameters for the API.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.RequestDocumentation">
+            <summary>
+            Gets or sets the documentation for the request.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.RequestModelDescription">
+            <summary>
+            Gets or sets the <see cref="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the request body.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.RequestBodyParameters">
+            <summary>
+            Gets the request body parameter descriptions.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.ResourceDescription">
+            <summary>
+            Gets or sets the <see cref="T:PassAPic.Areas.HelpPage.ModelDescriptions.ModelDescription"/> that describes the resource.
+            </summary>
+        </member>
+        <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.ResourceProperties">
+            <summary>
+            Gets the resource property descriptions.
             </summary>
         </member>
         <member name="P:PassAPic.Areas.HelpPage.Models.HelpPageApiModel.SampleRequests">
@@ -259,10 +319,19 @@
         <member name="M:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.GetSampleObject(System.Type)">
             <summary>
             Gets the sample object that will be serialized by the formatters. 
-            First, it will look at the <see cref="P:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects"/>. If no sample object is found, it will try to create one using <see cref="T:PassAPic.Areas.HelpPage.ObjectGenerator"/>.
+            First, it will look at the <see cref="P:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.SampleObjects"/>. If no sample object is found, it will try to create
+            one using <see cref="M:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.DefaultSampleObjectFactory(PassAPic.Areas.HelpPage.HelpPageSampleGenerator,System.Type)"/> (which wraps an <see cref="T:PassAPic.Areas.HelpPage.ObjectGenerator"/>) and other
+            factories in <see cref="P:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories"/>.
             </summary>
             <param name="type">The type.</param>
             <returns>The sample object.</returns>
+        </member>
+        <member name="M:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.ResolveHttpRequestMessageType(System.Web.Http.Description.ApiDescription)">
+            <summary>
+            Resolves the actual type of <see cref="T:System.Net.Http.ObjectContent`1"/> passed to the <see cref="T:System.Net.Http.HttpRequestMessage"/> in an action.
+            </summary>
+            <param name="api">The <see cref="T:System.Web.Http.Description.ApiDescription"/>.</param>
+            <returns>The type.</returns>
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.ResolveType(System.Web.Http.Description.ApiDescription,System.String,System.String,System.Collections.Generic.IEnumerable{System.String},PassAPic.Areas.HelpPage.SampleDirection,System.Collections.ObjectModel.Collection{System.Net.Http.Formatting.MediaTypeFormatter}@)">
             <summary>
@@ -300,10 +369,26 @@
             Gets the objects that are serialized as samples by the supported formatters.
             </summary>
         </member>
+        <member name="P:PassAPic.Areas.HelpPage.HelpPageSampleGenerator.SampleObjectFactories">
+            <summary>
+            Gets factories for the objects that the supported formatters will serialize as samples. Processed in order,
+            stopping when the factory successfully returns a non-<see langref="null"/> object.
+            </summary>
+            <remarks>
+            Collection includes just <see cref="M:PassAPic.Areas.HelpPage.ObjectGenerator.GenerateObject(System.Type)"/> initially. Use
+            <code>SampleObjectFactories.Insert(0, func)</code> to provide an override and
+            <code>SampleObjectFactories.Add(func)</code> to provide a fallback.</remarks>
+        </member>
         <member name="T:PassAPic.Areas.HelpPage.HelpPageSampleKey">
             <summary>
             This is used to identify the place where the sample should be applied.
             </summary>
+        </member>
+        <member name="M:PassAPic.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue)">
+            <summary>
+            Creates a new <see cref="T:PassAPic.Areas.HelpPage.HelpPageSampleKey"/> based on media type.
+            </summary>
+            <param name="mediaType">The media type.</param>
         </member>
         <member name="M:PassAPic.Areas.HelpPage.HelpPageSampleKey.#ctor(System.Net.Http.Headers.MediaTypeHeaderValue,System.Type)">
             <summary>

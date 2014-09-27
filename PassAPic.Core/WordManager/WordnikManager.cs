@@ -5,11 +5,16 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using PassAPic.Core.WordManager;
+using PassAPic.Contracts;
+using Ninject;
 
 namespace PassAPic.WordManager
 {
     public class WordnikManager : IWordManager
     {
+        [Inject]
+        public IDataContext DataContext { get; set; }
+
         public async Task<Word> GetWord(Mode mode)
         {
             switch (mode)
@@ -29,11 +34,14 @@ namespace PassAPic.WordManager
                     }
                     break;
                 case Mode.Easy:
-
-
-                    break;
+                    var count = DataContext.EasyWord.Count();
+                    var index = new Random().Next(count);
+                    var startingWord =
+                        DataContext.EasyWord.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.Word }).First();
+                    return await Task.Run(() => startingWord);
             }
             return new Word();
         }
+
     }
 }

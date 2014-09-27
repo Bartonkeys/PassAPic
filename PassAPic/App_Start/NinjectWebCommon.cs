@@ -1,17 +1,14 @@
-using System.Web.Http;
-using JPassAPic.Core.Repositories.Helpers;
 using PassAPic.Contracts;
 using PassAPic.Contracts.EmailService;
+using PassAPic.Core.CloudImage;
 using PassAPic.Core.Email;
 using PassAPic.Core.PushRegistration;
-using PassAPic.Core.CloudImage;
 using PassAPic.Core.Repositories;
 using PassAPic.Core.WordManager;
-using PassAPic.Repositories.Helpers;
 using PassAPic.WordManager;
 
-[assembly: WebActivator.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWebCommon), "Start")]
-[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(PassAPic.App_Start.NinjectWebCommon), "Stop")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWebCommon), "Start")]
+[assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(PassAPic.App_Start.NinjectWebCommon), "Stop")]
 
 namespace PassAPic.App_Start
 {
@@ -52,14 +49,19 @@ namespace PassAPic.App_Start
         private static IKernel CreateKernel()
         {
             var kernel = new StandardKernel();
-            kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
-            kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
+            try
+            {
+                kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
+                kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
 
-            // Install our Ninject-based IDependencyResolver into the Web API config
-            GlobalConfiguration.Configuration.DependencyResolver = new NinjectDependencyResolver(kernel);
-
-            RegisterServices(kernel);
-            return kernel;
+                RegisterServices(kernel);
+                return kernel;
+            }
+            catch
+            {
+                kernel.Dispose();
+                throw;
+            }
         }
 
         /// <summary>
@@ -68,12 +70,10 @@ namespace PassAPic.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<RepositoryFactories>().To<RepositoryFactories>().InSingletonScope();
-            kernel.Bind<IRepositoryProvider>().To<RepositoryProvider>();
-            kernel.Bind<IUnitOfWork>().To<EFUnitOfWork>();
+            kernel.Bind<IDataContext>().To<EfDataContext>();
             kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
             kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
-            kernel.Bind<IWordManager>().To<WordnikManager>();
+            kernel.Bind<IWordManager>().To<LocalWordManager>();
             kernel.Bind<IEmailService>().To<SendGridEmailService>();
         }        
     }

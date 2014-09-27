@@ -23,11 +23,11 @@ namespace PassAPic.Controllers
         protected AnimatedGifService AnimatedGifService;
 
         [Inject]
-        public GifController(IUnitOfWork unitOfWork, ICloudImageProvider cloudImageProvider)
+        public GifController(IDataContext dataContext, ICloudImageProvider cloudImageProvider)
         {
             CloudImageService = new CloudImageService(cloudImageProvider);
-            AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
-            UnitOfWork = unitOfWork;
+            AnimatedGifService = new AnimatedGifService(CloudImageService, dataContext);
+            DataContext = dataContext;
         }
 
         /// GET /api/gif
@@ -40,7 +40,7 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var game = UnitOfWork.Game.GetById(gameId);
+                var game = DataContext.Game.Find(gameId);
                 if (game.AnimatedResult != null && !game.AnimatedResult.Equals("")) return Request.CreateResponse(HttpStatusCode.OK, game.AnimatedResult);
 
                 var tempAnimatedGif = HttpContext.Current.Server.MapPath("~/App_Data/" + gameId + ".gif");

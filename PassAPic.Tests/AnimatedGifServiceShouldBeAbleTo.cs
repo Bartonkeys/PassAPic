@@ -1,12 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using JPassAPic.Core.Repositories.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PassAPic.Core.AnimatedGif;
-using PassAPic.Core.CloudImage;
-using PassAPic.Core.Repositories;
-using PassAPic.Repositories.Helpers;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PassAPic.Tests
 {
