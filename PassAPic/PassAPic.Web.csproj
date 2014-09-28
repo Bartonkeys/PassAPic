@@ -202,11 +202,11 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Content Include="Content\GuessesMap.aspx.cs">
+    <Compile Include="Content\GuessesMap.aspx.cs">
       <DependentUpon>GuessesMap.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Compile>
     <Content Include="Content\GuessesMap.aspx.designer.cs">
       <DependentUpon>GuessesMap.aspx</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
