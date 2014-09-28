@@ -27,9 +27,9 @@ namespace PassAPic.Controllers
         private IEmailService _emailService;
 
         [Inject]
-        public AccountController(IUnitOfWork unitOfWork, IEmailService emailService)
+        public AccountController(IDataContext dataContext, IEmailService emailService)
         {
-            UnitOfWork = unitOfWork;
+            DataContext = dataContext;
             _emailService = emailService;
         }
 
@@ -38,13 +38,13 @@ namespace PassAPic.Controllers
         [AllowAnonymous]
         public HttpResponseMessage UpdateNullPasswords()
         {
-            var usersWithNullPasswords = UnitOfWork.User.SearchFor(x => String.IsNullOrEmpty(x.Password));
+            var usersWithNullPasswords = DataContext.User.Where(x => String.IsNullOrEmpty(x.Password));
 
             foreach (var user in usersWithNullPasswords)
             {
                 user.Password = PasswordHash.CreateHash("password01");
             }
-            UnitOfWork.Commit();
+            DataContext.Commit();
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -53,13 +53,13 @@ namespace PassAPic.Controllers
         [AllowAnonymous]
         public HttpResponseMessage UpdateNullEmails()
         {
-            var usersWithNullEmails = UnitOfWork.User.SearchFor(x => String.IsNullOrEmpty(x.Email));
+            var usersWithNullEmails = DataContext.User.Where(x => String.IsNullOrEmpty(x.Email));
 
             foreach (var user in usersWithNullEmails)
             {
                 user.Email = user.Username + "@passapic.com";
             }
-            UnitOfWork.Commit();
+            DataContext.Commit();
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -86,7 +86,7 @@ namespace PassAPic.Controllers
                 if (String.IsNullOrEmpty(model.Email) || String.IsNullOrEmpty(model.Password) || !EmailVerification.IsValidEmail(model.Email)) 
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                if (UnitOfWork.User.SearchFor(x => x.Email == model.Email).Any())
+                if (DataContext.User.Any(x => x.Email == model.Email))
                     return Request.CreateResponse(HttpStatusCode.Conflict);             
 
                 var newUser = new User
@@ -95,8 +95,8 @@ namespace PassAPic.Controllers
                     Email = model.Email,
                     Password = PasswordHash.CreateHash(model.Password)
                 };
-                UnitOfWork.User.Insert(newUser);
-                UnitOfWork.Commit();
+                DataContext.User.Add(newUser);
+                DataContext.Commit();
                 model.UserId = newUser.Id;
                 model.Username = newUser.Username;
                 model.OpenGames = new OpenGamesModel();
@@ -121,7 +121,7 @@ namespace PassAPic.Controllers
             try
             {
                 List<AccountModel> usersOnline =
-                    UnitOfWork.User.SearchFor(x => x.IsOnline)
+                    DataContext.User.Where(x => x.IsOnline)
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
                     .Take(pageSize)
@@ -159,7 +159,7 @@ namespace PassAPic.Controllers
             try
             {
                 List<AccountModel> users =
-                    UnitOfWork.User.SearchFor(x => x.Id > 0)
+                    DataContext.User.Where(x => x.Id > 0 && x.IsOnline)
                         .Select(y => new AccountModel {UserId = y.Id, Username = y.Username, Email = y.Email})
                         .ToList();
                 return Request.CreateResponse(HttpStatusCode.OK, users);
@@ -186,7 +186,7 @@ namespace PassAPic.Controllers
                 string email = model.Email;
                 string password = model.Password;
 
-                User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
+                User user = DataContext.User.FirstOrDefault(x => x.Email == email);
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
                 if (!PasswordHash.ValidatePassword(password, user.Password))
@@ -194,10 +194,9 @@ namespace PassAPic.Controllers
 
                 user.IsOnline = true;
 
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
+                var guesses = DataContext.Guess.Where(x => x.NextUser.Id == user.Id && !x.Complete);
                 var openGameModel = PopulateOpenGamesModel(guesses);
 
                 var accountModel = new AccountModel
@@ -234,13 +233,12 @@ namespace PassAPic.Controllers
             try
             {
                 string email = model.Email;
-                User user = UnitOfWork.User.SearchFor(x => x.Email == email).FirstOrDefault();
+                User user = DataContext.User.FirstOrDefault(x => x.Email == email);
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
                 var password = GenerateRandomPassword();
                 user.Password = PasswordHash.CreateHash(password);
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
+                DataContext.Commit();
                 
                 _emailService.SendPasswordToEmail(password, email);
 
@@ -265,7 +263,7 @@ namespace PassAPic.Controllers
         {
             try
             {
-                User user = UnitOfWork.User.SearchFor(x => x.Email == model.Email).FirstOrDefault();
+                User user = DataContext.User.FirstOrDefault(x => x.Email == model.Email);
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
                 //if (!PasswordHash.ValidatePassword(model.Password, user.Password))
@@ -273,8 +271,7 @@ namespace PassAPic.Controllers
 
                 user.Password = PasswordHash.CreateHash(model.NewPassword);
 
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -307,13 +304,12 @@ namespace PassAPic.Controllers
         {
             try
             {
-                User user = UnitOfWork.User.GetById(userId);
+                User user = DataContext.User.Find(userId);
                 if (user == null) return Request.CreateResponse(HttpStatusCode.NotFound);
 
                 user.IsOnline = false;
 
-                UnitOfWork.User.Update(user);
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -347,7 +343,7 @@ namespace PassAPic.Controllers
             try
             {
                 PushRegister registration =
-                    UnitOfWork.PushRegister.SearchFor(x => x.DeviceToken == deviceToken).FirstOrDefault();
+                    DataContext.PushRegister.FirstOrDefault(x => x.DeviceToken == deviceToken);
                 if (registration != null)
                 {
                     if (registration.UserId == userId && deviceType == PushRegisterService.DeviceTypeIos)
@@ -359,8 +355,8 @@ namespace PassAPic.Controllers
                     {
                         //Droid and WP8 could have multiple device IDs linking user & device - its generated each time
                         //NB this code is identical to the base case below but we may vary for other devices
-                        UnitOfWork.PushRegister.Delete(registration);
-                        UnitOfWork.PushRegister.Insert(new PushRegister
+                        DataContext.PushRegister.Remove(registration);
+                        DataContext.PushRegister.Add(new PushRegister
                         {
                             UserId = userId,
                             DeviceToken = deviceToken,
@@ -372,8 +368,8 @@ namespace PassAPic.Controllers
                     else
                     {
                         //deviceToken associated with different member ID so remove this record to prevent duplicate push meassages
-                        UnitOfWork.PushRegister.Delete(registration);
-                        UnitOfWork.PushRegister.Insert(new PushRegister
+                        DataContext.PushRegister.Remove(registration);
+                        DataContext.PushRegister.Add(new PushRegister
                         {
                             UserId = userId,
                             DeviceToken = deviceToken,
@@ -385,7 +381,7 @@ namespace PassAPic.Controllers
                 else
                 {
                     //No entry for this deviceToken - so create a new one
-                    UnitOfWork.PushRegister.Insert(new PushRegister
+                    DataContext.PushRegister.Add(new PushRegister
                     {
                         UserId = userId,
                         DeviceToken = deviceToken,
@@ -394,7 +390,7 @@ namespace PassAPic.Controllers
                     });
                 }
 
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
                 msg = "Success";
             }
@@ -437,7 +433,7 @@ namespace PassAPic.Controllers
             fbUser = Newtonsoft.Json.JsonConvert.DeserializeObject<FacebookUserViewModel>(content);
             var fbUserId = long.Parse(fbUser.ID);
 
-            var user = UnitOfWork.User.SearchFor(x => x.FacebookId == fbUserId).FirstOrDefault();
+            var user = DataContext.User.FirstOrDefault(x => x.FacebookId == fbUserId);
 
             if (user == null)
             {
@@ -449,8 +445,8 @@ namespace PassAPic.Controllers
                         FacebookId = long.Parse(fbUser.ID),
                         IsOnline = true
                     };
-                    UnitOfWork.User.Insert(papUser);
-                    UnitOfWork.Commit();
+                    DataContext.User.Add(papUser);
+                    DataContext.Commit();
                 var accountModel = new AccountModel
                 {
                     UserId = papUser.Id,
@@ -462,7 +458,7 @@ namespace PassAPic.Controllers
             else
             {
 
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == user.Id && !x.Complete);
+                var guesses = DataContext.Guess.Where(x => x.NextUser.Id == user.Id && !x.Complete);
                 var openGameModel = PopulateOpenGamesModel(guesses);
 
                 var accountModel = new AccountModel

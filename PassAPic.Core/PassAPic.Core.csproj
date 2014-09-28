@@ -114,13 +114,9 @@
     <Compile Include="PushRegistration\PushProviderUrbanAirship.cs" />
     <Compile Include="PushRegistration\PushRegisterService.cs" />
     <Compile Include="PushRegistration\UrbanAirshipPushObject.cs" />
-    <Compile Include="Repositories\EFRepository.cs" />
-    <Compile Include="Repositories\EFUnitOfWork.cs" />
-    <Compile Include="Repositories\EFUserRepository.cs" />
-    <Compile Include="Repositories\Helpers\IRepositoryProvider.cs" />
-    <Compile Include="Repositories\Helpers\RepositoryFactories.cs" />
-    <Compile Include="Repositories\Helpers\RepositoryProvider.cs" />
+    <Compile Include="Repositories\EfDataContext.cs" />
     <Compile Include="WordManager\IWordManager.cs" />
+    <Compile Include="WordManager\LocalWordManager.cs" />
     <Compile Include="WordManager\Mode.cs" />
     <Compile Include="WordManager\Word.cs" />
     <Compile Include="WordManager\WordnikManager.cs" />

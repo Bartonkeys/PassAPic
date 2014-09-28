@@ -14,7 +14,7 @@ namespace PassAPic.Controllers
     public class BaseController : ApiController
     {
         protected static readonly log4net.ILog _log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        protected IUnitOfWork UnitOfWork;
+        protected IDataContext DataContext;
         protected List<String> Words;
         protected List<String> EasyWords;
         protected Random random = new Random();

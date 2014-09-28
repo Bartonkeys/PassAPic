@@ -17,19 +17,19 @@ namespace PassAPic.Core.AnimatedGif
     public class AnimatedGifService
     {
         private readonly CloudImageService _cloudImageService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDataContext _dataContext;
 
-        public AnimatedGifService(CloudImageService cloudImageService, IUnitOfWork unitOfWork)
+        public AnimatedGifService(CloudImageService cloudImageService, IDataContext dataContext)
         {
             _cloudImageService = cloudImageService;
-            _unitOfWork = unitOfWork;
+            _dataContext = dataContext;
         }     
 
         public string CreateAnimatedGif(int gameId, string tempAnimatedGif)
         {
             try
             {
-                var game = _unitOfWork.Game.SearchFor(x => x.Id == gameId).FirstOrDefault();
+                var game = _dataContext.Game.FirstOrDefault(x => x.Id == gameId);
 
                 using (var magickImageCollection = new MagickImageCollection())
                 {
@@ -92,7 +92,7 @@ namespace PassAPic.Core.AnimatedGif
                 }
 
                 game.AnimatedResult  = _cloudImageService.SaveImageToCloud(tempAnimatedGif, gameId.ToString()+".gif");
-                _unitOfWork.Commit();
+                _dataContext.Commit();
                 return game.AnimatedResult;
             }
             catch (Exception e)

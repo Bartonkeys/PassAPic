@@ -37,14 +37,15 @@ namespace PassAPic.Controllers
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
         [Inject]
-        public GameController(IUnitOfWork unitOfWork, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider, IWordManager wordManager)
+        public GameController(IDataContext dataContext, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider, IWordManager wordManager)
         {
-            UnitOfWork = unitOfWork;
-            EasyWords = UnitOfWork.EasyWord.GetAll().Select(x => x.Word).ToList();
+            DataContext = dataContext;
+            EasyWords = DataContext.EasyWord.Select(x => x.Word).ToList();
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
-            AnimatedGifService = new AnimatedGifService(CloudImageService, unitOfWork);
+            AnimatedGifService = new AnimatedGifService(CloudImageService, dataContext);
             WordManager = wordManager;
+            WordManager.DataContext = DataContext;
         }
 
         // POST /api/game/start
@@ -57,20 +58,20 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var user = UnitOfWork.User.GetById(model.UserId);
+                var user = DataContext.User.Find(model.UserId);
 
                 var startingWord = await WordManager.GetWord(model.Mode);
-
+              
                 var game = new Game
                 {
-                    StartingWord = model.Mode == Mode.Easy ? EasyWords[random.Next(EasyWords.Count)] : startingWord.RandomWord,
+                    StartingWord = startingWord.RandomWord,
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user,
                     DateCreated = DateTime.UtcNow
                 };
 
-                UnitOfWork.Game.Insert(game);
-                UnitOfWork.Commit();
+                DataContext.Game.Add(game);
+                DataContext.Commit();
 
                 var wordModel = new WordModel
                 {
@@ -103,19 +104,14 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var game = UnitOfWork.Game.GetById(gameId);
+                var game = DataContext.Game.Find(gameId);
 
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                var normalWord = await WordManager.GetWord(mode);
-
-                game.StartingWord = mode == Mode.Easy
-                    ? EasyWords[random.Next(EasyWords.Count)]
-                    : normalWord.RandomWord;
-
-                UnitOfWork.Game.Update(game);
-                UnitOfWork.Commit();
+                var word = await WordManager.GetWord(mode);
+                game.StartingWord = word.RandomWord;
+                DataContext.Commit();
 
                 var wordModel = new WordModel
                 {
@@ -156,9 +152,9 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var user = UnitOfWork.User.GetById(model.UserId);
-                var nextUser = UnitOfWork.User.GetById(model.NextUserId);
-                var game = UnitOfWork.Game.GetById(model.GameId);
+                var user = DataContext.User.Find(model.UserId);
+                var nextUser = DataContext.User.Find(model.NextUserId);
+                var game = DataContext.Game.Find(model.GameId);
 
                 if (NextUserAlreadyHadAGo(game, model.NextUserId))
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
@@ -190,7 +186,7 @@ namespace PassAPic.Controllers
 
                 game.Guesses.Add(wordGuess);
 
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
                 if (model.IsLastTurn)
                 {
@@ -227,7 +223,7 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var guesses = UnitOfWork.Guess.SearchFor(x => x.NextUser.Id == userId && !x.Complete);             
+                var guesses = DataContext.Guess.Where(x => x.NextUser.Id == userId && !x.Complete);             
 
                 return Request.CreateResponse(HttpStatusCode.OK, PopulateOpenGamesModel(guesses));
             }
@@ -262,8 +258,8 @@ namespace PassAPic.Controllers
             var completedGameModelList = new List<CompletedGamesModel>();
             try
             {
-                var results = UnitOfWork.Guess
-                    .SearchFor(x => x.User.Id == userId && x.Game.GameOverMan)
+                var results = DataContext.Guess
+                    .Where(x => x.User.Id == userId && x.Game.GameOverMan)
                     .OrderByDescending(x => x.Game.DateCompleted)
                     .Skip(pageSize * page)
                     .Take(pageSize)
@@ -283,7 +279,7 @@ namespace PassAPic.Controllers
 
                 foreach (var result in results)
                 {
-                    var game = UnitOfWork.Game.GetById(result.GameId);
+                    var game = DataContext.Game.Find(result.GameId);
                     var wordModelList = new List<WordModel>();
                     var imageModelList = new List<ImageModel>();
                
@@ -342,7 +338,7 @@ namespace PassAPic.Controllers
 
         private void PopulatePaginationHeaderForAction(int userId, int page, int pageSize, string action)
         {
-            var totalCount = UnitOfWork.Guess.SearchFor(x => x.User.Id == userId && x.Game.GameOverMan).Count();
+            var totalCount = DataContext.Guess.Count(x => x.User.Id == userId && x.Game.GameOverMan);
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
             var urlHelper = new UrlHelper(Request);
@@ -398,9 +394,9 @@ namespace PassAPic.Controllers
                 var longitude = streamProvider.FormData["longitude"] == null ? 0.0 : double.Parse(streamProvider.FormData["longitude"]);
                 var imageName = streamProvider.FileData.Select(entry => entry.LocalFileName).First();
                 
-                var user = UnitOfWork.User.GetById(userId);
-                var nextUser = UnitOfWork.User.GetById(nextUserId);
-                var game = UnitOfWork.Game.GetById(gameId);
+                var user = DataContext.User.Find(userId);
+                var nextUser = DataContext.User.Find(nextUserId);
+                var game = DataContext.Game.Find(gameId);
 
                 if (NextUserAlreadyHadAGo(game, nextUserId))
                     return Request.CreateResponse(HttpStatusCode.NotAcceptable,
@@ -434,7 +430,7 @@ namespace PassAPic.Controllers
 
                 game.Guesses.Add(imageGuess);
 
-                UnitOfWork.Commit();
+                DataContext.Commit();
 
                 if (!isLastTurn)
                 {
@@ -473,7 +469,7 @@ namespace PassAPic.Controllers
         private void SendPushMessage(int userId, String messageToPush)
         {
             //Grab the list of devices while we have access to the UnitOfWork object
-            var listOfPushDevices = UnitOfWork.PushRegister.SearchFor(x => x.UserId == userId).ToList();
+            var listOfPushDevices = DataContext.PushRegister.Where(x => x.UserId == userId).ToList();
 
             //Check user has any devices registered for push
             try
