@@ -31,18 +31,24 @@ namespace PassAPic.Controllers
         {
             if (ModelState.IsValid && model.Password == "Y)rm91234")
             {
-                var newWords = model.Words.Split(',').ToList();
-
+                var newWordsUntrimmed = model.Words.Split(',').ToList();
+                var newWordsTrimmed = newWordsUntrimmed.Select(s => s.Trim());
                 switch (model.Mode)
                 {
                     case Mode.Normal:
-                        foreach (var word in newWords)
+                        var existingWords = _dataContext.Words.ToList();
+                        var nonDuplicateWords = newWordsTrimmed.Where(x => !existingWords.Any(y => x == y.word));
+                        foreach (var word in nonDuplicateWords)
                         {
                             _dataContext.Words.Add(new Word { word = word });
                         }
                         break;
                     case Mode.Easy:
-                        foreach (var word in newWords)
+
+                        var existingWordsEasy = _dataContext.EasyWords.ToList();
+                        var nonDuplicateWordsEasy = newWordsTrimmed.Where(x => !existingWordsEasy.Any(y => x == y.Word));
+       
+                        foreach (var word in nonDuplicateWordsEasy)
                         {
                             _dataContext.EasyWords.Add(new EasyWord { Word = word });
                         }
