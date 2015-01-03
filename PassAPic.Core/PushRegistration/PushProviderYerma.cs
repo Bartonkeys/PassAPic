@@ -12,7 +12,7 @@ namespace PassAPic.Core.PushRegistration
 {
     public class PushProviderYerma : IPushProvider
     {
-        private const String YmPushUrl = "http://ympushserver.cloudapp.net/PushQueue";
+        private const String YmPushUrl = "http://ympushserver.cloudapp.net/PushQueue";//"http://127.0.0.1:81/PushQueue"; //
         private const String YmContentType = "application/json";
         private const int DeviceTypeIos = 0;
         private const int DeviceTypeAndroid = 1;
@@ -35,7 +35,7 @@ namespace PassAPic.Core.PushRegistration
             SendObjectAsJson(ymPushObject);
         }
 
-        private static void SendObjectAsJson(YmPushObject ymPushObject)
+        private static void  SendObjectAsJson(YmPushObject ymPushObject)
         {
             
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(YmPushUrl);

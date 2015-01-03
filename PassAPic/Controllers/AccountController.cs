@@ -28,7 +28,7 @@ namespace PassAPic.Controllers
     public class AccountController : BaseController
     {
         private IEmailService _emailService;
-        private const string YmPushUrl = "http://ympushserver.cloudapp.net/Register";
+        private const string YmPushUrl = "http://ympushserver.cloudapp.net/Register"; //"http://127.0.0.1:81/Register"; //
         private const string YmContentType = "application/json";
         private const string YmPushApplicationGuid = "6e4a0f2f-320e-401e-894e-d4eea7aaee5d";
         private const int DeviceTypeIos = 0;
@@ -340,9 +340,7 @@ namespace PassAPic.Controllers
         public HttpResponseMessage RegisterPush([FromBody] RegisterItem registerItem)
         {
             //If deviceType is not passed in - it will default to zero
-            int deviceType = registerItem.DeviceType;
-            int userId = registerItem.UserId;
-            string deviceToken = registerItem.DeviceToken;
+            //If AplicationGuid is not passed in - we use the Passapic Guid stored locally
             string applicationGuid = registerItem.ApplicationGuid;
 
             if (applicationGuid.IsNullOrWhiteSpace())
