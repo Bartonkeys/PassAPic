@@ -3,8 +3,8 @@ using Newtonsoft.Json;
 
 namespace PassAPic.Core.PushRegistration
 {
-    [Serializable] 
-    public class UrbanAirshipPushObject
+    [Serializable]
+    public class UrbanAirshipPushObject 
     {
         public String ToJson()
         {

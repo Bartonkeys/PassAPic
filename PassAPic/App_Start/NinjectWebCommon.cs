@@ -71,7 +71,7 @@ namespace PassAPic.App_Start
         private static void RegisterServices(IKernel kernel)
         {
             kernel.Bind<IDataContext>().To<EfDataContext>();
-            kernel.Bind<IPushProvider>().To<PushProviderUrbanAirship>();
+            kernel.Bind<IPushProvider>().To<PushProviderYerma>();
             kernel.Bind<ICloudImageProvider>().To<CloudImageProviderAzureBlob>();
             kernel.Bind<IWordManager>().To<LocalWordManager>();
             kernel.Bind<IEmailService>().To<SendGridEmailService>();

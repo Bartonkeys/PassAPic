@@ -190,11 +190,32 @@ namespace PassAPic.Controllers
 
                 if (model.IsLastTurn)
                 {
-                    foreach (var guess in game.Guesses) SendPushMessage(guess.User.Id, "PassAPic Complete!!! - check your Completed Games now");
+                    var usersInGame = new List<PushQueueMember>();
+                    foreach (var guess in game.Guesses)
+                    {
+                        usersInGame.Add(
+                            new PushQueueMember
+                                {
+                                    Id = guess.User.Id,
+                                    PushBadgeNumber = 1
+                                }
+                            );
+                    }
+                    SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
+                    
                 }
                 else
                 {
-                    SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new word to draw!", user.Username));
+                    SendPushMessage(
+                            game.Id, 
+                            new List<PushQueueMember>(){
+                                new PushQueueMember
+                                {
+                                    Id = nextUser.Id,
+                                    PushBadgeNumber = 1
+                                }
+                            },
+                            String.Format("{0} has sent you a new word to draw!", user.Username));
                 } 
 
                 return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage("Push message sent successfully"));
@@ -434,8 +455,37 @@ namespace PassAPic.Controllers
 
                 if (!isLastTurn)
                 {
-                    SendPushMessage(nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+                    //SendPushMessage(game.Id, nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
+
+                    SendPushMessage(
+                            game.Id,
+                            new List<PushQueueMember>(){
+                                new PushQueueMember
+                                {
+                                    Id = nextUser.Id,
+                                    PushBadgeNumber = 1
+                                }
+                            },
+                            String.Format("{0} has sent you a new image to guess!", user.Username));
                 }
+
+                else
+                {
+                    var usersInGame = new List<PushQueueMember>();
+                    foreach (var guess in game.Guesses)
+                    {
+                        usersInGame.Add(
+                            new PushQueueMember
+                            {
+                                Id = guess.User.Id,
+                                PushBadgeNumber = 1
+                            }
+                            );
+                    }
+                    SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
+
+                }
+                
 
                 return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage("Push message sent successfully"));
             }
@@ -466,15 +516,16 @@ namespace PassAPic.Controllers
             if (previousGuess != null) previousGuess.Complete = true;
         }
 
-        private void SendPushMessage(int userId, String messageToPush)
+        private void SendPushMessage(int gameId, List<PushQueueMember> memberList, String messageToPush)
         {
             //Grab the list of devices while we have access to the UnitOfWork object
-            var listOfPushDevices = DataContext.PushRegister.Where(x => x.UserId == userId).ToList();
+            //var listOfPushDevices = DataContext.PushRegister.Where(x => x.UserId == userId).ToList();
+            
 
             //Check user has any devices registered for push
             try
             {
-                if (listOfPushDevices.Count > 0) PushRegisterService.SendPush(userId, messageToPush, listOfPushDevices);
+                PushRegisterService.SendPush(gameId, memberList, messageToPush);
            
             }
             catch (Exception ex)
