@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Security;
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Contracts.EmailService;
@@ -25,6 +28,11 @@ namespace PassAPic.Controllers
     public class AccountController : BaseController
     {
         private IEmailService _emailService;
+        private const string YmPushUrl = "http://ympushserver.cloudapp.net/Register";
+        private const string YmContentType = "application/json";
+        private const string YmPushApplicationGuid = "6e4a0f2f-320e-401e-894e-d4eea7aaee5d";
+        private const int DeviceTypeIos = 0;
+        private const int DeviceTypeAndroid = 1;
 
         [Inject]
         public AccountController(IDataContext dataContext, IEmailService emailService)
@@ -324,7 +332,7 @@ namespace PassAPic.Controllers
         /// <summary>
         ///     POST a JObject up to register a device
         /// </summary>
-        /// <param name="jsonData"></param>
+        /// <param name="registerItem"></param>
         /// <returns></returns>
         [Route("RegisterPush")]
         [AllowAnonymous]
@@ -334,75 +342,17 @@ namespace PassAPic.Controllers
             //If deviceType is not passed in - it will default to zero
             int deviceType = registerItem.DeviceType;
             int userId = registerItem.UserId;
-            String deviceToken = registerItem.DeviceToken;
+            string deviceToken = registerItem.DeviceToken;
+            string applicationGuid = registerItem.ApplicationGuid;
 
-            //RegisterLibrary.RegisterDeviceWithUser(userId, deviceToken, deviceType);
-
-            string msg = "";
-
-            try
+            if (applicationGuid.IsNullOrWhiteSpace())
             {
-                PushRegister registration =
-                    DataContext.PushRegister.FirstOrDefault(x => x.DeviceToken == deviceToken);
-                if (registration != null)
-                {
-                    if (registration.UserId == userId && deviceType == PushRegisterService.DeviceTypeIos)
-                    {
-                        //DO NOTHING - the record already exists and is correct 
-                        //NB iOS will always have the same UUID per device
-                    }
-                    else if (registration.UserId == userId && deviceType != PushRegisterService.DeviceTypeIos)
-                    {
-                        //Droid and WP8 could have multiple device IDs linking user & device - its generated each time
-                        //NB this code is identical to the base case below but we may vary for other devices
-                        DataContext.PushRegister.Remove(registration);
-                        DataContext.PushRegister.Add(new PushRegister
-                        {
-                            UserId = userId,
-                            DeviceToken = deviceToken,
-                            DeviceType = deviceType,
-                            Timestamp = DateTime.Now
-                        });
-                    }
-
-                    else
-                    {
-                        //deviceToken associated with different member ID so remove this record to prevent duplicate push meassages
-                        DataContext.PushRegister.Remove(registration);
-                        DataContext.PushRegister.Add(new PushRegister
-                        {
-                            UserId = userId,
-                            DeviceToken = deviceToken,
-                            DeviceType = deviceType,
-                            Timestamp = DateTime.Now
-                        });
-                    }
-                }
-                else
-                {
-                    //No entry for this deviceToken - so create a new one
-                    DataContext.PushRegister.Add(new PushRegister
-                    {
-                        UserId = userId,
-                        DeviceToken = deviceToken,
-                        DeviceType = deviceType,
-                        Timestamp = DateTime.Now
-                    });
-                }
-
-                DataContext.Commit();
-
-                msg = "Success";
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException.InnerException.Message.Contains("Violation of PRIMARY KEY constraint"))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
-                }
-                throw;
+                registerItem.ApplicationGuid = YmPushApplicationGuid;
             }
 
+            SendObjectAsJson(registerItem);
+
+            string msg = SendObjectAsJson(registerItem);
 
             return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage(msg));
         }
@@ -472,6 +422,27 @@ namespace PassAPic.Controllers
             }
         }
 
+        private string SendObjectAsJson(RegisterItem registerItem)
+        {
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(YmPushUrl);
+            httpWebRequest.Method = "POST";
+            httpWebRequest.ContentType = YmContentType;
+
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
+                string json = JsonConvert.SerializeObject(registerItem);
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    return streamReader.ReadToEnd();
+                }
+            }
+        }
 
     }
 }
