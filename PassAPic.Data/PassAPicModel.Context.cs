@@ -31,5 +31,6 @@ namespace PassAPic.Data
         public virtual DbSet<Word> Words { get; set; }
         public virtual DbSet<PushRegister> PushRegisters { get; set; }
         public virtual DbSet<EasyWord> EasyWords { get; set; }
+        public virtual DbSet<Game_Comments> Game_Comments { get; set; }
     }
 }

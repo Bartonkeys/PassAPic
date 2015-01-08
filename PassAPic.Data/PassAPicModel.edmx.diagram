@@ -16,11 +16,14 @@
         <EntityTypeShape EntityType="PassAPicModel.ImageGuess" Width="1.5" PointX="7.5" PointY="4.625" />
         <InheritanceConnector EntityType="PassAPicModel.WordGuess" />
         <InheritanceConnector EntityType="PassAPicModel.ImageGuess" />
-        <EntityTypeShape EntityType="PassAPicModel.Word" Width="1.5" PointX="1.75" PointY="3.25" />
+        <EntityTypeShape EntityType="PassAPicModel.Word" Width="1.5" PointX="0.75" PointY="2.625" />
         <AssociationConnector Association="PassAPicModel.NextGuesses" />
         <EntityTypeShape EntityType="PassAPicModel.PushRegister" Width="1.5" PointX="10.625" PointY="1.25" />
         <AssociationConnector Association="PassAPicModel.FK_PushRegister_Users" />
         <EntityTypeShape EntityType="PassAPicModel.EasyWord" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="PassAPicModel.Game_Comments" Width="1.5" PointX="6.25" PointY="7.5" />
+        <AssociationConnector Association="PassAPicModel.FK_Game_Comments_Games" />
+        <AssociationConnector Association="PassAPicModel.FK_Game_Comments_Users" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

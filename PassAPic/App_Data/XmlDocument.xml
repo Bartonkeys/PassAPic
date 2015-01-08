@@ -665,6 +665,12 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.PostComment(PassAPic.Models.GameCommentModel)">
+            <summary>
+            Add a comment to a completed game
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>

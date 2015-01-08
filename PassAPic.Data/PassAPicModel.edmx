@@ -12,6 +12,17 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Word" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="Game_Comments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Text" Type="nvarchar(max)" />
+          <Property Name="Likes" Type="bigint" />
+          <Property Name="GameId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Games">
           <Key>
             <PropertyRef Name="Id" />
@@ -80,6 +91,30 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="word" Type="varchar" MaxLength="200" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Game_Comments_Games">
+          <End Role="Games" Type="Self.Games" Multiplicity="1" />
+          <End Role="Game_Comments" Type="Self.Game_Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Games">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Comments">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Comments_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Game_Comments" Type="Self.Game_Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Comments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_GameTurn">
           <End Role="Games" Type="Self.Games" Multiplicity="1" />
           <End Role="Guesses" Type="Self.Guesses" Multiplicity="*" />
@@ -170,6 +205,7 @@
         </Association>
         <EntityContainer Name="PassAPicModelStoreContainer">
           <EntitySet Name="EasyWords" EntityType="Self.EasyWords" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Game_Comments" EntityType="Self.Game_Comments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
@@ -177,6 +213,14 @@
           <EntitySet Name="PushRegister" EntityType="Self.PushRegister" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Words" EntityType="Self.Words" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Game_Comments_Games" Association="Self.FK_Game_Comments_Games">
+            <End Role="Games" EntitySet="Games" />
+            <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Comments_Users" Association="Self.FK_Game_Comments_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
           <AssociationSet Name="FK_GameTurn" Association="Self.FK_GameTurn">
             <End Role="Games" EntitySet="Games" />
             <End Role="Guesses" EntitySet="Guesses" />
@@ -237,6 +281,15 @@
             <End Role="PushRegister" EntitySet="PushRegisters" />
           </AssociationSet>
           <EntitySet Name="EasyWords" EntityType="PassAPicModel.EasyWord" />
+          <EntitySet Name="Game_Comments" EntityType="PassAPicModel.Game_Comments" />
+          <AssociationSet Name="FK_Game_Comments_Games" Association="PassAPicModel.FK_Game_Comments_Games">
+            <End Role="Game" EntitySet="Games" />
+            <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Comments_Users" Association="PassAPicModel.FK_Game_Comments_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -251,7 +304,8 @@
           <Property Name="AnimatedResult" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DateCompleted" Type="DateTime" Precision="3" />
-        </EntityType>
+          <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Games" FromRole="Game" ToRole="Game_Comments" />
+          </EntityType>
         <EntityType Name="Guess">
           <Key>
             <PropertyRef Name="Id" />
@@ -283,6 +337,7 @@
           <Property Name="FacebookId" Type="Int64" />
           <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Email" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Users" FromRole="User" ToRole="Game_Comments" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -339,6 +394,43 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Game_Comments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Likes" Type="Int64" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Game" Relationship="PassAPicModel.FK_Game_Comments_Games" FromRole="Game_Comments" ToRole="Game" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="PassAPicModel.FK_Game_Comments_Users" FromRole="Game_Comments" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Game_Comments_Games">
+          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="PassAPicModel.Game_Comments" Role="Game_Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Comments">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Comments_Users">
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="1" />
+          <End Type="PassAPicModel.Game_Comments" Role="Game_Comments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Comments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -348,7 +440,7 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
-          <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
+                <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -451,6 +543,18 @@
             <EntityTypeMapping TypeName="PassAPicModel.EasyWord">
               <MappingFragment StoreEntitySet="EasyWords">
                 <ScalarProperty Name="Word" ColumnName="Word" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Game_Comments">
+            <EntityTypeMapping TypeName="PassAPicModel.Game_Comments">
+              <MappingFragment StoreEntitySet="Game_Comments">
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="Likes" ColumnName="Likes" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

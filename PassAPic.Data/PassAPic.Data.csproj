@@ -64,6 +64,9 @@
     <Compile Include="Game.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Game_Comments.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Guess.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>

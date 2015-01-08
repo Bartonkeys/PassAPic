@@ -18,6 +18,7 @@ namespace PassAPic.Core.Repositories
         public IDbSet<Word> Word { get { return _context.Words; } }
         public IDbSet<EasyWord> EasyWord { get { return _context.EasyWords; } }
         public IDbSet<PushRegister> PushRegister { get { return _context.PushRegisters; } }
+        public IDbSet<Game_Comments> Comment { get { return _context.Game_Comments; } }
         public void Commit()
         {
             _context.SaveChanges();        

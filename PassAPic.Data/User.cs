@@ -20,6 +20,7 @@ namespace PassAPic.Data
             this.CompletedGuesses = new HashSet<Guess>();
             this.NextGuesses = new HashSet<Guess>();
             this.PushRegisters = new HashSet<PushRegister>();
+            this.Game_Comments = new HashSet<Game_Comments>();
         }
     
         public int Id { get; set; }
@@ -33,5 +34,6 @@ namespace PassAPic.Data
         public virtual ICollection<Guess> CompletedGuesses { get; set; }
         public virtual ICollection<Guess> NextGuesses { get; set; }
         public virtual ICollection<PushRegister> PushRegisters { get; set; }
+        public virtual ICollection<Game_Comments> Game_Comments { get; set; }
     }
 }

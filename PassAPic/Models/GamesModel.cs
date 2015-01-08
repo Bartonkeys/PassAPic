@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Web;
@@ -32,6 +33,9 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "dateCompleted")]
         public DateTime? DateCompleted { get; set; }
+
+        [JsonProperty(PropertyName = "comments")]
+        public virtual List<GameCommentClientModel> Comments { get; set; }
 
     }
 }

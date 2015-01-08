@@ -218,6 +218,8 @@
     <Compile Include="Models\CompletedGamesModel.cs" />
     <Compile Include="Models\FacebookFriendModel.cs" />
     <Compile Include="Models\FacebookUserViewModel.cs" />
+    <Compile Include="Models\GameCommentClientModel.cs" />
+    <Compile Include="Models\GameCommentModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\NewWordsModel.cs" />

@@ -285,15 +285,25 @@ namespace PassAPic.Controllers
                     .Skip(pageSize * page)
                     .Take(pageSize)
                     .Select(y => new CompletedGamesModel
-                    {
+                   {
                         GameId = y.Game.Id,
                         StartingWord = y.Game.StartingWord,
                         NumberOfGuesses = y.Game.NumberOfGuesses,
                         GameOverMan = y.Game.GameOverMan,
                         DateCreated = y.Game.DateCreated,
                         DateCompleted = y.Game.DateCompleted,
-                        Animation = y.Game.AnimatedResult
-                        
+                        Animation = y.Game.AnimatedResult,
+                        Comments = DataContext.Comment.Where(c => c.GameId == y.Game.Id)
+                        .Select(u => new GameCommentClientModel
+                        {
+                            Id = u.Id,
+                            Text = u.Text,
+                            Likes = (long)u.Likes,
+                            GameId = u.GameId,
+                            UserId = u.UserId,
+                            UserName = DataContext.User.FirstOrDefault(user => user.Id == u.UserId).Username
+                       
+                        }).ToList()
                     }).ToList();
 
                 PopulatePaginationHeaderForAction(userId, page, pageSize, "CompletedGames");
@@ -515,6 +525,60 @@ namespace PassAPic.Controllers
             var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
             if (previousGuess != null) previousGuess.Complete = true;
         }
+
+
+        // POST /api/game/comment
+        /// <summary>
+        /// Add a comment to a completed game
+        /// </summary>
+        /// <returns></returns>
+        [Route("Comment")]
+        public async Task<HttpResponseMessage> PostComment(GameCommentModel model)
+        {
+            try
+            {
+                var game = DataContext.Game.Find(model.GameId);
+
+                if (game != null)
+                {
+                    var user = DataContext.User.Find(model.UserId);
+
+                    if (user != null)
+                    {
+                        //TODO: validate game is completed and user has participated in game?
+                        var gameComment = new Game_Comments()
+                        {
+                            GameId = model.GameId,
+                            UserId = model.UserId,
+                            Text = model.Text,
+                            Likes = 0,
+                            DateCreated = DateTime.UtcNow
+                        };
+
+                        DataContext.Comment.Add(gameComment);
+                        DataContext.Commit();
+
+                        return Request.CreateResponse(HttpStatusCode.Created, "Comment added!");
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This user does not exist");
+                    }
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,"This game does not exist");
+                }
+                   
+                
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
         private void SendPushMessage(int gameId, List<PushQueueMember> memberList, String messageToPush)
         {
