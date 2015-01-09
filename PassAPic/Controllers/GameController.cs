@@ -558,6 +558,22 @@ namespace PassAPic.Controllers
                         DataContext.Comment.Add(gameComment);
                         DataContext.Commit();
 
+                        //Call Push server
+                        var usersInGame = new List<PushQueueMember>();
+                        foreach (var guess in game.Guesses)
+                        {
+                            usersInGame.Add(
+                                new PushQueueMember
+                                {
+                                    Id = guess.User.Id,
+                                    PushBadgeNumber = 1
+                                }
+                                );
+                        }
+
+                        
+                        SendPushMessage(game.Id, usersInGame, user.Username + " has commented on '" + game.StartingWord + "' - check your completed Games now");
+                    
                         return Request.CreateResponse(HttpStatusCode.Created, "Comment added!");
                     }
                     else
