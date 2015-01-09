@@ -571,8 +571,8 @@ namespace PassAPic.Controllers
                                 );
                         }
 
-                        
-                        SendPushMessage(game.Id, usersInGame, user.Username + " has commented on '" + game.StartingWord + "' - check your completed Games now");
+
+                        SendPushMessage(game.Id, usersInGame, user.Username + " says '" + model.Text + "' about '" + game.StartingWord + "'");
                     
                         return Request.CreateResponse(HttpStatusCode.Created, "Comment added!");
                     }
