@@ -12,6 +12,9 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "userId")]
         public int UserId { get; set; }
 
+        [JsonProperty(PropertyName = "userName")]
+        public string UserName { get; set; }
+
         [JsonProperty(PropertyName = "creatorId")]
         public int CreatorId { get; set; }
 

@@ -23,5 +23,13 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "userId")]
         public int UserId { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty(PropertyName = "dateCreated")]
+        public DateTime DateCreated { get; set; }
+
+
     }
 }

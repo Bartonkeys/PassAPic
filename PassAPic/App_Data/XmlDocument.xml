@@ -651,6 +651,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetComments(System.Int32)">
+            <summary>
+            Returns collection of guesses for user
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.PostImageGuessMultiPart">
             POST /api/game/imageGuessMultiPart
              <summary>
@@ -677,6 +683,11 @@
             Create animated Gif for game and return url
             </summary>
             <returns></returns>
+        </member>
+        <member name="P:PassAPic.Models.GameCommentModel.DateCreated">
+            <summary>
+            
+            </summary>
         </member>
     </members>
 </doc>

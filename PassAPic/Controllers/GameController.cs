@@ -301,6 +301,7 @@ namespace PassAPic.Controllers
                             Likes = (long)u.Likes,
                             GameId = u.GameId,
                             UserId = u.UserId,
+                            DateCreated = u.DateCreated,
                             UserName = DataContext.User.FirstOrDefault(user => user.Id == u.UserId).Username
                        
                         }).ToList()
@@ -322,7 +323,8 @@ namespace PassAPic.Controllers
                             var wordModel = new WordModel
                             {
                                 GameId = wordGuess.Game.Id,
-                                UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
+                                UserId = wordGuess.User.Id, //wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id,
+                                UserName = wordGuess.User.Username,
                                 Word = wordGuess.Word,
                                 Order = wordGuess.Order,
                                 CreatorId = game.Creator.Id
@@ -339,7 +341,8 @@ namespace PassAPic.Controllers
                             var imageModel = new ImageModel
                             {
                                 GameId = imageGuess.Game.Id,
-                                UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
+                                UserId = imageGuess.User.Id, //imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
+                                UserName = imageGuess.User.Username,
                                 Image = imageGuess.Image,
                                 Order = imageGuess.Order,
                                 CreatorId = game.Creator.Id
@@ -388,6 +391,38 @@ namespace PassAPic.Controllers
                                                                 Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
         }
 
+
+        // GET /api/game/Comments/{gameId}
+        /// <summary>
+        /// Returns collection of guesses for user
+        /// </summary>
+        /// <returns></returns>
+        [Route("Comments/{gameId}")]
+        public HttpResponseMessage GetComments(int gameId)
+        {
+            try
+            {
+                var comments = DataContext.Comment.Where(c => c.GameId == gameId)
+                    .Select(u => new GameCommentClientModel
+                    {
+                        Id = u.Id,
+                        Text = u.Text,
+                        Likes = (long) u.Likes,
+                        GameId = u.GameId,
+                        UserId = u.UserId,
+                        DateCreated = u.DateCreated,
+                        UserName = DataContext.User.FirstOrDefault(user => user.Id == u.UserId).Username
+
+                    }).ToList();
+
+                return Request.CreateResponse(HttpStatusCode.OK, comments);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
 
         ///POST /api/game/imageGuessMultiPart
         /// <summary>
@@ -562,15 +597,19 @@ namespace PassAPic.Controllers
                         var usersInGame = new List<PushQueueMember>();
                         foreach (var guess in game.Guesses)
                         {
-                            usersInGame.Add(
-                                new PushQueueMember
-                                {
-                                    Id = guess.User.Id,
-                                    PushBadgeNumber = 1
-                                }
-                                );
-                        }
+                            //Don't send push to user who created comment!
+                            if (guess.User != user)
+                            {
+                                usersInGame.Add(
+                                    new PushQueueMember
+                                    {
+                                        Id = guess.User.Id,
+                                        PushBadgeNumber = 1
+                                    }
+                                 );
+                            }
 
+                        }
 
                         SendPushMessage(game.Id, usersInGame, user.Username + " says '" + model.Text + "' about '" + game.StartingWord + "'");
                     
