@@ -287,6 +287,8 @@ namespace PassAPic.Controllers
                     .Select(y => new CompletedGamesModel
                    {
                         GameId = y.Game.Id,
+                        CreatorId = y.User.Id,
+                        CreatorName = y.User.Username,
                         StartingWord = y.Game.StartingWord,
                         NumberOfGuesses = y.Game.NumberOfGuesses,
                         GameOverMan = y.Game.GameOverMan,

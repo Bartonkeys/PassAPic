@@ -13,6 +13,12 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "gameId")]
         public int GameId { get; set; }
 
+        [JsonProperty(PropertyName = "creatorId")]
+        public int CreatorId { get; set; }
+
+        [JsonProperty(PropertyName = "creatorName")]
+        public virtual string CreatorName { get; set; }
+
         [JsonProperty(PropertyName = "startingWord")]
         public string StartingWord { get; set; }
 
@@ -36,6 +42,8 @@ namespace PassAPic.Models
 
         [JsonProperty(PropertyName = "comments")]
         public virtual List<GameCommentClientModel> Comments { get; set; }
+
+       
 
     }
 }
