@@ -325,7 +325,7 @@ namespace PassAPic.Controllers
                             var wordModel = new WordModel
                             {
                                 GameId = wordGuess.Game.Id,
-                                UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id, //UserId = wordGuess.User.Id, //
+                                UserId = wordGuess.User.Id, //UserId = wordGuess.NextUser == null ? 0 : wordGuess.NextUser.Id, 
                                 UserName = wordGuess.User.Username,
                                 Word = wordGuess.Word,
                                 Order = wordGuess.Order,
@@ -343,7 +343,7 @@ namespace PassAPic.Controllers
                             var imageModel = new ImageModel
                             {
                                 GameId = imageGuess.Game.Id,
-                                UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id, //UserId = imageGuess.User.Id, //imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
+                                UserId = imageGuess.User.Id, //UserId = imageGuess.NextUser == null ? 0 : imageGuess.NextUser.Id,
                                 UserName = imageGuess.User.Username,
                                 Image = imageGuess.Image,
                                 Order = imageGuess.Order,
