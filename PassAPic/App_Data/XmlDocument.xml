@@ -633,6 +633,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.DeleteGame(System.Int32,System.String)">
+            <summary>
+            Deletes Game and all associated Guesses
+            - Requires Password
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.GetCompletedGames(System.Int32,System.Int32,System.Int32)">
             <summary>
             Returns a Paginated collection of finished games for user, latest game at top.

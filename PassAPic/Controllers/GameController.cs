@@ -256,6 +256,46 @@ namespace PassAPic.Controllers
         }
 
 
+        // DELTE /api/game/delete
+        /// <summary>
+        /// Deletes Game and all associated Guesses
+        /// - Requires Password
+        /// </summary>
+        /// <returns></returns>
+        [Route("delete/{gameId}/{password}")]
+        [HttpDelete]
+        public HttpResponseMessage DeleteGame(int gameId, string password)
+        {         
+            try
+            {
+                if (password.Equals("ilovepassapic"))
+                {
+                    var guesses = DataContext.Guess.Where(x => x.Game.Id == gameId);
+                    foreach (var guess in guesses)
+                    {
+                        DataContext.Guess.Remove(guess);
+                    }
+                    DataContext.Game.Remove(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+
+                    DataContext.Commit();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, "Game deleted");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "Game not deleted");
+                }
+
+               
+   
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         // GET /api/game/CompletedGames
         /// <summary>
         /// Returns a Paginated collection of finished games for user, latest game at top.
