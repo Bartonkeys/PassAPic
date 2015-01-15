@@ -30,7 +30,7 @@ namespace PassAPic.Controllers
                 var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
 
                 var sentFromUsername = ""; 
-                var previousGuess = guess.Game.Guesses.FirstOrDefault(g => g.Order == guess.Order - 1);
+                var previousGuess = guess.Game.Guesses.FirstOrDefault(g => g.Order == guess.Order);
                 if (previousGuess != null)
                 {
                     sentFromUsername = previousGuess.User.Username;
