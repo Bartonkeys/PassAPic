@@ -36,6 +36,9 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "mode")]
         public Mode Mode { get; set; }
 
+        [JsonProperty(PropertyName = "dateCreated")]
+        public DateTime DateCreated { get; set; }
+
 
     }
 }

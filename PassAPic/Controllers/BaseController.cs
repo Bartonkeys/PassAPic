@@ -50,7 +50,8 @@ namespace PassAPic.Controllers
                         Word = wordGuess.Word,
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
-                        SentFromUsername = sentFromUsername
+                        SentFromUsername = sentFromUsername,
+                        DateCreated = guess.Game.DateCreated
                     };
 
                     wordModelList.Add(wordModel);
@@ -66,7 +67,8 @@ namespace PassAPic.Controllers
                         Image = imageGuess.Image,
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
-                        SentFromUsername = sentFromUsername
+                        SentFromUsername = sentFromUsername,
+                        DateCreated = guess.Game.DateCreated
                     };
 
                     imageModelList.Add(imageModel);
