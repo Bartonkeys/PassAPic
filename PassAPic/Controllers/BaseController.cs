@@ -35,6 +35,10 @@ namespace PassAPic.Controllers
                 {
                     sentFromUsername = previousGuess.User.Username;
                 }
+                else
+                {
+                    sentFromUsername = guess.Game.Creator.Username;
+                }
 
                 if (guess is WordGuess)
                 {
