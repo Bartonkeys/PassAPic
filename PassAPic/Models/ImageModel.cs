@@ -16,5 +16,8 @@ namespace PassAPic.Models
         [JsonProperty(PropertyName = "nextUserId")]
         public int NextUserId { get; set; }
 
+        [JsonProperty("sentFromUsername")]
+        public string SentFromUsername { get; set; }
+
     }
 }

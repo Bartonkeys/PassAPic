@@ -29,6 +29,13 @@ namespace PassAPic.Controllers
             {
                 var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
 
+                var sentFromUsername = ""; 
+                var previousGuess = guess.Game.Guesses.FirstOrDefault(g => g.Order == guess.Order - 1);
+                if (previousGuess != null)
+                {
+                    sentFromUsername = previousGuess.User.Username;
+                }
+
                 if (guess is WordGuess)
                 {
                     var wordGuess = (WordGuess)guess;
@@ -38,7 +45,8 @@ namespace PassAPic.Controllers
                         UserId = wordGuess.NextUser.Id,
                         Word = wordGuess.Word,
                         IsLastTurn = isLastTurn,
-                        CreatorId = guess.Game.Creator.Id
+                        CreatorId = guess.Game.Creator.Id,
+                        SentFromUsername = sentFromUsername
                     };
 
                     wordModelList.Add(wordModel);
@@ -53,7 +61,8 @@ namespace PassAPic.Controllers
                         UserId = imageGuess.NextUser.Id,
                         Image = imageGuess.Image,
                         IsLastTurn = isLastTurn,
-                        CreatorId = guess.Game.Creator.Id
+                        CreatorId = guess.Game.Creator.Id,
+                        SentFromUsername = sentFromUsername
                     };
 
                     imageModelList.Add(imageModel);
