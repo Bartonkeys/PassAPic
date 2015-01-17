@@ -39,6 +39,7 @@ namespace PassAPic.Controllers
         protected PushRegisterService PushRegisterService;
         protected CloudImageService CloudImageService;
         protected AnimatedGifService AnimatedGifService;
+        protected GameService GameService;
         protected IWordManager WordManager;
         static readonly string ServerUploadFolder = Path.GetTempPath();
 
@@ -50,6 +51,7 @@ namespace PassAPic.Controllers
             PushRegisterService = new PushRegisterService(pushProvider);
             CloudImageService = new CloudImageService(cloudImageProvider);
             AnimatedGifService = new AnimatedGifService(CloudImageService, dataContext);
+            GameService = new GameService(dataContext);
             WordManager = wordManager;
             WordManager.DataContext = DataContext;
         }
@@ -209,11 +211,10 @@ namespace PassAPic.Controllers
                     }
                     SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
-                    var gs = new GameService();
                     //Calculate Scores
-                    var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
+                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
                     //try writing scores to DB
-                    var result = gs.SaveScoresToDatabase(scores, DataContext);
+                    var result = GameService.SaveScoresToDatabase(scores);
                 }
                 else
                 {
@@ -588,13 +589,13 @@ namespace PassAPic.Controllers
                             }
                             );
                     }
+
                     SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
-                    var gs = new GameService();
                     //Calculate Scores
-                    var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
                     //try writing scores to DB
-                    var result = gs.SaveScoresToDatabase(scores, DataContext);
+                    var result = GameService.SaveScoresToDatabase(scores);
                 }
                 
 
@@ -698,12 +699,10 @@ namespace PassAPic.Controllers
         {
             try
             {
-         
-                var gs = new GameService();
-                var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
-                
+
+                var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));            
                 //try writing scores to DB
-                var result = gs.SaveScoresToDatabase(scores, DataContext);
+                var result = GameService.SaveScoresToDatabase(scores);
                    
                 return Request.CreateResponse(HttpStatusCode.OK, scores);
 

@@ -14,6 +14,13 @@ namespace PassAPic.Core.Services
     //TODO: extract Interface and inject at runtime
     public class GameService
     {
+        private readonly IDataContext _dataContext;
+
+        public GameService(IDataContext dataContext)
+        {
+            _dataContext = dataContext;
+        } 
+
         public List<GameScoringModel> CalculateScoreForGame(Game game)
         {
             /*
@@ -100,7 +107,7 @@ namespace PassAPic.Core.Services
             return gameScores;
         }
 
-        public string SaveScoresToDatabase(List<GameScoringModel> scores, IDataContext dataContext)
+        public string SaveScoresToDatabase(List<GameScoringModel> scores)
         {
             string message = "Scores saved successfuly";
 
@@ -115,8 +122,8 @@ namespace PassAPic.Core.Services
                         Score = gameScoringModel.Score,
                         DateCreated = DateTime.UtcNow
                     };
-                    if (!dataContext.Score.Any(s => s.GameId == gameScore.GameId && s.UserId == gameScore.UserId))
-                    { dataContext.Score.Add(gameScore); }
+                    if (!_dataContext.Score.Any(s => s.GameId == gameScore.GameId && s.UserId == gameScore.UserId))
+                    { _dataContext.Score.Add(gameScore); }
                 }
                 catch (Exception ex)
                 {
@@ -126,7 +133,7 @@ namespace PassAPic.Core.Services
 
             }
 
-            dataContext.Commit();
+            _dataContext.Commit();
 
             return message;
         }
