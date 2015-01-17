@@ -57,6 +57,7 @@
     <Compile Include="Models\GameBaseModel.cs" />
     <Compile Include="Models\GameCommentClientModel.cs" />
     <Compile Include="Models\GameCommentModel.cs" />
+    <Compile Include="Models\GameScoringModel.cs" />
     <Compile Include="Models\GameSetupModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\ImageModel.cs" />

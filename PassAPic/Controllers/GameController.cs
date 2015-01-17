@@ -17,6 +17,7 @@ using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Core.CloudImage;
+using PassAPic.Core.Services;
 using PassAPic.Core.WordManager;
 using PassAPic.Data;
 using PassAPic.Models;
@@ -668,41 +669,20 @@ namespace PassAPic.Controllers
         }
 
 
-
-        // POST /api/game/scoreTest
+        // Get /api/game/score/{gameId}
         /// <summary>
         ///Test for scoring
         /// </summary>
         /// <returns></returns>
-        [Route("Score")]
-        public async Task<HttpResponseMessage> PostScoreTest(GameCommentModel model)
+        [Route("Score/{gameId}")]
+        public async Task<HttpResponseMessage> GetScore(int gameId)
         {
             try
             {
-
-               
-                var guesses = DataContext.Guess.Where(g => g.Game.Id == model.GameId);
-                foreach (var guess in guesses)
-                {
-                    if (guess is WordGuess)
-                    {
-                        var wordGuess = (WordGuess) guess;
-                        var wordModel = new WordModel
-                        {
-                            Word = wordGuess.Word                                    
-                        };
-
-
-                        //var similar = SqlFunctions.SoundCode(wordModel.Word) == SqlFunctions.SoundCode(model.Text);
-                       
-                        var metaphone = new Metaphone();
-                        var stringArray = new string[] {model.Text, wordModel.Word};
-                        var similar =   metaphone.IsSimilar(stringArray);
-
-                        
-                        return Request.CreateResponse(HttpStatusCode.OK, similar);
-                    }
-                }
+         
+                var gs = new GameService();
+                var score = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                return Request.CreateResponse(HttpStatusCode.OK, score);
 
             }
             catch (Exception ex)

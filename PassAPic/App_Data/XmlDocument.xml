@@ -684,7 +684,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostScoreTest(PassAPic.Models.Models.GameCommentModel)">
+        <member name="M:PassAPic.Controllers.GameController.GetScore(System.Int32)">
              <summary>
             Test for scoring
              </summary>
