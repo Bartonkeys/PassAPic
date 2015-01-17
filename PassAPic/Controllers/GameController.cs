@@ -360,7 +360,7 @@ namespace PassAPic.Controllers
                        
                         }).ToList(),
 
-                         Scores = DataContext.Score.Where(s => s.GameId == s.Game.Id)
+                         Scores = DataContext.Score.Where(s => s.GameId == y.Game.Id)
                         .Select(s => new GameScoringModel()
                         {
                             UserId = s.UserId,
