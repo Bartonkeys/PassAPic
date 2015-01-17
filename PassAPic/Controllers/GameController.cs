@@ -19,7 +19,6 @@ using PassAPic.Core.PushRegistration;
 using PassAPic.Core.CloudImage;
 using PassAPic.Core.WordManager;
 using PassAPic.Data;
-using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
 using Phonix;
 using Word = PassAPic.Core.WordManager.Word;

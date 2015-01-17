@@ -7,7 +7,6 @@ using System.Web.Http;
 using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Data;
-using PassAPic.Models;
 
 namespace PassAPic.Controllers
 {

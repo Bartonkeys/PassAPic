@@ -18,7 +18,7 @@ using PassAPic.Contracts.EmailService;
 using PassAPic.Core.AccountManagement;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
-using PassAPic.Models;
+
 
 namespace PassAPic.Controllers
 {

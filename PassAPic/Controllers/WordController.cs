@@ -2,7 +2,6 @@
 using PassAPic.Contracts;
 using PassAPic.Core.WordManager;
 using PassAPic.Data;
-using PassAPic.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

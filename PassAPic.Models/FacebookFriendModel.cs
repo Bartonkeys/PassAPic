@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
 
 namespace PassAPic.Models
 {
     public class FacebookFriendModel
     {
-         [JsonProperty("name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
-         [JsonProperty("id")]
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         [JsonProperty("isPaPUser")]
@@ -19,10 +15,5 @@ namespace PassAPic.Models
 
         [JsonProperty("papUserId")]
         public int PaPUserId { get; set; }
-    }
-
-    public class FacebookFriendsModel
-    {
-        public List<FacebookFriendModel> data { get; set; }
     }
 }

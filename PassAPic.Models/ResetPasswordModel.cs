@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
-
-namespace PassAPic.Models
+﻿namespace PassAPic.Models
 {
     public class ResetPasswordModel
     {

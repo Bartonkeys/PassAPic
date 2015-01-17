@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json.Serialization;
-using PassAPic.Models;
 
 namespace PassAPic
 {

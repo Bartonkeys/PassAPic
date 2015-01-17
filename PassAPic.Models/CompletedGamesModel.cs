@@ -1,13 +1,8 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 namespace PassAPic.Models
 {
-    public class OpenGamesModel
+    public class CompletedGamesModel : GamesModel
     {
         [JsonProperty(PropertyName = "wordModelList")]
         public List<WordModel> WordModelList { get; set; }
