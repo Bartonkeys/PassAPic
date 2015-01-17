@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.SqlServer;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -207,7 +208,12 @@ namespace PassAPic.Controllers
                             );
                     }
                     SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
-                    
+
+                    var gs = new GameService();
+                    //Calculate Scores
+                    var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
+                    //try writing scores to DB
+                    var result = gs.SaveScoresToDatabase(scores, DataContext);
                 }
                 else
                 {
@@ -351,6 +357,14 @@ namespace PassAPic.Controllers
                             DateCreated = u.DateCreated,
                             UserName = DataContext.User.FirstOrDefault(user => user.Id == u.UserId).Username
                        
+                        }).ToList(),
+
+                         Scores = DataContext.Score.Where(s => s.GameId == s.Game.Id)
+                        .Select(s => new GameScoringModel()
+                        {
+                            UserId = s.UserId,
+                            UserName = DataContext.User.FirstOrDefault(user => user.Id == s.UserId).Username,
+                            Score = s.Score
                         }).ToList()
                     }).ToList();
 
@@ -576,6 +590,11 @@ namespace PassAPic.Controllers
                     }
                     SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
+                    var gs = new GameService();
+                    //Calculate Scores
+                    var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                    //try writing scores to DB
+                    var result = gs.SaveScoresToDatabase(scores, DataContext);
                 }
                 
 
@@ -681,8 +700,12 @@ namespace PassAPic.Controllers
             {
          
                 var gs = new GameService();
-                var score = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
-                return Request.CreateResponse(HttpStatusCode.OK, score);
+                var scores = gs.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                
+                //try writing scores to DB
+                var result = gs.SaveScoresToDatabase(scores, DataContext);
+                   
+                return Request.CreateResponse(HttpStatusCode.OK, scores);
 
             }
             catch (Exception ex)

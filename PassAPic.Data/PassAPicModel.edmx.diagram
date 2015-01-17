@@ -21,9 +21,12 @@
         <EntityTypeShape EntityType="PassAPicModel.PushRegister" Width="1.5" PointX="10.625" PointY="1.25" />
         <AssociationConnector Association="PassAPicModel.FK_PushRegister_Users" />
         <EntityTypeShape EntityType="PassAPicModel.EasyWord" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="PassAPicModel.Game_Comments" Width="1.5" PointX="6.25" PointY="7.5" />
+        <EntityTypeShape EntityType="PassAPicModel.Game_Comments" Width="1.5" PointX="3" PointY="7" />
         <AssociationConnector Association="PassAPicModel.FK_Game_Comments_Games" />
         <AssociationConnector Association="PassAPicModel.FK_Game_Comments_Users" />
+        <EntityTypeShape EntityType="PassAPicModel.Game_Scoring" Width="1.5" PointX="8.25" PointY="6.75" />
+        <AssociationConnector Association="PassAPicModel.FK_Game_Scoring_Games" />
+        <AssociationConnector Association="PassAPicModel.FK_Game_Scoring_Users" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

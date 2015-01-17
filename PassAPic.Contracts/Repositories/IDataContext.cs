@@ -12,6 +12,8 @@ namespace PassAPic.Contracts
         IDbSet<EasyWord> EasyWord { get; }
         IDbSet<PushRegister> PushRegister { get; }
         IDbSet<Game_Comments> Comment { get; }
+        IDbSet<Game_Scoring> Score { get; }
+
         void Commit();
     }
 }

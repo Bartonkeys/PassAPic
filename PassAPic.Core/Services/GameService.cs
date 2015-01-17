@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PassAPic.Contracts;
 using PassAPic.Data;
 using PassAPic.Models.Models;
 using Phonix;
 
 namespace PassAPic.Core.Services
 {
+    //TODO: extract Interface and inject at runtime
     public class GameService
     {
         public List<GameScoringModel> CalculateScoreForGame(Game game)
@@ -36,24 +39,7 @@ namespace PassAPic.Core.Services
 
             var wordGuesses = guesses.Where(g => g is WordGuess).ToList();
 
-            //First and last word
-            var firstWord = wordGuesses.First();
-            var lastWord = wordGuesses.Last();
-
-            if (firstWord is WordGuess && lastWord is WordGuess)
-            {
-                var similar = compareWords((WordGuess)firstWord, (WordGuess)lastWord);
-                if (similar)
-                {
-                    gameScores.Add(new GameScoringModel()
-                    {
-                        GameId = game.Id,
-                        UserId = game.Creator.Id,
-                        UserName = game.Creator.Username,
-                        Score = game.NumberOfGuesses
-                    });
-                }
-            }
+           
 
             //Other guesses
             for (int i = 0; i < wordGuesses.Count-1; i++)
@@ -82,8 +68,67 @@ namespace PassAPic.Core.Services
                 }
             }
 
+            //First and last word
+            var firstWord = wordGuesses.First();
+            var lastWord = wordGuesses.Last();
+
+            if (firstWord is WordGuess && lastWord is WordGuess)
+            {
+                var similar = compareWords((WordGuess)firstWord, (WordGuess)lastWord);
+                if (similar)
+                {
+                    //Check if the game creator has already scored in this game
+                    if (gameScores.Any(s => s.UserId == game.Creator.Id))
+                    {
+                        var score = gameScores.Find(s => s.UserId == game.Creator.Id);
+                        score.Score += game.NumberOfGuesses;
+                    }
+                    else
+                    {
+                        gameScores.Add(new GameScoringModel()
+                        {
+                            GameId = game.Id,
+                            UserId = game.Creator.Id,
+                            UserName = game.Creator.Username,
+                            Score = game.NumberOfGuesses
+                        });
+                    }
+                    
+                }
+            }
 
             return gameScores;
+        }
+
+        public string SaveScoresToDatabase(List<GameScoringModel> scores, IDataContext dataContext)
+        {
+            string message = "Scores saved successfuly";
+
+            foreach (var gameScoringModel in scores)
+            {
+                try
+                {
+                    var gameScore = new Game_Scoring()
+                    {
+                        GameId = gameScoringModel.GameId,
+                        UserId = gameScoringModel.UserId,
+                        Score = gameScoringModel.Score,
+                        DateCreated = DateTime.UtcNow
+                    };
+                    if (!dataContext.Score.Any(s => s.GameId == gameScore.GameId && s.UserId == gameScore.UserId))
+                    { dataContext.Score.Add(gameScore); }
+                }
+                catch (Exception ex)
+                {
+                    message += "Score already exists for game/user Ids";
+                    Debug.WriteLine(ex.Message);
+                }
+
+            }
+
+            dataContext.Commit();
+
+            return message;
         }
 
         private bool compareWords(WordGuess firstWordGuess, WordGuess secondWordGuess)

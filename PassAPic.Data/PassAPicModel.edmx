@@ -23,6 +23,16 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Game_Scoring">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Score" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Games">
           <Key>
             <PropertyRef Name="Id" />
@@ -111,6 +121,30 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Game_Comments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Scoring_Games">
+          <End Role="Games" Type="Self.Games" Multiplicity="1" />
+          <End Role="Game_Scoring" Type="Self.Game_Scoring" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Games">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Scoring">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Scoring_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Game_Scoring" Type="Self.Game_Scoring" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Scoring">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -206,6 +240,7 @@
         <EntityContainer Name="PassAPicModelStoreContainer">
           <EntitySet Name="EasyWords" EntityType="Self.EasyWords" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Game_Comments" EntityType="Self.Game_Comments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Game_Scoring" EntityType="Self.Game_Scoring" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
@@ -220,6 +255,14 @@
           <AssociationSet Name="FK_Game_Comments_Users" Association="Self.FK_Game_Comments_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Scoring_Games" Association="Self.FK_Game_Scoring_Games">
+            <End Role="Games" EntitySet="Games" />
+            <End Role="Game_Scoring" EntitySet="Game_Scoring" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Scoring_Users" Association="Self.FK_Game_Scoring_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Game_Scoring" EntitySet="Game_Scoring" />
           </AssociationSet>
           <AssociationSet Name="FK_GameTurn" Association="Self.FK_GameTurn">
             <End Role="Games" EntitySet="Games" />
@@ -290,6 +333,15 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Game_Comments" EntitySet="Game_Comments" />
           </AssociationSet>
+          <EntitySet Name="Game_Scoring" EntityType="PassAPicModel.Game_Scoring" />
+          <AssociationSet Name="FK_Game_Scoring_Games" Association="PassAPicModel.FK_Game_Scoring_Games">
+            <End Role="Game" EntitySet="Games" />
+            <End Role="Game_Scoring" EntitySet="Game_Scoring" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Scoring_Users" Association="PassAPicModel.FK_Game_Scoring_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Game_Scoring" EntitySet="Game_Scoring" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -305,6 +357,7 @@
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DateCompleted" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Games" FromRole="Game" ToRole="Game_Comments" />
+          <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Games" FromRole="Game" ToRole="Game_Scoring" />
           </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -338,6 +391,7 @@
           <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Email" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Users" FromRole="User" ToRole="Game_Comments" />
+          <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Users" FromRole="User" ToRole="Game_Scoring" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -427,6 +481,42 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Game_Comments">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Game_Scoring">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Score" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Game" Relationship="PassAPicModel.FK_Game_Scoring_Games" FromRole="Game_Scoring" ToRole="Game" />
+          <NavigationProperty Name="User" Relationship="PassAPicModel.FK_Game_Scoring_Users" FromRole="Game_Scoring" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Game_Scoring_Games">
+          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="PassAPicModel.Game_Scoring" Role="Game_Scoring" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Scoring">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Scoring_Users">
+          <End Type="PassAPicModel.User" Role="User" Multiplicity="1" />
+          <End Type="PassAPicModel.Game_Scoring" Role="Game_Scoring" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Scoring">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -555,6 +645,17 @@
                 <ScalarProperty Name="GameId" ColumnName="GameId" />
                 <ScalarProperty Name="Likes" ColumnName="Likes" />
                 <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Game_Scoring">
+            <EntityTypeMapping TypeName="PassAPicModel.Game_Scoring">
+              <MappingFragment StoreEntitySet="Game_Scoring">
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

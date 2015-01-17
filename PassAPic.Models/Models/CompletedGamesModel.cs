@@ -10,5 +10,8 @@ namespace PassAPic.Models.Models
 
         [JsonProperty(PropertyName = "imageModelList")]
         public List<ImageModel> ImageModelList { get; set; }
+
+        [JsonProperty(PropertyName = "scores")]
+        public virtual List<GameScoringModel> Scores { get; set; }
     }
 }
