@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.SqlServer;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -20,6 +21,7 @@ using PassAPic.Core.WordManager;
 using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
+using Phonix;
 using Word = PassAPic.Core.WordManager.Word;
 
 namespace PassAPic.Controllers
@@ -590,19 +592,6 @@ namespace PassAPic.Controllers
             }
         }
 
-        #region "Helper methods"
-
-        private string SaveImageToCloud(string imagePath, string imageName)
-        {
-            return CloudImageService.SaveImageToCloud(imagePath, imageName);
-        }
-
-        private void SetPreviousGuessAsComplete(Game game, int userId)
-        {
-            var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
-            if (previousGuess != null) previousGuess.Complete = true;
-        }
-
 
         // POST /api/game/comment
         /// <summary>
@@ -654,7 +643,7 @@ namespace PassAPic.Controllers
                         }
 
                         SendPushMessage(game.Id, usersInGame, user.Username + " says '" + model.Text + "' about '" + game.StartingWord + "'");
-                    
+
                         return Request.CreateResponse(HttpStatusCode.Created, "Comment added!");
                     }
                     else
@@ -664,10 +653,10 @@ namespace PassAPic.Controllers
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,"This game does not exist");
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This game does not exist");
                 }
-                   
-                
+
+
             }
             catch (Exception ex)
             {
@@ -676,6 +665,68 @@ namespace PassAPic.Controllers
             }
         }
 
+
+
+        // POST /api/game/scoreTest
+        /// <summary>
+        ///Test for scoring
+        /// </summary>
+        /// <returns></returns>
+        [Route("Score")]
+        public async Task<HttpResponseMessage> PostScoreTest(GameCommentModel model)
+        {
+            try
+            {
+
+               
+                var guesses = DataContext.Guess.Where(g => g.Game.Id == model.GameId);
+                foreach (var guess in guesses)
+                {
+                    if (guess is WordGuess)
+                    {
+                        var wordGuess = (WordGuess) guess;
+                        var wordModel = new WordModel
+                        {
+                            Word = wordGuess.Word                                    
+                        };
+
+
+                        //var similar = SqlFunctions.SoundCode(wordModel.Word) == SqlFunctions.SoundCode(model.Text);
+                       
+                        var metaphone = new Metaphone();
+                        var stringArray = new string[] {model.Text, wordModel.Word};
+                        var similar =   metaphone.IsSimilar(stringArray);
+
+                        
+                        return Request.CreateResponse(HttpStatusCode.OK, similar);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This game does not exist");
+        }
+
+
+
+
+        #region "Helper methods"
+
+        private string SaveImageToCloud(string imagePath, string imageName)
+        {
+            return CloudImageService.SaveImageToCloud(imagePath, imageName);
+        }
+
+        private void SetPreviousGuessAsComplete(Game game, int userId)
+        {
+            var previousGuess = game.Guesses.SingleOrDefault(x => x.NextUser.Id == userId);
+            if (previousGuess != null) previousGuess.Complete = true;
+        }
 
         private void SendPushMessage(int gameId, List<PushQueueMember> memberList, String messageToPush)
         {

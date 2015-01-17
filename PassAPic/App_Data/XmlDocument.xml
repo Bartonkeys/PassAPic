@@ -684,6 +684,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.PostScoreTest(PassAPic.Models.GameCommentModel)">
+             <summary>
+            Test for scoring
+             </summary>
+             <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>
