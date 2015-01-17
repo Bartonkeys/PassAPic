@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Web", "PassAPic\PassAPic.Web.csproj", "{AB2D14CC-E3D0-4795-A0D6-3077223A30F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Data", "PassAPic.Data\PassAPic.Data.csproj", "{47D67790-5496-4905-9785-9A281F5F818F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Contracts", "PassAPic.Contracts\PassAPic.Contracts.csproj", "{9829536C-B05A-4430-B6A0-EA3A3E42861C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E32308A4-A909-40C6-9815-7F92C26216C2} = {E32308A4-A909-40C6-9815-7F92C26216C2}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Core", "PassAPic.Core\PassAPic.Core.csproj", "{09318371-A58A-41CA-BDD5-20B460E6A2BE}"
 EndProject
@@ -19,6 +22,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7EFF19
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Tests", "PassAPic.Tests\PassAPic.Tests.csproj", "{F6F58CB8-970F-4CF3-9187-85CFD029FE9F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E32308A4-A909-40C6-9815-7F92C26216C2} = {E32308A4-A909-40C6-9815-7F92C26216C2}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Models", "PassAPic.Models\PassAPic.Models.csproj", "{E32308A4-A909-40C6-9815-7F92C26216C2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{47D67790-5496-4905-9785-9A281F5F818F} = {47D67790-5496-4905-9785-9A281F5F818F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +57,10 @@ Global
 		{F6F58CB8-970F-4CF3-9187-85CFD029FE9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6F58CB8-970F-4CF3-9187-85CFD029FE9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6F58CB8-970F-4CF3-9187-85CFD029FE9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32308A4-A909-40C6-9815-7F92C26216C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32308A4-A909-40C6-9815-7F92C26216C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32308A4-A909-40C6-9815-7F92C26216C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32308A4-A909-40C6-9815-7F92C26216C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

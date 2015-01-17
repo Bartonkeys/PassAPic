@@ -8,6 +8,7 @@ using Ninject;
 using PassAPic.Contracts;
 using PassAPic.Data;
 using PassAPic.Models;
+using PassAPic.Models.Models;
 
 namespace PassAPic.Controllers
 {

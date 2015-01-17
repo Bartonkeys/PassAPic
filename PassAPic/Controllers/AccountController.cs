@@ -19,6 +19,7 @@ using PassAPic.Core.AccountManagement;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Data;
 using PassAPic.Models;
+using PassAPic.Models.Models;
 
 namespace PassAPic.Controllers
 {
