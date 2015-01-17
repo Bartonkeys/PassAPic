@@ -13,6 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Contracts", "PassA
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassAPic.Core", "PassAPic.Core\PassAPic.Core.csproj", "{09318371-A58A-41CA-BDD5-20B460E6A2BE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E32308A4-A909-40C6-9815-7F92C26216C2} = {E32308A4-A909-40C6-9815-7F92C26216C2}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7EFF197D-79A2-4A30-93CE-B3F4F45F5CC8}"
 	ProjectSection(SolutionItems) = preProject

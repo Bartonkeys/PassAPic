@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PassAPic.Data;
+using PassAPic.Models.Models;
 
 namespace PassAPic.Tests
 {

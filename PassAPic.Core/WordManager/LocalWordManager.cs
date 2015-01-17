@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PassAPic.Models.Models;
+using PassAPic.Models.Models.Models;
 
 namespace PassAPic.Core.WordManager
 {

@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\AddExternalLoginBindingModel.cs" />
     <Compile Include="Models\ChangePasswordBindingModel.cs" />
@@ -62,6 +61,7 @@
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\ManageInfoViewModel.cs" />
+    <Compile Include="Models\Mode.cs" />
     <Compile Include="Models\NewWordsModel.cs" />
     <Compile Include="Models\OpenGamesModel.cs" />
     <Compile Include="Models\RegisterBindingModel.cs" />
@@ -73,6 +73,7 @@
     <Compile Include="Models\SetPasswordBindingModel.cs" />
     <Compile Include="Models\UserInfoViewModel.cs" />
     <Compile Include="Models\UserLoginInfoViewModel.cs" />
+    <Compile Include="Models\Word.cs" />
     <Compile Include="Models\WordModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

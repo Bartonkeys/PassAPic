@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PassAPic.Core.WordManager;
-using PassAPic.WordManager;
+using PassAPic.Models.Models.Models;
 
 namespace PassAPic.Tests
 {

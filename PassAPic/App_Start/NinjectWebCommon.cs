@@ -5,7 +5,6 @@ using PassAPic.Core.Email;
 using PassAPic.Core.PushRegistration;
 using PassAPic.Core.Repositories;
 using PassAPic.Core.WordManager;
-using PassAPic.WordManager;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof(PassAPic.App_Start.NinjectWebCommon), "Start")]
 [assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(PassAPic.App_Start.NinjectWebCommon), "Stop")]

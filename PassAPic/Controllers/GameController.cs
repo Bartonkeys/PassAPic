@@ -22,8 +22,9 @@ using PassAPic.Data;
 using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
 using PassAPic.Models.Models;
+using PassAPic.Models.Models.Models;
 using Phonix;
-using Word = PassAPic.Core.WordManager.Word;
+using Word = PassAPic.Models.Models.Word;
 
 namespace PassAPic.Controllers
 {

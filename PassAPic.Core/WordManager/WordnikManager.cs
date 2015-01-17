@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
-using PassAPic.Core.WordManager;
-using PassAPic.Contracts;
 using Ninject;
+using PassAPic.Contracts;
+using PassAPic.Models.Models;
+using PassAPic.Models.Models.Models;
 
-namespace PassAPic.WordManager
+namespace PassAPic.Core.WordManager
 {
     public class WordnikManager : IWordManager
     {

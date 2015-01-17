@@ -526,7 +526,7 @@
             To modify move field declaration from designer file to code-behind file.
             </remarks>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.PostRegister(PassAPic.Models.AccountModel)">
+        <member name="M:PassAPic.Controllers.AccountController.PostRegister(PassAPic.Models.Models.AccountModel)">
              <summary>
                  This is registration to get us started. POST with JSON in the body with email
                  and password - populate AccountModel accordingly.
@@ -553,20 +553,20 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.Login(PassAPic.Models.AccountModel)">
+        <member name="M:PassAPic.Controllers.AccountController.Login(PassAPic.Models.Models.AccountModel)">
             <summary>
             Login with email and password
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.PostForgotPassword(PassAPic.Models.ResetPasswordModel)">
+        <member name="M:PassAPic.Controllers.AccountController.PostForgotPassword(PassAPic.Models.Models.ResetPasswordModel)">
             <summary>
             HTTP GET to this API with email. Password will be randomly generated and emailed to user.
             </summary>
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.PostResetPassword(PassAPic.Models.ResetPasswordModel)">
+        <member name="M:PassAPic.Controllers.AccountController.PostResetPassword(PassAPic.Models.Models.ResetPasswordModel)">
             <summary>
             HTTP POST to this API with ResetPasswordModel populated with email, password and new password. 
             </summary>
@@ -580,7 +580,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.AccountController.RegisterPush(PassAPic.Models.RegisterItem)">
+        <member name="M:PassAPic.Controllers.AccountController.RegisterPush(PassAPic.Models.Models.RegisterItem)">
             <summary>
                 POST a JObject up to register a device
             </summary>
@@ -604,13 +604,13 @@
             Handles setup of game and management of guesses and results
             </summary>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostStart(PassAPic.Models.GameSetupModel)">
+        <member name="M:PassAPic.Controllers.GameController.PostStart(PassAPic.Models.Models.GameSetupModel)">
             <summary>
             Lets play. Set up game, generate first word and return to user. Remember to set whether easy mode or not
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32,PassAPic.Core.WordManager.Mode)">
+        <member name="M:PassAPic.Controllers.GameController.GetNewWord(System.Int32,System.Int32,PassAPic.Models.Models.Models.Mode)">
             <summary>
             The game creator can call this API to get a new word for their just started game. 
             Only game creator can change and it can only happen at start of game
@@ -620,7 +620,7 @@
             <param name="isEasyMode"></param>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostWordGuess(PassAPic.Models.WordModel)">
+        <member name="M:PassAPic.Controllers.GameController.PostWordGuess(PassAPic.Models.Models.WordModel)">
             <summary>
             Post up word guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
             If this is last guess then dont set next user and mark game as over.
@@ -678,13 +678,13 @@
              </summary>
              <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostComment(PassAPic.Models.GameCommentModel)">
+        <member name="M:PassAPic.Controllers.GameController.PostComment(PassAPic.Models.Models.GameCommentModel)">
             <summary>
             Add a comment to a completed game
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.PostScoreTest(PassAPic.Models.GameCommentModel)">
+        <member name="M:PassAPic.Controllers.GameController.PostScoreTest(PassAPic.Models.Models.GameCommentModel)">
              <summary>
             Test for scoring
              </summary>
@@ -696,11 +696,6 @@
             Create animated Gif for game and return url
             </summary>
             <returns></returns>
-        </member>
-        <member name="P:PassAPic.Models.GameCommentModel.DateCreated">
-            <summary>
-            
-            </summary>
         </member>
     </members>
 </doc>

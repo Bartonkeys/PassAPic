@@ -123,8 +123,6 @@
     <Compile Include="Services\GameService.cs" />
     <Compile Include="WordManager\IWordManager.cs" />
     <Compile Include="WordManager\LocalWordManager.cs" />
-    <Compile Include="WordManager\Mode.cs" />
-    <Compile Include="WordManager\Word.cs" />
     <Compile Include="WordManager\WordnikManager.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +137,10 @@
     <ProjectReference Include="..\PassAPic.Data\PassAPic.Data.csproj">
       <Project>{47d67790-5496-4905-9785-9a281f5f818f}</Project>
       <Name>PassAPic.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PassAPic.Models\PassAPic.Models.csproj">
+      <Project>{e32308a4-a909-40c6-9815-7f92c26216c2}</Project>
+      <Name>PassAPic.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
