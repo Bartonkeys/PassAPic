@@ -690,6 +690,18 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetRecalculateLeaderboard(System.String)">
+             <summary>
+            Test for leaderboard
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.GameController.GetLeaderboard">
+             <summary>
+            Test for leaderboard
+             </summary>
+             <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>

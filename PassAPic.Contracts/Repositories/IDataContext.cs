@@ -13,6 +13,7 @@ namespace PassAPic.Contracts
         IDbSet<PushRegister> PushRegister { get; }
         IDbSet<Game_Comments> Comment { get; }
         IDbSet<Game_Scoring> Score { get; }
+        IDbSet<Leaderboard> Leaderboard { get; } 
 
         void Commit();
     }

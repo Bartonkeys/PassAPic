@@ -61,6 +61,7 @@
     <Compile Include="Models\GameSetupModel.cs" />
     <Compile Include="Models\GamesModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
+    <Compile Include="Models\LeaderboardModel.cs" />
     <Compile Include="Models\ManageInfoViewModel.cs" />
     <Compile Include="Models\Mode.cs" />
     <Compile Include="Models\NewWordsModel.cs" />

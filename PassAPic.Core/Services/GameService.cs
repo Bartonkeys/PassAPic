@@ -138,6 +138,87 @@ namespace PassAPic.Core.Services
             return message;
         }
 
+        public List<Leaderboard> RecalculateLeaderboard()
+        {
+
+            try
+            {
+                
+                var allScores = _dataContext.Score.ToList();
+                var newLeaderboard = CollateScoresForLeaderboard(allScores);
+
+                //Clear out old leaderboad
+                foreach (var leaderboard in _dataContext.Leaderboard)
+                {
+                    _dataContext.Leaderboard.Remove(leaderboard);
+                }
+
+                //Write all leaderboard items together
+                foreach (var leaderboard in newLeaderboard)
+                {
+                    _dataContext.Leaderboard.Add(leaderboard);
+                }
+
+                _dataContext.Commit();
+
+                return newLeaderboard;
+            }
+
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
+        private List<Leaderboard> CollateScoresForLeaderboard(List<Game_Scoring> scores)
+        {
+            var newLeaderboard = new List<Leaderboard>();
+            var now = DateTime.UtcNow;
+
+            try
+            {
+
+                foreach (var gameScoringModel in scores)
+                {
+
+                    var leaderboardItem = new Leaderboard();
+
+                    if (newLeaderboard.Any(l => l.UserId == gameScoringModel.User.Id))
+                    {
+                        leaderboardItem =
+                            (newLeaderboard.FirstOrDefault(l => l.UserId == gameScoringModel.User.Id));
+                        if (leaderboardItem != null)
+                        {
+                            leaderboardItem.TotalScore += gameScoringModel.Score;
+                            leaderboardItem.DateCreated = now;
+                        }
+                    }
+                    else
+                    {
+                        leaderboardItem.UserId = gameScoringModel.User.Id;
+                        leaderboardItem.Username = gameScoringModel.User.Username;
+                        leaderboardItem.TotalScore = gameScoringModel.Score;
+                        leaderboardItem.DateCreated = now;
+
+                    }
+
+                    newLeaderboard.Add(leaderboardItem);
+
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+
+            return newLeaderboard;
+            
+        }
+
         private bool compareWords(WordGuess firstWordGuess, WordGuess secondWordGuess)
         {         
             var firstWordModel = new WordModel

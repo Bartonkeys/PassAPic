@@ -20,6 +20,8 @@ namespace PassAPic.Core.Repositories
         public IDbSet<PushRegister> PushRegister { get { return _context.PushRegisters; } }
         public IDbSet<Game_Comments> Comment { get { return _context.Game_Comments; } }
         public IDbSet<Game_Scoring> Score { get { return _context.Game_Scoring; } }
+        public IDbSet<Leaderboard> Leaderboard { get { return _context.Leaderboards; } }
+        
         public void Commit()
         {
             _context.SaveChanges();        

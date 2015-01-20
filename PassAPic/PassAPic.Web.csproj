@@ -214,7 +214,9 @@
     </Compile>
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BaseMvcController.cs" />
     <Compile Include="Controllers\GameController.cs" />
+    <Compile Include="Controllers\LeaderboardController.cs" />
     <Compile Include="Controllers\GifController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WordController.cs" />
@@ -293,6 +295,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Word\Create.cshtml" />
+    <Content Include="Views\Leaderboard\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -214,7 +214,11 @@ namespace PassAPic.Controllers
                     //Calculate Scores
                     var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
                     //try writing scores to DB
-                    var result = GameService.SaveScoresToDatabase(scores);
+                    GameService.SaveScoresToDatabase(scores);
+                    //Update Leaderboard
+                    GameService.RecalculateLeaderboard();
+                    
+
                 }
                 else
                 {
@@ -595,7 +599,10 @@ namespace PassAPic.Controllers
                     //Calculate Scores
                     var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
                     //try writing scores to DB
-                    var result = GameService.SaveScoresToDatabase(scores);
+                    GameService.SaveScoresToDatabase(scores);
+                    //Update Leaderboard
+                    GameService.RecalculateLeaderboard();
+
                 }
                 
 
@@ -717,6 +724,54 @@ namespace PassAPic.Controllers
         }
 
 
+        // Get /api/game/recalculateLeaderboard/{password}
+        /// <summary>
+        ///Test for leaderboard
+        /// </summary>
+        /// <returns></returns>
+        [Route("RecalculateLeaderboard/{password}")]
+        public async Task<HttpResponseMessage> GetRecalculateLeaderboard(string password)
+        {
+            if (password != "ilovepassapic")
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "You are not allowed to access this");
+            }
+            try
+            {
+
+                var result = GameService.RecalculateLeaderboard();
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This game does not exist");
+        }
+
+
+        // Get /api/game/getLeaderboard
+        /// <summary>
+        ///Test for leaderboard
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetLeaderboard")]
+        public async Task<HttpResponseMessage> GetLeaderboard()
+        {
+            try
+            {
+                var result = DataContext.Leaderboard.ToList();
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
 
 
         #region "Helper methods"

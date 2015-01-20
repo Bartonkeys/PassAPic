@@ -73,6 +73,16 @@
           <Property Name="Word" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Id" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Leaderboard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Username" Type="nvarchar(max)" />
+          <Property Name="TotalScore" Type="int" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="PushRegister">
           <Key>
             <PropertyRef Name="Id" />
@@ -245,6 +255,7 @@
           <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_WordGuess" EntityType="Self.Guesses_WordGuess" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Leaderboard" EntityType="Self.Leaderboard" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PushRegister" EntityType="Self.PushRegister" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Words" EntityType="Self.Words" Schema="dbo" store:Type="Tables" />
@@ -342,6 +353,7 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Game_Scoring" EntitySet="Game_Scoring" />
           </AssociationSet>
+          <EntitySet Name="Leaderboards" EntityType="PassAPicModel.Leaderboard" />
           </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -521,6 +533,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Leaderboard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="TotalScore" Type="Int32" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -656,6 +678,17 @@
                 <ScalarProperty Name="Score" ColumnName="Score" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Leaderboards">
+            <EntityTypeMapping TypeName="PassAPicModel.Leaderboard">
+              <MappingFragment StoreEntitySet="Leaderboard">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
