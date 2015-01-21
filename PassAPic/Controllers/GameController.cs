@@ -75,7 +75,8 @@ namespace PassAPic.Controllers
                     StartingWord = startingWord.RandomWord,
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user,
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    TimerInSeconds = model.TimerInSeconds!=null?model.TimerInSeconds:0
                 };
 
                 DataContext.Game.Add(game);
@@ -87,7 +88,8 @@ namespace PassAPic.Controllers
                     UserId = user.Id,
                     Word = game.StartingWord,
                     CreatorId = game.Creator.Id,
-                    Mode = model.Mode
+                    Mode = model.Mode,
+                    TimerInSeconds = model.TimerInSeconds != null ? model.TimerInSeconds : 0
                 };
 
                 return Request.CreateResponse(HttpStatusCode.Created, wordModel);

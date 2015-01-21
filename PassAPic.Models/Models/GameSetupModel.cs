@@ -10,5 +10,6 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "isEasyMode")]
         public bool IsEasyMode { get; set; }
 
+
     }
 }

@@ -45,6 +45,7 @@
           <Property Name="AnimatedResult" Type="varchar(max)" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="DateCompleted" Type="datetime" />
+          <Property Name="TimerInSeconds" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Guesses">
           <Key>
@@ -370,6 +371,7 @@
           <Property Name="DateCompleted" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Games" FromRole="Game" ToRole="Game_Comments" />
           <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Games" FromRole="Game" ToRole="Game_Scoring" />
+          <Property Name="TimerInSeconds" Type="Int32" Nullable="false" />
           </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -552,6 +554,7 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
+                <ScalarProperty Name="TimerInSeconds" ColumnName="TimerInSeconds" />
                 <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="AnimatedResult" ColumnName="AnimatedResult" />

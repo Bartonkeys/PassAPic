@@ -28,6 +28,7 @@ namespace PassAPic.Data
         public string AnimatedResult { get; set; }
         public System.DateTime DateCreated { get; set; }
         public Nullable<System.DateTime> DateCompleted { get; set; }
+        public int TimerInSeconds { get; set; }
     
         public virtual ICollection<Guess> Guesses { get; set; }
         public virtual User Creator { get; set; }

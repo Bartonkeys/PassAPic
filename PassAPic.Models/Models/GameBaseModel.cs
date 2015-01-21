@@ -36,6 +36,8 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "dateCreated")]
         public DateTime DateCreated { get; set; }
 
+        [JsonProperty(PropertyName = "timerInSeconds")]
+        public int TimerInSeconds { get; set; }
 
     }
 }

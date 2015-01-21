@@ -34,6 +34,5 @@ namespace PassAPic.Data
         public virtual DbSet<Game_Comments> Game_Comments { get; set; }
         public virtual DbSet<Game_Scoring> Game_Scoring { get; set; }
         public virtual DbSet<Leaderboard> Leaderboards { get; set; }
-
     }
 }
