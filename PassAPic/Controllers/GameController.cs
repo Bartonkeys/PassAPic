@@ -763,8 +763,21 @@ namespace PassAPic.Controllers
         {
             try
             {
-                var result = DataContext.Leaderboard.ToList();
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                var leaderboardItems = DataContext.Leaderboard;
+
+                var leaderboardModels = new List<LeaderboardModel>();
+                foreach (var leaderboardItem in leaderboardItems)
+                {
+                    if (leaderboardItem.TotalScore != null)
+                        leaderboardModels.Add(new LeaderboardModel()
+                        {
+                            UserName = leaderboardItem.Username,
+                            TotalScore = (int)leaderboardItem.TotalScore
+
+                        });
+                }
+                
+                return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.TotalScore));
             }
             catch (Exception ex)
             {

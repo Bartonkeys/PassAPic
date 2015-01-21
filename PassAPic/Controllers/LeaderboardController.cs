@@ -17,20 +17,10 @@ namespace PassAPic.Controllers
         {
             var client = new HttpClient();
             var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboard");
-            var leaderboardItems = await response.Content.ReadAsAsync<List<Leaderboard>>();
-
-            var leaderboardModels = new List<LeaderboardModel>();
-            foreach (var leaderboardItem in leaderboardItems)
-            {
-                if (leaderboardItem.TotalScore != null)
-                    leaderboardModels.Add(new LeaderboardModel()
-                        {
-                            UserName = leaderboardItem.Username,
-                            TotalScore = (int) leaderboardItem.TotalScore
-
-                        });
-            }
-            return View(leaderboardModels.OrderByDescending(l => l.TotalScore));
+            
+            var leaderboardModels = await response.Content.ReadAsAsync<List<LeaderboardModel>>();
+            
+            return View(leaderboardModels);
         }
     }
 }
