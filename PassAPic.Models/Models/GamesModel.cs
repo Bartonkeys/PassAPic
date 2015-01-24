@@ -39,6 +39,9 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "comments")]
         public virtual List<GameCommentClientModel> Comments { get; set; }
 
+        [JsonProperty(PropertyName = "timerInSeconds")]
+        public int TimerInSeconds { get; set; }
+
        
 
     }

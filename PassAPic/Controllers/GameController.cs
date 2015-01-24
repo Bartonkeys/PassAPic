@@ -352,6 +352,7 @@ namespace PassAPic.Controllers
                         GameOverMan = y.Game.GameOverMan,
                         DateCreated = y.Game.DateCreated,
                         DateCompleted = y.Game.DateCompleted,
+                        TimerInSeconds = y.Game.TimerInSeconds,
                         Animation = y.Game.AnimatedResult,
                         Comments = DataContext.Comment.Where(c => c.GameId == y.Game.Id)
                         .Select(u => new GameCommentClientModel
