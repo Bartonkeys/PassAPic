@@ -790,6 +790,62 @@ namespace PassAPic.Controllers
         }
 
 
+        // GET api/Game/UsersNotPlaying
+        /// <summary>
+        ///     This API will return a list of online users not playing in the this game.
+        /// </summary>
+        /// <returns></returns>
+        [Route("UsersNotPlaying/{currentUserId}/{gameId}/{page?}/{pageSize?}")]
+        [AllowAnonymous]
+        public HttpResponseMessage GetUsersNotPlaying(int currentUserId, int gameId, int page = 0, int pageSize = 10)
+        {
+            try
+            {
+
+                IQueryable<AccountModel> usersOnline =
+                    DataContext.User
+                    .Where(x => x.IsOnline)
+                    .OrderBy(x => x.Username)
+                    .Skip(pageSize * page)
+                    .Take(pageSize)
+                        .Select(y => new AccountModel
+                        {
+                            UserId = y.Id,
+                            Username = y.Username,
+                            LastActivity = y.Games.Max(d => d.DateCompleted),
+                            NumberOfCompletedGames = y.Games.Count(g => g.GameOverMan),
+                            HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
+                            GamesPlayedWithUserBefore = y.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
+
+                        });
+
+
+                var playersInGame = DataContext.Guess.Where(g => g.Game.Id == gameId).Select(u => new AccountModel
+                {
+                    UserId = u.User.Id,
+                    Username = u.User.Username,
+                    LastActivity = u.User.Games.Max(d => d.DateCompleted),
+                    NumberOfCompletedGames = u.User.Games.Count(g => g.GameOverMan),
+                    HasPlayedWithUserBefore = u.User.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
+                    GamesPlayedWithUserBefore = u.User.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
+
+                });
+
+                var onlineUsersNotPlaying = usersOnline.Except(playersInGame);
+
+                var sortedUsers = onlineUsersNotPlaying.OrderBy(o => o.GamesPlayedWithUserBefore).ToList();
+                sortedUsers.Reverse();
+
+                return Request.CreateResponse(HttpStatusCode.OK, sortedUsers);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+
         #region "Helper methods"
 
         private string SaveImageToCloud(string imagePath, string imageName)

@@ -31,9 +31,14 @@ namespace PassAPic.Core.Services
              *  
              * 2. If a user guesses the same word as the previous usr was trying to draw:
              *   - both the drawer and the guesser get one point each
+             *   
+             * 3. If this is a timed game
+             *   - both drawers and guessers get double points
+             * 
              */
 
             var gameScores = new List<GameScoringModel>();
+            var scoreMultiplier = game.TimerInSeconds == 0 ? 1 : 2;
 
             List<Guess> guesses = game.Guesses.OrderBy(g => g.Order).ToList();
             var startingWord = new WordGuess()
@@ -62,7 +67,7 @@ namespace PassAPic.Core.Services
                         GameId = game.Id,
                         UserId = word1.NextUser.Id,
                         UserName = word1.NextUser.Username,
-                        Score = 1
+                        Score = 1 * scoreMultiplier
                     });
 
                     gameScores.Add(new GameScoringModel()
@@ -70,7 +75,7 @@ namespace PassAPic.Core.Services
                         GameId = game.Id,
                         UserId = word2.User.Id,
                         UserName = word2.User.Username,
-                        Score = 1
+                        Score = 1 * scoreMultiplier
                     });
                 }
             }
@@ -88,7 +93,7 @@ namespace PassAPic.Core.Services
                     if (gameScores.Any(s => s.UserId == game.Creator.Id))
                     {
                         var score = gameScores.Find(s => s.UserId == game.Creator.Id);
-                        score.Score += game.NumberOfGuesses;
+                        score.Score += (game.NumberOfGuesses * scoreMultiplier) ;
                     }
                     else
                     {
@@ -97,7 +102,7 @@ namespace PassAPic.Core.Services
                             GameId = game.Id,
                             UserId = game.Creator.Id,
                             UserName = game.Creator.Username,
-                            Score = game.NumberOfGuesses
+                            Score = game.NumberOfGuesses * scoreMultiplier
                         });
                     }
                     

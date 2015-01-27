@@ -26,6 +26,9 @@ namespace PassAPic.Models.Models
          [JsonProperty(PropertyName = "hasPlayedWithUserBefore")]
         public bool HasPlayedWithUserBefore { get; set; }
 
+         [JsonProperty(PropertyName = "gamesPlayedWithUserBefore")]
+         public int GamesPlayedWithUserBefore { get; set; }
+
         [JsonProperty(PropertyName = "password")]
         public string Password { get; set; }
 
