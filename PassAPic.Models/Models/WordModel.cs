@@ -12,6 +12,7 @@ namespace PassAPic.Models.Models
 
         [JsonProperty("sentFromUsername")]
         public string SentFromUsername { get; set; }
+
     }
     
 }

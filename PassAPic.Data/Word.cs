@@ -16,5 +16,6 @@ namespace PassAPic.Data
     {
         public int Id { get; set; }
         public string word { get; set; }
+        public Nullable<int> games { get; set; }
     }
 }

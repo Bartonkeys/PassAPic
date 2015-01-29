@@ -1,4 +1,5 @@
-﻿using PassAPic.Contracts;
+﻿using System.Linq;
+using PassAPic.Contracts;
 using System.Threading.Tasks;
 using PassAPic.Core.WordManager;
 using PassAPic.Models.Models;
@@ -10,6 +11,11 @@ namespace PassAPic.Core.WordManager
     {
         IDataContext DataContext { get; set; }
 
-        Task<Word> GetWord(Mode mode);
+        Task<Word> GetWord(Mode mode, bool isLeastUsedWords);
+
+        int IncrementGameCount(string word);
+
+        IQueryable<Data.Word> LeastUsedWords();
+
     }
 }

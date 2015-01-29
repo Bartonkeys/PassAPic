@@ -219,6 +219,7 @@
     <Compile Include="Controllers\LeaderboardController.cs" />
     <Compile Include="Controllers\GifController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\WordApiController.cs" />
     <Compile Include="Controllers\WordController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

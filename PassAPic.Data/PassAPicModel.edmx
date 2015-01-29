@@ -46,6 +46,7 @@
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
           <Property Name="DateCompleted" Type="datetime" />
           <Property Name="TimerInSeconds" Type="int" Nullable="false" />
+          <Property Name="Exchanges" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Guesses">
           <Key>
@@ -111,6 +112,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="word" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="games" Type="int" />
         </EntityType>
         <Association Name="FK_Game_Comments_Games">
           <End Role="Games" Type="Self.Games" Multiplicity="1" />
@@ -372,6 +374,7 @@
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Games" FromRole="Game" ToRole="Game_Comments" />
           <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Games" FromRole="Game" ToRole="Game_Scoring" />
           <Property Name="TimerInSeconds" Type="Int32" Nullable="false" />
+          <Property Name="Exchanges" Type="Int32" Nullable="false" />
           </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -427,6 +430,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="word" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="games" Type="Int32" />
         </EntityType>
         <Association Name="NextGuesses">
           <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="*" />
@@ -554,6 +558,7 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
+                <ScalarProperty Name="Exchanges" ColumnName="Exchanges" />
                 <ScalarProperty Name="TimerInSeconds" ColumnName="TimerInSeconds" />
                 <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
@@ -603,7 +608,8 @@
     <EntitySetMapping Name="Words">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Word)">
         <MappingFragment StoreEntitySet="Words">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="games" ColumnName="games" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="word" ColumnName="word" />
         </MappingFragment>
       </EntityTypeMapping>

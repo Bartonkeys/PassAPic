@@ -14,7 +14,7 @@ namespace PassAPic.Core.WordManager
         [Inject]
         public IDataContext DataContext { get; set; }
 
-        public async Task<Word> GetWord(Mode mode)
+        public async Task<Word> GetWord(Mode mode, bool isLeastUsedWords)
         {
             switch (mode)
             {
@@ -42,5 +42,10 @@ namespace PassAPic.Core.WordManager
             return new Word();
         }
 
+        public int IncrementGameCount(string word)
+        { throw new NotImplementedException();}
+
+        public IQueryable<Data.Word> LeastUsedWords()
+        { throw new NotImplementedException(); }
     }
 }

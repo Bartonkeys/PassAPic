@@ -68,7 +68,7 @@ namespace PassAPic.Controllers
             {
                 var user = DataContext.User.Find(model.UserId);
 
-                var startingWord = await WordManager.GetWord(model.Mode);
+                var startingWord = await WordManager.GetWord(model.Mode, true);
               
                 var game = new Game
                 {
@@ -119,8 +119,9 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                var word = await WordManager.GetWord(mode);
+                var word = await WordManager.GetWord(mode, game.Exchanges < WordManager.LeastUsedWords().Count());
                 game.StartingWord = word.RandomWord;
+                game.Exchanges++;
                 DataContext.Commit();
 
                 var wordModel = new WordModel
@@ -546,7 +547,12 @@ namespace PassAPic.Controllers
                 SetPreviousGuessAsComplete(game, userId);
 
                 var order = game.Guesses.Count + 1;
-
+                 //If this is the first guess of the game we know the starting word can no longer be excanged
+                if (order < 2)
+                {
+                    WordManager.IncrementGameCount(game.StartingWord);
+                }
+                    
                 var imageGuess = new ImageGuess
                 {
                     Order = order,
@@ -845,6 +851,20 @@ namespace PassAPic.Controllers
             }
         }
 
+         // GET api/Game/UsersNotPlaying
+        /// <summary>
+        ///     This API will return a list of online users not playing in the this game.
+        /// </summary>
+        /// <returns></returns>
+        [Route("TestRandomWord/{currentUserId}/{gameId}")]
+        [AllowAnonymous]
+        public HttpResponseMessage GetRandomWord(int currentUserId, int gameId)
+        {
+            var word = WordManager.GetWord(Mode.Normal, true);
+            return Request.CreateResponse(HttpStatusCode.OK, word);
+        }
+
+        
 
         #region "Helper methods"
 

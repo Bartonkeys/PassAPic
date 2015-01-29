@@ -15,19 +15,30 @@ namespace PassAPic.Core.WordManager
         [Inject]
         public IDataContext DataContext { get; set; }
 
-        public Task<Word> GetWord(Mode mode)
+        public Task<Word> GetWord(Mode mode, bool isLeastUsedWords)
         {
             int count;
             int index;
             var startingWord = new Word();
+            IQueryable<Data.Word> wordPool;
 
+            if (isLeastUsedWords)
+            {
+                var leastUsedWords = LeastUsedWords();
+                wordPool = leastUsedWords;
+            }
+            else
+            {
+                wordPool = DataContext.Word;
+            }
+            
             switch (mode)
             {
                 case Mode.Normal:
-                    count = DataContext.Word.Count();
+                    count = wordPool.Count();
                     index = new Random().Next(count);
                     startingWord =
-                        DataContext.Word.OrderBy(x => x.Id).Skip(index).Select(x => new Word {RandomWord = x.word}).First();
+                        wordPool.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.word }).First();
                     break;
                 case Mode.Easy:
                     count = DataContext.EasyWord.Count();
@@ -39,6 +50,27 @@ namespace PassAPic.Core.WordManager
             }
 
             return Task.Run(() => startingWord);
+        }
+
+        public IQueryable<Data.Word> LeastUsedWords()
+        {
+            var minGameCount = DataContext.Word.Min(w => w.games);
+            var leastUsedWords = DataContext.Word.Where(w => w.games == minGameCount);
+            return leastUsedWords;
+        }
+
+        public int IncrementGameCount(string word)
+        {
+            var wordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
+            int gameCount = -1;
+            if (wordModel != null)
+            {
+                if (wordModel.games != null) gameCount = (int) wordModel.games++;
+                DataContext.Commit();
+            }
+
+            return gameCount;
+
         }
     }
 }

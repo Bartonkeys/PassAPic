@@ -708,10 +708,27 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetRandomWord(System.Int32,System.Int32)">
+            <summary>
+                This API will return a list of online users not playing in the this game.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>
             Create animated Gif for game and return url
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:PassAPic.Controllers.WordApiController">
+            <summary>
+            Handles word stuff
+            </summary>
+        </member>
+        <member name="M:PassAPic.Controllers.WordApiController.GetCleanup(System.String)">
+            <summary>
+            Cleanup the words in the DB
             </summary>
             <returns></returns>
         </member>

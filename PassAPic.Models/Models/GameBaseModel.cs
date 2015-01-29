@@ -39,5 +39,8 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "timerInSeconds")]
         public int TimerInSeconds { get; set; }
 
+        [JsonProperty(PropertyName = "exchanges")]
+        public int Exchanges { get; set; }
+
     }
 }
