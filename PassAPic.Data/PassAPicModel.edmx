@@ -11,6 +11,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Word" Type="varchar(max)" Nullable="false" />
+          <Property Name="games" Type="int" />
         </EntityType>
         <EntityType Name="Game_Comments">
           <Key>
@@ -22,6 +23,14 @@
           <Property Name="GameId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Game_Exchange_Words">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="word" Type="varchar" MaxLength="200" />
+          <Property Name="GameId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Game_Scoring">
           <Key>
@@ -135,6 +144,18 @@
             </Principal>
             <Dependent Role="Game_Comments">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Exchange_Words_Games">
+          <End Role="Games" Type="Self.Games" Multiplicity="1" />
+          <End Role="Game_Exchange_Words" Type="Self.Game_Exchange_Words" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Games">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Exchange_Words">
+              <PropertyRef Name="GameId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -253,6 +274,7 @@
         <EntityContainer Name="PassAPicModelStoreContainer">
           <EntitySet Name="EasyWords" EntityType="Self.EasyWords" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Game_Comments" EntityType="Self.Game_Comments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Game_Exchange_Words" EntityType="Self.Game_Exchange_Words" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Game_Scoring" EntityType="Self.Game_Scoring" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Games" EntityType="Self.Games" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses" EntityType="Self.Guesses" Schema="dbo" store:Type="Tables" />
@@ -269,6 +291,10 @@
           <AssociationSet Name="FK_Game_Comments_Users" Association="Self.FK_Game_Comments_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Game_Comments" EntitySet="Game_Comments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Exchange_Words_Games" Association="Self.FK_Game_Exchange_Words_Games">
+            <End Role="Games" EntitySet="Games" />
+            <End Role="Game_Exchange_Words" EntitySet="Game_Exchange_Words" />
           </AssociationSet>
           <AssociationSet Name="FK_Game_Scoring_Games" Association="Self.FK_Game_Scoring_Games">
             <End Role="Games" EntitySet="Games" />
@@ -357,6 +383,11 @@
             <End Role="Game_Scoring" EntitySet="Game_Scoring" />
           </AssociationSet>
           <EntitySet Name="Leaderboards" EntityType="PassAPicModel.Leaderboard" />
+          <EntitySet Name="Game_Exchange_Words" EntityType="PassAPicModel.Game_Exchange_Words" />
+          <AssociationSet Name="FK_Game_Exchange_Words_Games" Association="PassAPicModel.FK_Game_Exchange_Words_Games">
+            <End Role="Game" EntitySet="Games" />
+            <End Role="Game_Exchange_Words" EntitySet="Game_Exchange_Words" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -375,6 +406,7 @@
           <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Games" FromRole="Game" ToRole="Game_Scoring" />
           <Property Name="TimerInSeconds" Type="Int32" Nullable="false" />
           <Property Name="Exchanges" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Game_Exchange_Words" Relationship="PassAPicModel.FK_Game_Exchange_Words_Games" FromRole="Game" ToRole="Game_Exchange_Words" />
           </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -465,6 +497,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="games" Type="Int32" />
         </EntityType>
         <EntityType Name="Game_Comments">
           <Key>
@@ -549,6 +582,27 @@
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="Game_Exchange_Words">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="word" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="GameId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Game" Relationship="PassAPicModel.FK_Game_Exchange_Words_Games" FromRole="Game_Exchange_Words" ToRole="Game" />
+        </EntityType>
+        <Association Name="FK_Game_Exchange_Words_Games">
+          <End Type="PassAPicModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="PassAPicModel.Game_Exchange_Words" Role="Game_Exchange_Words" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Game_Exchange_Words">
+              <PropertyRef Name="GameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -663,6 +717,7 @@
           <EntitySetMapping Name="EasyWords">
             <EntityTypeMapping TypeName="PassAPicModel.EasyWord">
               <MappingFragment StoreEntitySet="EasyWords">
+                <ScalarProperty Name="games" ColumnName="games" />
                 <ScalarProperty Name="Word" ColumnName="Word" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -698,6 +753,15 @@
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Game_Exchange_Words">
+            <EntityTypeMapping TypeName="PassAPicModel.Game_Exchange_Words">
+              <MappingFragment StoreEntitySet="Game_Exchange_Words">
+                <ScalarProperty Name="GameId" ColumnName="GameId" />
+                <ScalarProperty Name="word" ColumnName="word" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

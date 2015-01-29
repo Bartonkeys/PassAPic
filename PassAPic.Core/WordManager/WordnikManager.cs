@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Ninject;
 using PassAPic.Contracts;
-using PassAPic.Models.Models;
+using PassAPic.Data;
 using PassAPic.Models.Models.Models;
+using Word = PassAPic.Models.Models.Word;
 
 namespace PassAPic.Core.WordManager
 {
@@ -14,7 +16,7 @@ namespace PassAPic.Core.WordManager
         [Inject]
         public IDataContext DataContext { get; set; }
 
-        public async Task<Word> GetWord(Mode mode, bool isLeastUsedWords)
+        public async Task<Word> GetWord(Mode mode, bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords)
         {
             switch (mode)
             {

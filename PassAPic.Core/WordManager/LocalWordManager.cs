@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PassAPic.Models.Models;
+using PassAPic.Data;
 using PassAPic.Models.Models.Models;
+using Word = PassAPic.Models.Models.Word;
 
 namespace PassAPic.Core.WordManager
 {
@@ -15,36 +16,29 @@ namespace PassAPic.Core.WordManager
         [Inject]
         public IDataContext DataContext { get; set; }
 
-        public Task<Word> GetWord(Mode mode, bool isLeastUsedWords)
+        public Task<Word> GetWord(Mode mode, bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords)
         {
             int count;
             int index;
             var startingWord = new Word();
-            IQueryable<Data.Word> wordPool;
-
-            if (isLeastUsedWords)
-            {
-                var leastUsedWords = LeastUsedWords();
-                wordPool = leastUsedWords;
-            }
-            else
-            {
-                wordPool = DataContext.Word;
-            }
-            
+           
             switch (mode)
             {
                 case Mode.Normal:
+                    IQueryable<Data.Word> wordPool = CreateWordPool(isLeastUsedWords, exchangedWords);
+            
                     count = wordPool.Count();
                     index = new Random().Next(count);
                     startingWord =
                         wordPool.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.word }).First();
                     break;
                 case Mode.Easy:
-                    count = DataContext.EasyWord.Count();
+                    IQueryable<Data.EasyWord> easyWordPool = CreateEasyWordPool(isLeastUsedWords, exchangedWords);
+
+                    count = easyWordPool.Count();
                     index = new Random().Next(count);
                     startingWord =
-                        DataContext.EasyWord.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.Word }).First();
+                        easyWordPool.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.Word }).First();
 
                     break;
             }
@@ -52,11 +46,96 @@ namespace PassAPic.Core.WordManager
             return Task.Run(() => startingWord);
         }
 
+        private IQueryable<Data.Word> CreateWordPool(bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords)
+        {
+            IQueryable<Data.Word> wordPool;
+            if (isLeastUsedWords)
+            {
+                var leastUsedWords = LeastUsedWords();
+                if (exchangedWords != null)
+                {
+                    var exchangedWordList = exchangedWords.Select(gameExchangeWord => gameExchangeWord.word).ToList();
+                    wordPool = leastUsedWords.Where(w => exchangedWordList.All(e => e != w.word));
+                    if (!wordPool.Any())
+                    {
+                        wordPool = leastUsedWords;
+                    }
+                }
+                else
+                {
+                    wordPool = leastUsedWords;
+                }
+            }
+            else
+            {
+                if (exchangedWords != null)
+                {
+                    var exchangedWordList = exchangedWords.Select(gameExchangeWord => gameExchangeWord.word).ToList();
+                    wordPool = DataContext.Word.Where(w => exchangedWordList.All(e => e != w.word));
+                    if (!wordPool.Any())
+                    {
+                        wordPool = DataContext.Word;
+                    }
+                }
+                else
+                {
+                    wordPool = DataContext.Word;
+                }
+            }
+            return wordPool;
+        }
+
+        private IQueryable<Data.EasyWord> CreateEasyWordPool(bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords)
+        {
+            IQueryable<Data.EasyWord> wordPool;
+            if (isLeastUsedWords)
+            {
+                var leastUsedWords = LeastUsedEasyWords();
+                if (exchangedWords != null)
+                {
+                    var exchangedWordList = exchangedWords.Select(gameExchangeWord => gameExchangeWord.word).ToList();
+                    wordPool = leastUsedWords.Where(w => exchangedWordList.All(e => e != w.Word));
+                    if (!wordPool.Any())
+                    {
+                        wordPool = leastUsedWords;
+                    }
+                }
+                else
+                {
+                    wordPool = leastUsedWords;
+                }
+            }
+            else
+            {
+                if (exchangedWords != null)
+                {
+                    var exchangedWordList = exchangedWords.Select(gameExchangeWord => gameExchangeWord.word).ToList();
+                    wordPool = DataContext.EasyWord.Where(w => exchangedWordList.All(e => e != w.Word));
+                    if (!wordPool.Any())
+                    {
+                        wordPool = DataContext.EasyWord;
+                    }
+                }
+                else
+                {
+                    wordPool = DataContext.EasyWord;
+                }
+            }
+            return wordPool;
+        }
+
         public IQueryable<Data.Word> LeastUsedWords()
         {
             var minGameCount = DataContext.Word.Min(w => w.games);
             var leastUsedWords = DataContext.Word.Where(w => w.games == minGameCount);
             return leastUsedWords;
+        }
+
+        public IQueryable<Data.EasyWord> LeastUsedEasyWords()
+        {
+            var minGameCount = DataContext.EasyWord.Min(w => w.games);
+            var leastUsedEasyWords = DataContext.EasyWord.Where(w => w.games == minGameCount);
+            return leastUsedEasyWords;
         }
 
         public int IncrementGameCount(string word)
@@ -72,5 +151,6 @@ namespace PassAPic.Core.WordManager
             return gameCount;
 
         }
+
     }
 }

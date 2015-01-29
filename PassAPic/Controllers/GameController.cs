@@ -68,7 +68,7 @@ namespace PassAPic.Controllers
             {
                 var user = DataContext.User.Find(model.UserId);
 
-                var startingWord = await WordManager.GetWord(model.Mode, true);
+                var startingWord = await WordManager.GetWord(model.Mode, true, null);
               
                 var game = new Game
                 {
@@ -78,6 +78,12 @@ namespace PassAPic.Controllers
                     DateCreated = DateTime.UtcNow,
                     TimerInSeconds = model.TimerInSeconds!=null?model.TimerInSeconds:0
                 };
+
+                game.Game_Exchange_Words.Add(new Game_Exchange_Words()
+                {
+                    GameId = game.Id,
+                    word = game.StartingWord
+                });
 
                 DataContext.Game.Add(game);
                 DataContext.Commit();
@@ -119,9 +125,15 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                var word = await WordManager.GetWord(mode, game.Exchanges < WordManager.LeastUsedWords().Count());
+                var word = await WordManager.GetWord(mode, game.Exchanges < WordManager.LeastUsedWords().Count(), game.Game_Exchange_Words);
+                
                 game.StartingWord = word.RandomWord;
                 game.Exchanges++;
+                game.Game_Exchange_Words.Add(new Game_Exchange_Words()
+                {
+                    GameId = gameId,
+                    word = game.StartingWord
+                });
                 DataContext.Commit();
 
                 var wordModel = new WordModel
@@ -849,19 +861,6 @@ namespace PassAPic.Controllers
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
-        }
-
-         // GET api/Game/UsersNotPlaying
-        /// <summary>
-        ///     This API will return a list of online users not playing in the this game.
-        /// </summary>
-        /// <returns></returns>
-        [Route("TestRandomWord/{currentUserId}/{gameId}")]
-        [AllowAnonymous]
-        public HttpResponseMessage GetRandomWord(int currentUserId, int gameId)
-        {
-            var word = WordManager.GetWord(Mode.Normal, true);
-            return Request.CreateResponse(HttpStatusCode.OK, word);
         }
 
         

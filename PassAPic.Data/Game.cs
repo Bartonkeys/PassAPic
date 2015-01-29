@@ -19,6 +19,7 @@ namespace PassAPic.Data
             this.Guesses = new HashSet<Guess>();
             this.Game_Comments = new HashSet<Game_Comments>();
             this.Game_Scoring = new HashSet<Game_Scoring>();
+            this.Game_Exchange_Words = new HashSet<Game_Exchange_Words>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,6 @@ namespace PassAPic.Data
         public virtual User Creator { get; set; }
         public virtual ICollection<Game_Comments> Game_Comments { get; set; }
         public virtual ICollection<Game_Scoring> Game_Scoring { get; set; }
+        public virtual ICollection<Game_Exchange_Words> Game_Exchange_Words { get; set; }
     }
 }

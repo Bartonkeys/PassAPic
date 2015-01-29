@@ -60,7 +60,18 @@ namespace PassAPic.Controllers
                         DataContext.Game.Count(g => g.StartingWord.Trim().ToLower().Equals(normalWord.word.ToLower()));
                     normalWord.games = noOfTimesUsed;
                 }
-               
+
+
+                var easyWords = DataContext.EasyWord;
+
+                foreach (var easyWord in easyWords)
+                {
+                    easyWord.Word = easyWord.Word.Trim();
+                    var noOfTimesUsed =
+                        DataContext.Game.Count(g => g.StartingWord.Trim().ToLower().Equals(easyWord.Word.ToLower()));
+                    easyWord.games = noOfTimesUsed;
+                }
+
                 DataContext.Commit();
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Cleanup successful");

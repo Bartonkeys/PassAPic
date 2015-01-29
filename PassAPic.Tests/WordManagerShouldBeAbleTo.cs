@@ -14,7 +14,7 @@ namespace PassAPic.Tests
         public async Task GetANormalWord()
         {
             var wm = new WordnikManager();
-            var result = wm.GetWord(Mode.Normal);
+            var result = wm.GetWord(Mode.Normal, true, null);
             Assert.IsNotNull(result);
         }
     }

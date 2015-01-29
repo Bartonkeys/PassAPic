@@ -68,6 +68,9 @@
     <Compile Include="Game_Comments.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Game_Exchange_Words.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Game_Scoring.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>

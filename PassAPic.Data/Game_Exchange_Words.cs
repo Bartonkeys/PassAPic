@@ -12,10 +12,12 @@ namespace PassAPic.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class EasyWord
+    public partial class Game_Exchange_Words
     {
         public int Id { get; set; }
-        public string Word { get; set; }
-        public Nullable<int> games { get; set; }
+        public string word { get; set; }
+        public int GameId { get; set; }
+    
+        public virtual Game Game { get; set; }
     }
 }

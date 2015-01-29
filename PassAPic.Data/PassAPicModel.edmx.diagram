@@ -28,6 +28,8 @@
         <AssociationConnector Association="PassAPicModel.FK_Game_Scoring_Games" />
         <AssociationConnector Association="PassAPicModel.FK_Game_Scoring_Users" />
         <EntityTypeShape EntityType="PassAPicModel.Leaderboard" Width="1.5" PointX="10.625" PointY="4.75" />
+        <EntityTypeShape EntityType="PassAPicModel.Game_Exchange_Words" Width="1.5" PointX="5.625" PointY="7.125" />
+        <AssociationConnector Association="PassAPicModel.FK_Game_Exchange_Words_Games" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
