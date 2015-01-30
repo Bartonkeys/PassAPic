@@ -138,18 +138,73 @@ namespace PassAPic.Core.WordManager
             return leastUsedEasyWords;
         }
 
-        public int IncrementGameCount(string word)
+        public int IncrementGameCount(string word, Mode mode)
         {
-            var wordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
             int gameCount = -1;
-            if (wordModel != null)
+
+            switch (mode)
             {
-                if (wordModel.games != null) gameCount = (int) wordModel.games++;
-                DataContext.Commit();
+                case Mode.Normal:
+                    var wordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
+                    if (wordModel != null)
+                    {if (wordModel.games != null) gameCount = (int) wordModel.games++;}
+                    break;
+
+                case Mode.Easy:
+                    var easyWordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
+                    if (easyWordModel != null)
+                    {if (easyWordModel.games != null) gameCount = (int)easyWordModel.games++;}
+                    break;
             }
 
+            DataContext.Commit();
+            
             return gameCount;
 
+        }
+
+        public int IncrementExchangeCount(string word, Mode mode)
+        {
+            int exchangeCount = -1;
+
+            switch (mode)
+            {
+                case Mode.Normal:
+                    var wordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
+                    if (wordModel != null)
+                    {
+                        if (wordModel.exchanges != null)
+                        {
+                            exchangeCount = (int) wordModel.exchanges++;
+                        }
+                        else
+                        {
+                            wordModel.exchanges = 1;
+                            exchangeCount = 1;
+                        }
+                    }
+                    break;
+
+                case Mode.Easy:
+                    var easyWordModel = DataContext.EasyWord.FirstOrDefault(w => w.Word.Equals(word));
+                    if (easyWordModel != null)
+                    {
+                        if (easyWordModel.exchanges != null)
+                        {
+                            exchangeCount = (int)easyWordModel.exchanges++;
+                        }
+                        else
+                        {
+                            easyWordModel.exchanges = 1;
+                            exchangeCount = 1;
+                        }
+                    }
+                    break;
+            }
+
+            DataContext.Commit();
+
+            return exchangeCount;
         }
 
     }

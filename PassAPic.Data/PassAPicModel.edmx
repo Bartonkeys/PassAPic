@@ -12,6 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Word" Type="varchar(max)" Nullable="false" />
           <Property Name="games" Type="int" />
+          <Property Name="exchanges" Type="int" />
         </EntityType>
         <EntityType Name="Game_Comments">
           <Key>
@@ -56,6 +57,7 @@
           <Property Name="DateCompleted" Type="datetime" />
           <Property Name="TimerInSeconds" Type="int" Nullable="false" />
           <Property Name="Exchanges" Type="int" Nullable="false" />
+          <Property Name="Mode" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="Guesses">
           <Key>
@@ -122,6 +124,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="word" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="games" Type="int" />
+          <Property Name="exchanges" Type="int" />
         </EntityType>
         <Association Name="FK_Game_Comments_Games">
           <End Role="Games" Type="Self.Games" Multiplicity="1" />
@@ -407,6 +410,7 @@
           <Property Name="TimerInSeconds" Type="Int32" Nullable="false" />
           <Property Name="Exchanges" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Game_Exchange_Words" Relationship="PassAPicModel.FK_Game_Exchange_Words_Games" FromRole="Game" ToRole="Game_Exchange_Words" />
+          <Property Name="Mode" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
           </EntityType>
         <EntityType Name="Guess">
           <Key>
@@ -463,6 +467,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="word" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="games" Type="Int32" />
+          <Property Name="exchanges" Type="Int32" />
         </EntityType>
         <Association Name="NextGuesses">
           <End Type="PassAPicModel.Guess" Role="Guess" Multiplicity="*" />
@@ -498,6 +503,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Word" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="games" Type="Int32" />
+          <Property Name="exchanges" Type="Int32" />
         </EntityType>
         <EntityType Name="Game_Comments">
           <Key>
@@ -612,6 +618,7 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Game)">
         <MappingFragment StoreEntitySet="Games">
+                <ScalarProperty Name="Mode" ColumnName="Mode" />
                 <ScalarProperty Name="Exchanges" ColumnName="Exchanges" />
                 <ScalarProperty Name="TimerInSeconds" ColumnName="TimerInSeconds" />
                 <ScalarProperty Name="DateCompleted" ColumnName="DateCompleted" />
@@ -662,7 +669,8 @@
     <EntitySetMapping Name="Words">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Word)">
         <MappingFragment StoreEntitySet="Words">
-          <ScalarProperty Name="games" ColumnName="games" />
+                <ScalarProperty Name="exchanges" ColumnName="exchanges" />
+                <ScalarProperty Name="games" ColumnName="games" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="word" ColumnName="word" />
         </MappingFragment>
@@ -717,6 +725,7 @@
           <EntitySetMapping Name="EasyWords">
             <EntityTypeMapping TypeName="PassAPicModel.EasyWord">
               <MappingFragment StoreEntitySet="EasyWords">
+                <ScalarProperty Name="exchanges" ColumnName="exchanges" />
                 <ScalarProperty Name="games" ColumnName="games" />
                 <ScalarProperty Name="Word" ColumnName="Word" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

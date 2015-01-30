@@ -76,7 +76,8 @@ namespace PassAPic.Controllers
                     NumberOfGuesses = model.NumberOfPlayers,
                     Creator = user,
                     DateCreated = DateTime.UtcNow,
-                    TimerInSeconds = model.TimerInSeconds!=null?model.TimerInSeconds:0
+                    TimerInSeconds = model.TimerInSeconds!=null?model.TimerInSeconds:0,
+                    Mode = model.Mode.ToString().Trim()
                 };
 
                 game.Game_Exchange_Words.Add(new Game_Exchange_Words()
@@ -125,7 +126,20 @@ namespace PassAPic.Controllers
                 if (game.Creator.Id != userId) return Request.CreateResponse(HttpStatusCode.Forbidden);
                 if (game.Guesses.Count > 0) return Request.CreateResponse(HttpStatusCode.NotAcceptable);
 
-                var word = await WordManager.GetWord(mode, game.Exchanges < WordManager.LeastUsedWords().Count(), game.Game_Exchange_Words);
+                //For older games - should never need this!
+                if (game.Mode == null)
+                {
+                    game.Mode = Mode.Normal.ToString();
+                }
+                WordManager.IncrementExchangeCount(game.StartingWord, game.Mode.Trim().Equals("Normal") ? Mode.Normal : Mode.Easy);
+                
+                bool useLeastWords = false;
+                if (mode == Mode.Normal)
+                {useLeastWords = game.Exchanges < WordManager.LeastUsedWords().Count();}
+                else
+                {useLeastWords = game.Exchanges < WordManager.LeastUsedEasyWords().Count();}
+
+                var word = await WordManager.GetWord(mode, useLeastWords, game.Game_Exchange_Words);
                 
                 game.StartingWord = word.RandomWord;
                 game.Exchanges++;
@@ -134,6 +148,9 @@ namespace PassAPic.Controllers
                     GameId = gameId,
                     word = game.StartingWord
                 });
+
+      
+               
                 DataContext.Commit();
 
                 var wordModel = new WordModel
@@ -562,7 +579,7 @@ namespace PassAPic.Controllers
                  //If this is the first guess of the game we know the starting word can no longer be excanged
                 if (order < 2)
                 {
-                    WordManager.IncrementGameCount(game.StartingWord);
+                    WordManager.IncrementGameCount(game.StartingWord, game.Mode.Equals("Normal") ? Mode.Normal : Mode.Easy);
                 }
                     
                 var imageGuess = new ImageGuess

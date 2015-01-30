@@ -31,6 +31,7 @@ namespace PassAPic.Data
         public Nullable<System.DateTime> DateCompleted { get; set; }
         public int TimerInSeconds { get; set; }
         public int Exchanges { get; set; }
+        public string Mode { get; set; }
     
         public virtual ICollection<Guess> Guesses { get; set; }
         public virtual User Creator { get; set; }

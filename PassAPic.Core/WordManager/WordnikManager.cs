@@ -16,7 +16,8 @@ namespace PassAPic.Core.WordManager
         [Inject]
         public IDataContext DataContext { get; set; }
 
-        public async Task<Word> GetWord(Mode mode, bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords)
+        public async Task<Word> GetWord(Mode mode, bool isLeastUsedWords,
+            ICollection<Game_Exchange_Words> exchangedWords)
         {
             switch (mode)
             {
@@ -24,7 +25,9 @@ namespace PassAPic.Core.WordManager
                     using (var client = new HttpClient())
                     {
 
-                        var address = new Uri("http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=true&minCorpusCount=500000&maxCorpusCount=-1&minDictionaryCount=10&maxDictionaryCount=-1&minLength=5&maxLength=-1&includePartOfSpeech=noun&excludePartOfSpeech=adjective&api_key=4d2867228c7945a20d9030f32db0adae6aa5aa8f648f10be5");
+                        var address =
+                            new Uri(
+                                "http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=true&minCorpusCount=500000&maxCorpusCount=-1&minDictionaryCount=10&maxDictionaryCount=-1&minLength=5&maxLength=-1&includePartOfSpeech=noun&excludePartOfSpeech=adjective&api_key=4d2867228c7945a20d9030f32db0adae6aa5aa8f648f10be5");
 
                         var response = await client.GetAsync(address);
 
@@ -38,16 +41,29 @@ namespace PassAPic.Core.WordManager
                     var count = DataContext.EasyWord.Count();
                     var index = new Random().Next(count);
                     var startingWord =
-                        DataContext.EasyWord.OrderBy(x => x.Id).Skip(index).Select(x => new Word { RandomWord = x.Word }).First();
+                        DataContext.EasyWord.OrderBy(x => x.Id)
+                            .Skip(index)
+                            .Select(x => new Word {RandomWord = x.Word})
+                            .First();
                     return await Task.Run(() => startingWord);
             }
             return new Word();
         }
 
-        public int IncrementGameCount(string word)
-        { throw new NotImplementedException();}
+        public int IncrementGameCount(string word, Mode mode)
+        { throw new NotImplementedException(); }
+        public int IncrementExchangeCount(string word, Mode mode)
+        { throw new NotImplementedException(); }
+
 
         public IQueryable<Data.Word> LeastUsedWords()
-        { throw new NotImplementedException(); }
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Data.EasyWord> LeastUsedEasyWords()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

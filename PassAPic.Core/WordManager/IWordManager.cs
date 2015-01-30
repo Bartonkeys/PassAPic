@@ -15,9 +15,11 @@ namespace PassAPic.Core.WordManager
 
         Task<Word> GetWord(Mode mode, bool isLeastUsedWords, ICollection<Game_Exchange_Words> exchangedWords);
 
-        int IncrementGameCount(string word);
+        int IncrementGameCount(string word, Mode mode);
+        int IncrementExchangeCount(string word, Mode mode);
 
         IQueryable<Data.Word> LeastUsedWords();
+        IQueryable<Data.EasyWord> LeastUsedEasyWords();
 
     }
 }
