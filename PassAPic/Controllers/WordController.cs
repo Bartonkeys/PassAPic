@@ -42,7 +42,12 @@ namespace PassAPic.Controllers
                         var nonDuplicateWords = newWordsTrimmed.Where(x => !existingWords.Any(y => x == y.word));
                         foreach (var word in nonDuplicateWords)
                         {
-                            _dataContext.Words.Add(new Word { word = word });
+                            _dataContext.Words.Add(new Word
+                            {
+                                word = word,
+                                games = 0,
+                                exchanges = 0
+                            });
                         }
                         break;
                     case Mode.Easy:
@@ -52,7 +57,12 @@ namespace PassAPic.Controllers
        
                         foreach (var word in nonDuplicateWordsEasy)
                         {
-                            _dataContext.EasyWords.Add(new EasyWord { Word = word });
+                            _dataContext.EasyWords.Add(new EasyWord
+                            {
+                                Word = word,
+                                games = 0,
+                                exchanges = 0
+                            });
                         }
                         break;
                 }
