@@ -15,6 +15,7 @@ using PassAPic.Core.Services;
 using PassAPic.Core.WordManager;
 using PassAPic.Data;
 using PassAPic.Models.Models;
+using PassAPic.Models.Models.Models;
 
 namespace PassAPic.Controllers
 {
@@ -81,6 +82,70 @@ namespace PassAPic.Controllers
                 _log.Error(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
+        }
+
+
+        // Get /api/word/GetWordViewModels/password/mode/orderByExchanges
+        /// <summary>
+        ///Get words in DB
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetWordViewModels/{password}/{mode}/{orderByExchanges}")]
+        public async Task<HttpResponseMessage> GetWordViewModels(string password, Mode mode, bool orderByExchanges)
+        {
+            if (password.Equals("Y)rm91234"))
+            {
+
+                try
+                {
+                    var wordViewModels = new List<WordViewModel>();
+
+                    switch (mode)
+                    {
+                        case Mode.Normal:
+
+                            wordViewModels.AddRange(DataContext.Word.Select(wordItem => new WordViewModel()
+                            {
+                                Word = wordItem.word,
+                                Games = wordItem.games,
+                                Exchanges = wordItem.exchanges,
+                                Mode = Mode.Normal
+                            }));
+
+                            break;
+                        case Mode.Easy:
+
+                            wordViewModels.AddRange(DataContext.EasyWord.Select(wordItem => new WordViewModel()
+                            {
+                                Word = wordItem.Word,
+                                Games = wordItem.games,
+                                Exchanges = wordItem.exchanges,
+                                Mode = Mode.Easy
+                            }));
+
+                            break;
+                    }
+                    if (orderByExchanges)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, wordViewModels.OrderByDescending(w => w.Exchanges));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, wordViewModels.OrderByDescending(w => w.Games));
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    _log.Error(ex);
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+                }
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Forbidden, "You are not authorised to run this command");
+            }
+            
         }
     }
 }

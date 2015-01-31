@@ -77,6 +77,7 @@
     <Compile Include="Models\UserLoginInfoViewModel.cs" />
     <Compile Include="Models\Word.cs" />
     <Compile Include="Models\WordModel.cs" />
+    <Compile Include="Models\WordViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

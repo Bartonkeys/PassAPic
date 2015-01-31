@@ -726,5 +726,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.WordApiController.GetWordViewModels(System.String,PassAPic.Models.Models.Models.Mode,System.Boolean)">
+             <summary>
+            Get words in DB
+             </summary>
+             <returns></returns>
+        </member>
     </members>
 </doc>
