@@ -708,6 +708,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.CleanupStartedGames(System.String)">
+             <summary>
+            Remove all games which have been started but never played
+             </summary>
+             <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>

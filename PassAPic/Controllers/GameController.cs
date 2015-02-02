@@ -880,7 +880,42 @@ namespace PassAPic.Controllers
             }
         }
 
-        
+
+        // Get /api/game/CleanupStartedGames
+        /// <summary>
+        ///Remove all games which have been started but never played
+        /// </summary>
+        /// <returns></returns>
+        [Route("CleanupStartedGames/{password}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> CleanupStartedGames(string password)
+        {
+            if (password != "Y)rm91234")
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorised to run this command");
+            }
+            try
+            {
+                var oneWeekAgo = DateTime.Now.AddDays(-7);
+                var gamesWithNoGuesses = DataContext.Game.Where(g => !g.Guesses.Any() && g.DateCreated < oneWeekAgo);
+                var gamesToDelete = gamesWithNoGuesses.Count();
+
+                foreach (var game in gamesWithNoGuesses)
+                {
+                    DataContext.Game.Remove(game);
+                }
+                
+                DataContext.Commit();
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Deleted " + gamesToDelete + " games");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
         #region "Helper methods"
 
