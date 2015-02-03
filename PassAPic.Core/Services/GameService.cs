@@ -236,11 +236,15 @@ namespace PassAPic.Core.Services
                 Word = secondWordGuess.Word.ToLower().Trim()
             };
 
-            var metaphone = new Metaphone();
+           
             var stringArray = new string[] { firstWordModel.Word, secondWordModel.Word };
-            var similar = metaphone.IsSimilar(stringArray);
+            
+            var metaphone = new Metaphone();
+            var soundex = new Soundex();
+            var similarMetaphone = metaphone.IsSimilar(stringArray);
+            var similarSoundex = soundex.IsSimilar(stringArray);
 
-            return similar;
+            return similarMetaphone || similarSoundex;
         }
        
     }
