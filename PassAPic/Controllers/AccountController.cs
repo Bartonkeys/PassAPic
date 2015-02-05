@@ -389,9 +389,8 @@ namespace PassAPic.Controllers
             {
                 var papUser = new User
                     {
-                        Username = String.IsNullOrEmpty(fbUser.Email) ? 
-                            String.Format("{0} {1}",fbUser.FirstName, fbUser.LastName)
-                            : fbUser.Email,
+                        Username = String.Format("{0} {1}",fbUser.FirstName, fbUser.LastName),
+                        Email = String.IsNullOrEmpty(fbUser.Email) ? null : fbUser.Email,
                         FacebookId = long.Parse(fbUser.ID),
                         IsOnline = true
                     };
