@@ -576,7 +576,10 @@ namespace PassAPic.Controllers
                 SetPreviousGuessAsComplete(game, userId);
 
                 var order = game.Guesses.Count + 1;
-                 //If this is the first guess of the game we know the starting word can no longer be excanged
+                
+                //If this is the first guess of the game we know the starting word can no longer be exchanged
+                //NB: minor buggette with this: until the user completes the FIRST drawing,
+                // another user could get this word for a new game - as the game count has not been incremented yet
                 if (order < 2)
                 {
                     WordManager.IncrementGameCount(game.StartingWord, game.Mode.Equals("Normal") ? Mode.Normal : Mode.Easy);

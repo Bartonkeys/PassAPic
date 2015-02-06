@@ -151,7 +151,7 @@ namespace PassAPic.Core.WordManager
                     break;
 
                 case Mode.Easy:
-                    var easyWordModel = DataContext.Word.FirstOrDefault(w => w.word.Equals(word));
+                    var easyWordModel = DataContext.EasyWord.FirstOrDefault(w => w.Word.Equals(word));
                     if (easyWordModel != null)
                     {if (easyWordModel.games != null) gameCount = (int)easyWordModel.games++;}
                     break;
