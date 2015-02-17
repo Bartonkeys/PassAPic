@@ -42,6 +42,7 @@ namespace PassAPic.Controllers
         protected GameService GameService;
         protected IWordManager WordManager;
         static readonly string ServerUploadFolder = Path.GetTempPath();
+        static readonly DateTime TwoDaysAgo = DateTime.Now.AddDays(-2);
 
         [Inject]
         public GameController(IDataContext dataContext, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider, IWordManager wordManager)
@@ -171,15 +172,6 @@ namespace PassAPic.Controllers
             }
         }
 
-        private bool CurrentUserAlreadyHadAGo(Game game, int userId)
-        {
-            return game.Guesses.Any(x => x.User.Id == userId);
-        }
-
-        private bool NextUserAlreadyHadAGo(Game game, int nextUserId)
-        {
-            return game.Guesses.Any(x => x.User.Id == nextUserId);
-        }
 
         // POST /api/game/guessword
         /// <summary>
@@ -241,14 +233,14 @@ namespace PassAPic.Controllers
                                 }
                             );
                     }
-                    SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
+                    await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
                     //Calculate Scores
                     var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
                     //try writing scores to DB
-                    GameService.SaveScoresToDatabase(scores);
+                    await GameService.SaveScoresToDatabase(scores);
                     //Update Leaderboard
-                    GameService.RecalculateLeaderboard();
+                    await GameService.RecalculateLeaderboard();
                     
 
                 }
@@ -469,27 +461,7 @@ namespace PassAPic.Controllers
 
         }
 
-        private void PopulatePaginationHeaderForAction(int userId, int page, int pageSize, string action)
-        {
-            var totalCount = DataContext.Guess.Count(x => x.User.Id == userId && x.Game.GameOverMan);
-            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-            var urlHelper = new UrlHelper(Request);
-            var prevLink = page > 0 ? urlHelper.Link(action, new { userId, page = page - 1, pageSize = pageSize }) : "";
-            var nextLink = page < totalPages - 1 ? urlHelper.Link(action, new { userId, page = page + 1, pageSize = pageSize }) : "";
-
-            var paginationHeader = new
-            {
-                TotalCount = totalCount,
-                TotalPages = totalPages,
-                PrevPageLink = prevLink,
-                NextPageLink = nextLink
-            };
-
-            HttpContext.Current.Response.Headers.Add("X-Pagination",
-                                                                Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
-        }
-
+        
 
         // GET /api/game/Comments/{gameId}
         /// <summary>
@@ -780,7 +752,7 @@ namespace PassAPic.Controllers
             try
             {
 
-                var result = GameService.RecalculateLeaderboard();
+                var result = await GameService.RecalculateLeaderboard();
                 return Request.CreateResponse(HttpStatusCode.OK, result);
 
             }
@@ -920,7 +892,60 @@ namespace PassAPic.Controllers
         }
 
 
+        // GET /api/game/LazyGuesses
+        /// <summary>
+        /// Returns a Paginated collection of abandoned games for user, latest game at top.
+        /// 
+        /// Call as follows: /api/game/abandonedGames/{userId}/{page}/{pageSze}
+        /// 
+        /// page and pageSize are optional so if left out will return first 10 results.
+        /// 
+        /// Now listen up , this is important: You will get a new Response Header - X-Pagination
+        /// 
+        /// It will have the following format:
+        /// 
+        /// {"TotalCount":78,"TotalPages":8,"PrevPageLink":"thePreviousLink","NextPageLink":"theNextLink"}
+        /// 
+        /// Use wisely my brothers of the Watch!
+        /// </summary>
+        /// <returns></returns>
+        [Route("LazyGuesses/{userId}/{page?}/{pageSize?}", Name = "LazyGuesses")]
+        [HttpGet]
+        public HttpResponseMessage GetLazyGuesses(int userId, int page = 0, int pageSize = 10)
+        {
+            try
+            {
+                var guesses = DataContext.Guess.Where(x =>
+                    x.User.Id == userId &&
+                    !x.Complete &&
+                    !x.Game.GameOverMan &&
+                    x.DateCreated < TwoDaysAgo);
+                //(x.DateCreated == null || x.DateCreated < DateTime.Now));
+
+                //PopulatePaginationHeaderForAction needs refactored
+                //PopulatePaginationHeaderForAction(userId, page, pageSize, "LazyGuesses");
+                return Request.CreateResponse(HttpStatusCode.OK, PopulateOpenGamesModel(guesses));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
+
         #region "Helper methods"
+
+
+        private bool CurrentUserAlreadyHadAGo(Game game, int userId)
+        {
+            return game.Guesses.Any(x => x.User.Id == userId);
+        }
+
+        private bool NextUserAlreadyHadAGo(Game game, int nextUserId)
+        {
+            return game.Guesses.Any(x => x.User.Id == nextUserId);
+        }
 
         private string SaveImageToCloud(string imagePath, string imageName)
         {
@@ -933,7 +958,7 @@ namespace PassAPic.Controllers
             if (previousGuess != null) previousGuess.Complete = true;
         }
 
-        private void SendPushMessage(int gameId, List<PushQueueMember> memberList, String messageToPush)
+        private async Task<string> SendPushMessage(int gameId, List<PushQueueMember> memberList, String messageToPush)
         {
             //Grab the list of devices while we have access to the UnitOfWork object
             //var listOfPushDevices = DataContext.PushRegister.Where(x => x.UserId == userId).ToList();
@@ -942,7 +967,7 @@ namespace PassAPic.Controllers
             //Check user has any devices registered for push
             try
             {
-                PushRegisterService.SendPush(gameId, memberList, messageToPush);
+                return await PushRegisterService.SendPush(gameId, memberList, messageToPush);
            
             }
             catch (Exception ex)
@@ -950,6 +975,27 @@ namespace PassAPic.Controllers
                 throw new PushMessageException("There has been an error while trying to send Push Message", ex);
             }
             
+        }
+
+        private void PopulatePaginationHeaderForAction(int userId, int page, int pageSize, string action)
+        {
+            var totalCount = DataContext.Guess.Count(x => x.User.Id == userId && x.Game.GameOverMan);
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            var urlHelper = new UrlHelper(Request);
+            var prevLink = page > 0 ? urlHelper.Link(action, new { userId, page = page - 1, pageSize = pageSize }) : "";
+            var nextLink = page < totalPages - 1 ? urlHelper.Link(action, new { userId, page = page + 1, pageSize = pageSize }) : "";
+
+            var paginationHeader = new
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                PrevPageLink = prevLink,
+                NextPageLink = nextLink
+            };
+
+            HttpContext.Current.Response.Headers.Add("X-Pagination",
+                                                                Newtonsoft.Json.JsonConvert.SerializeObject(paginationHeader));
         }
 
 

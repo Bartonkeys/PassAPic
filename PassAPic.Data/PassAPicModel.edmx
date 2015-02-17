@@ -71,6 +71,7 @@
           <Property Name="NextUser_Id" Type="int" />
           <Property Name="Latitude" Type="float" />
           <Property Name="Longitude" Type="float" />
+          <Property Name="DateCreated" Type="datetime" />
         </EntityType>
         <EntityType Name="Guesses_ImageGuess">
           <Key>
@@ -424,6 +425,7 @@
           <Property Name="Complete" Type="Boolean" Nullable="false" />
           <Property Name="Latitude" Type="Double" />
           <Property Name="Longitude" Type="Double" />
+          <Property Name="DateCreated" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="GameTurn">
           <End Type="PassAPicModel.Game" Multiplicity="1" Role="Game" />
@@ -634,7 +636,8 @@
     <EntitySetMapping Name="Guesses">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.Guess)">
         <MappingFragment StoreEntitySet="Guesses">
-          <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+          <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
                 <ScalarProperty Name="Latitude" ColumnName="Latitude" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Order" ColumnName="Order" />

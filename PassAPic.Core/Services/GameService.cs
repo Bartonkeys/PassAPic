@@ -112,7 +112,7 @@ namespace PassAPic.Core.Services
             return gameScores;
         }
 
-        public string SaveScoresToDatabase(List<GameScoringModel> scores)
+        public async Task<string> SaveScoresToDatabase(List<GameScoringModel> scores)
         {
             string message = "Scores saved successfuly";
 
@@ -143,7 +143,7 @@ namespace PassAPic.Core.Services
             return message;
         }
 
-        public List<Leaderboard> RecalculateLeaderboard()
+        public async Task<List<Leaderboard>> RecalculateLeaderboard()
         {
 
             try

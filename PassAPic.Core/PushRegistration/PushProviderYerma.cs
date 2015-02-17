@@ -20,7 +20,7 @@ namespace PassAPic.Core.PushRegistration
         //private const String UaAppMasterSecret = "zh2OX5qGRVKtQR8gYfTFVg";
         //private const String UaMessageContentType = "text/html";
 
-        void IPushProvider.PushToDevices(int id, List<PushQueueMember> memberList, string pushMessageToSend)
+        async Task<string> IPushProvider.PushToDevices(int id, List<PushQueueMember> memberList, string pushMessageToSend)
         {
             
             var ymPushObject = new YmPushObject()
@@ -32,10 +32,10 @@ namespace PassAPic.Core.PushRegistration
                 PushMessage = pushMessageToSend
             };
            
-            SendObjectAsJson(ymPushObject);
+            return await SendObjectAsJson(ymPushObject);
         }
 
-        private static void  SendObjectAsJson(YmPushObject ymPushObject)
+        private static async Task<string> SendObjectAsJson(YmPushObject ymPushObject)
         {
             
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(YmPushUrl);
@@ -44,15 +44,16 @@ namespace PassAPic.Core.PushRegistration
             
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
-                string json = JsonConvert.SerializeObject(ymPushObject);
-                streamWriter.Write(json);
-                streamWriter.Flush();
+                string json = await Task.Run(() => JsonConvert.SerializeObject(ymPushObject));
+                await streamWriter.WriteAsync(json);
+                await streamWriter.FlushAsync();
                 streamWriter.Close();
 
                 var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                 {
-                    var result = streamReader.ReadToEnd();
+                    var result = await streamReader.ReadToEndAsync();
+                    return result;
                 }
             }
         }

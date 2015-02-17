@@ -19,6 +19,7 @@ namespace PassAPic.Data
         public bool Complete { get; set; }
         public Nullable<double> Latitude { get; set; }
         public Nullable<double> Longitude { get; set; }
+        public Nullable<System.DateTime> DateCreated { get; set; }
     
         public virtual Game Game { get; set; }
         public virtual User User { get; set; }

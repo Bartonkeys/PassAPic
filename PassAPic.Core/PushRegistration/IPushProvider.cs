@@ -8,6 +8,6 @@ namespace PassAPic.Core.PushRegistration
 {
     public interface IPushProvider
     {
-        void PushToDevices(int id, List<PushQueueMember>memberList, String pushMessageToSend);
+        Task<string> PushToDevices(int id, List<PushQueueMember> memberList, String pushMessageToSend);
     }
 }

@@ -26,9 +26,9 @@ namespace PassAPic.Core.PushRegistration
             PushProvider = pushProvider;
         }
 
-        public void SendPush(int id, List<PushQueueMember> memberList, String pushMessageToSend)
+        public async Task<string> SendPush(int id, List<PushQueueMember> memberList, String pushMessageToSend)
         {
-            PushProvider.PushToDevices(id, memberList, pushMessageToSend);
+            return await PushProvider.PushToDevices(id, memberList, pushMessageToSend);
         }
 
     }
