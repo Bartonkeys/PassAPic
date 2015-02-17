@@ -246,7 +246,7 @@ namespace PassAPic.Controllers
                 }
                 else
                 {
-                    SendPushMessage(
+                    await SendPushMessage(
                             game.Id, 
                             new List<PushQueueMember>(){
                                 new PushQueueMember
@@ -581,7 +581,7 @@ namespace PassAPic.Controllers
                 {
                     //SendPushMessage(game.Id, nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
 
-                    SendPushMessage(
+                    await SendPushMessage(
                             game.Id,
                             new List<PushQueueMember>(){
                                 new PushQueueMember
@@ -607,14 +607,14 @@ namespace PassAPic.Controllers
                             );
                     }
 
-                    SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
+                    await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
                     //Calculate Scores
                     var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
                     //try writing scores to DB
-                    GameService.SaveScoresToDatabase(scores);
+                    await GameService.SaveScoresToDatabase(scores);
                     //Update Leaderboard
-                    GameService.RecalculateLeaderboard();
+                    await GameService.RecalculateLeaderboard();
 
                 }
                 
