@@ -21,7 +21,7 @@ namespace PassAPic.Core.Services
             _dataContext = dataContext;
         } 
 
-        public List<GameScoringModel> CalculateScoreForGame(Game game)
+        public async Task<List<GameScoringModel>> CalculateScoreForGame(Game game)
         {
             /*
              * Scoring algorithm:
@@ -37,79 +37,85 @@ namespace PassAPic.Core.Services
              * 
              */
 
-            var gameScores = new List<GameScoringModel>();
-            var scoreMultiplier = game.TimerInSeconds == 0 ? 1 : 2;
-
-            List<Guess> guesses = game.Guesses.OrderBy(g => g.Order).ToList();
-            var startingWord = new WordGuess()
+            await Task.Run(() =>
             {
-                Word = game.StartingWord, 
-                Order = 0,
-                NextUser = guesses.ElementAt(0).User
-            };
-            guesses.Insert(0, startingWord);
+                var gameScores = new List<GameScoringModel>();
+                var scoreMultiplier = game.TimerInSeconds == 0 ? 1 : 2;
 
-            var wordGuesses = guesses.Where(g => g is WordGuess).ToList();
-
-           
-
-            //Other guesses
-            for (int i = 0; i < wordGuesses.Count-1; i++)
-            {
-                var word1 = wordGuesses.ElementAt(i);
-                var word2 = wordGuesses.ElementAt(i+1);
-
-                var similar = compareWords((WordGuess)word1, (WordGuess)word2);
-                if (similar)
+                List<Guess> guesses = game.Guesses.OrderBy(g => g.Order).ToList();
+                var startingWord = new WordGuess()
                 {
-                    gameScores.Add(new GameScoringModel()
-                    {
-                        GameId = game.Id,
-                        UserId = word1.NextUser.Id,
-                        UserName = word1.NextUser.Username,
-                        Score = 1 * scoreMultiplier
-                    });
+                    Word = game.StartingWord,
+                    Order = 0,
+                    NextUser = guesses.ElementAt(0).User
+                };
+                guesses.Insert(0, startingWord);
 
-                    gameScores.Add(new GameScoringModel()
-                    {
-                        GameId = game.Id,
-                        UserId = word2.User.Id,
-                        UserName = word2.User.Username,
-                        Score = 1 * scoreMultiplier
-                    });
-                }
-            }
+                var wordGuesses = guesses.Where(g => g is WordGuess).ToList();
 
-            //First and last word
-            var firstWord = wordGuesses.First();
-            var lastWord = wordGuesses.Last();
 
-            if (firstWord is WordGuess && lastWord is WordGuess)
-            {
-                var similar = compareWords((WordGuess)firstWord, (WordGuess)lastWord);
-                if (similar)
+
+                //Other guesses
+                for (int i = 0; i < wordGuesses.Count - 1; i++)
                 {
-                    //Check if the game creator has already scored in this game
-                    if (gameScores.Any(s => s.UserId == game.Creator.Id))
-                    {
-                        var score = gameScores.Find(s => s.UserId == game.Creator.Id);
-                        score.Score += (game.NumberOfGuesses * scoreMultiplier) ;
-                    }
-                    else
+                    var word1 = wordGuesses.ElementAt(i);
+                    var word2 = wordGuesses.ElementAt(i + 1);
+
+                    var similar = compareWords((WordGuess) word1, (WordGuess) word2);
+                    if (similar)
                     {
                         gameScores.Add(new GameScoringModel()
                         {
                             GameId = game.Id,
-                            UserId = game.Creator.Id,
-                            UserName = game.Creator.Username,
-                            Score = game.NumberOfGuesses * scoreMultiplier
+                            UserId = word1.NextUser.Id,
+                            UserName = word1.NextUser.Username,
+                            Score = 1*scoreMultiplier
+                        });
+
+                        gameScores.Add(new GameScoringModel()
+                        {
+                            GameId = game.Id,
+                            UserId = word2.User.Id,
+                            UserName = word2.User.Username,
+                            Score = 1*scoreMultiplier
                         });
                     }
-                    
                 }
-            }
 
-            return gameScores;
+                //First and last word
+                var firstWord = wordGuesses.First();
+                var lastWord = wordGuesses.Last();
+
+                if (firstWord is WordGuess && lastWord is WordGuess)
+                {
+                    var similar = compareWords((WordGuess) firstWord, (WordGuess) lastWord);
+                    if (similar)
+                    {
+                        //Check if the game creator has already scored in this game
+                        if (gameScores.Any(s => s.UserId == game.Creator.Id))
+                        {
+                            var score = gameScores.Find(s => s.UserId == game.Creator.Id);
+                            score.Score += (game.NumberOfGuesses*scoreMultiplier);
+                        }
+                        else
+                        {
+                            gameScores.Add(new GameScoringModel()
+                            {
+                                GameId = game.Id,
+                                UserId = game.Creator.Id,
+                                UserName = game.Creator.Username,
+                                Score = game.NumberOfGuesses*scoreMultiplier
+                            });
+                        }
+
+                    }
+                }
+
+                return gameScores;
+            });
+
+            return null;
+
         }
 
         public async Task<string> SaveScoresToDatabase(List<GameScoringModel> scores)

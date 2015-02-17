@@ -236,7 +236,7 @@ namespace PassAPic.Controllers
                     await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
                     //Calculate Scores
-                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
+                    var scores = await GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
                     //try writing scores to DB
                     await GameService.SaveScoresToDatabase(scores);
                     //Update Leaderboard
@@ -610,7 +610,7 @@ namespace PassAPic.Controllers
                     await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
                     //Calculate Scores
-                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                    var scores = await GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
                     //try writing scores to DB
                     await GameService.SaveScoresToDatabase(scores);
                     //Update Leaderboard
@@ -720,7 +720,7 @@ namespace PassAPic.Controllers
             try
             {
 
-                var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));            
+                var scores = await GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));            
                 //try writing scores to DB
                 var result = GameService.SaveScoresToDatabase(scores);
                    
