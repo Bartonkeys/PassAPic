@@ -21,7 +21,7 @@ namespace PassAPic.Core.Services
             _dataContext = dataContext;
         } 
 
-        public async Task<List<GameScoringModel>> CalculateScoreForGame(Game game)
+        public List<GameScoringModel> CalculateScoreForGame(Game game)
         {
             /*
              * Scoring algorithm:
@@ -37,8 +37,8 @@ namespace PassAPic.Core.Services
              * 
              */
 
-            await Task.Run(() =>
-            {
+            //await Task.Run(() =>
+            //{
                 var gameScores = new List<GameScoringModel>();
                 var scoreMultiplier = game.TimerInSeconds == 0 ? 1 : 2;
 
@@ -112,13 +112,13 @@ namespace PassAPic.Core.Services
                 }
 
                 return gameScores;
-            });
+            //});
 
-            return null;
+            //return null;
 
         }
 
-        public async Task<string> SaveScoresToDatabase(List<GameScoringModel> scores)
+        public string SaveScoresToDatabase(List<GameScoringModel> scores)
         {
             string message = "Scores saved successfuly";
 
@@ -149,7 +149,7 @@ namespace PassAPic.Core.Services
             return message;
         }
 
-        public async Task<List<Leaderboard>> RecalculateLeaderboard()
+        public List<Leaderboard> RecalculateLeaderboard()
         {
 
             try
