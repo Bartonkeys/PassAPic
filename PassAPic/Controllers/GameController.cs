@@ -609,14 +609,19 @@ namespace PassAPic.Controllers
                             );
                     }
 
-                    await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
+                    //await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
+                    Task.Run(() => SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now"));
+
+                    Task.Run(() => GameService.DoScoringAsync(DataContext.Game.FirstOrDefault(g => g.Id == gameId)));
+
+                    
                     //Calculate Scores
-                    var scores = await GameService.CalculateScoreForGameAsync(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
-                    //try writing scores to DB
-                    await GameService.SaveScoresToDatabaseAsync(scores);
-                    //Update Leaderboard
-                    await GameService.RecalculateLeaderboardAsync();
+                    //var scores = await GameService.CalculateScoreForGameAsync(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                    ////try writing scores to DB
+                    //await GameService.SaveScoresToDatabaseAsync(scores);
+                    ////Update Leaderboard
+                    //await GameService.RecalculateLeaderboardAsync();
 
                 }
                 
