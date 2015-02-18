@@ -19,7 +19,18 @@ namespace PassAPic.Core.Services
         public GameService(IDataContext dataContext)
         {
             _dataContext = dataContext;
-        } 
+        }
+
+        public async Task<List<Leaderboard>> DoScoringAsync(Game game)
+        {
+            //Calculate Scores
+            var scores = await Task.Run(() => CalculateScoreForGame(game));
+            //try writing scores to DB
+            await SaveScoresToDatabaseAsync(scores);
+            //Update Leaderboard
+            return await RecalculateLeaderboardAsync();
+        }
+
 
         public List<GameScoringModel> CalculateScoreForGame(Game game)
         {
@@ -118,6 +129,11 @@ namespace PassAPic.Core.Services
 
         }
 
+        public async Task<List<GameScoringModel>> CalculateScoreForGameAsync(Game game)
+        {
+            return await Task.Run(() => CalculateScoreForGame(game));
+        }
+
         public string SaveScoresToDatabase(List<GameScoringModel> scores)
         {
             string message = "Scores saved successfuly";
@@ -147,6 +163,11 @@ namespace PassAPic.Core.Services
             _dataContext.Commit();
 
             return message;
+        }
+
+        public async Task<string> SaveScoresToDatabaseAsync(List<GameScoringModel> scores)
+        {
+            return await Task.Run(() => SaveScoresToDatabase(scores));
         }
 
         public List<Leaderboard> RecalculateLeaderboard()
@@ -183,6 +204,10 @@ namespace PassAPic.Core.Services
             return null;
         }
 
+        public async Task<List<Leaderboard>> RecalculateLeaderboardAsync()
+        {
+            return await Task.Run(() => RecalculateLeaderboard());
+        }
         private List<Leaderboard> CollateScoresForLeaderboard(List<Game_Scoring> scores)
         {
             var newLeaderboard = new List<Leaderboard>();

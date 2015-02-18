@@ -233,16 +233,18 @@ namespace PassAPic.Controllers
                                 }
                             );
                     }
-                    await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
-                    //Calculate Scores
-                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
-                    //try writing scores to DB
-                    GameService.SaveScoresToDatabase(scores);
-                    //Update Leaderboard
-                    GameService.RecalculateLeaderboard();
-                    
+                    Task.Run(() => SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now"));
 
+                    Task.Run(() => GameService.DoScoringAsync(DataContext.Game.FirstOrDefault(g => g.Id == game.Id)));
+
+                    ////Calculate Scores
+                    //var scores = await GameService.CalculateScoreForGameAsync(DataContext.Game.FirstOrDefault(g => g.Id == game.Id));
+                    ////try writing scores to DB
+                    //await GameService.SaveScoresToDatabaseAsync(scores);
+                    ////Update Leaderboard
+                    //await GameService.RecalculateLeaderboardAsync();
+      
                 }
                 else
                 {
@@ -610,11 +612,11 @@ namespace PassAPic.Controllers
                     await SendPushMessage(game.Id, usersInGame, "PassAPic Complete!!! - check your Completed Games now");
 
                     //Calculate Scores
-                    var scores = GameService.CalculateScoreForGame(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
+                    var scores = await GameService.CalculateScoreForGameAsync(DataContext.Game.FirstOrDefault(g => g.Id == gameId));
                     //try writing scores to DB
-                    GameService.SaveScoresToDatabase(scores);
+                    await GameService.SaveScoresToDatabaseAsync(scores);
                     //Update Leaderboard
-                    GameService.RecalculateLeaderboard();
+                    await GameService.RecalculateLeaderboardAsync();
 
                 }
                 
