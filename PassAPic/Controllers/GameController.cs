@@ -556,7 +556,7 @@ namespace PassAPic.Controllers
                 // another user could get this word for a new game - as the game count has not been incremented yet
                 if (order < 2)
                 {
-                    WordManager.IncrementGameCount(game.StartingWord, game.Mode.Equals("Normal") ? Mode.Normal : Mode.Easy);
+                    WordManager.IncrementGameCount(game.StartingWord, game.Mode.Trim().ToLower().Equals("normal") ? Mode.Normal : Mode.Easy);
                 }
                     
                 var imageGuess = new ImageGuess
