@@ -20,6 +20,9 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "totalScore")]
         public int TotalScore { get; set; }
 
+        [JsonProperty(PropertyName = "weekNumber")]
+        public int WeekNumber { get; set; }
+
     }
 
 }

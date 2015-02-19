@@ -772,6 +772,34 @@ namespace PassAPic.Controllers
             return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This game does not exist");
         }
 
+        // Get /api/game/recalculateLeaderboardSplit/{password}
+        /// <summary>
+        ///Test for leaderboard
+        /// </summary>
+        /// <returns></returns>
+        [Route("RecalculateLeaderboardSplit/{password}")]
+        public async Task<HttpResponseMessage> GetRecalculateLeaderboardSplit(string password)
+        {
+            if (password != "ilovepassapic")
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "You are not allowed to access this");
+            }
+            try
+            {
+
+                var result = GameService.RecalculateLeaderboardSplit();
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotAcceptable, "This game does not exist");
+        }
+
 
         // Get /api/game/getLeaderboard
         /// <summary>
@@ -806,6 +834,41 @@ namespace PassAPic.Controllers
             }
         }
 
+
+        // Get /api/game/getLeaderboardSplit
+        /// <summary>
+        ///Test for leaderboard split
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetLeaderboardSplit")]
+        public async Task<HttpResponseMessage> GetLeaderboardSplit()
+        {
+            try
+            {
+                var leaderboardItems = DataContext.LeaderboardSplit;
+
+                var leaderboardModels = new List<LeaderboardModel>();
+                foreach (var leaderboardItem in leaderboardItems)
+                {
+                    if (leaderboardItem.TotalScore != null)
+                        if (leaderboardItem.WeekNumber != null)
+                            leaderboardModels.Add(new LeaderboardModel()
+                            {
+                                UserName = leaderboardItem.Username,
+                                TotalScore = (int)leaderboardItem.TotalScore,
+                                WeekNumber = (int)leaderboardItem.WeekNumber
+
+                            });
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.TotalScore));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
 
         // GET api/Game/UsersNotPlaying
         /// <summary>

@@ -22,5 +22,16 @@ namespace PassAPic.Controllers
             
             return View(leaderboardModels);
         }
+
+        // GET: Leaderboard
+        public async Task<ActionResult> Split()
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboardSplit");
+
+            var leaderboardModels = await response.Content.ReadAsAsync<List<LeaderboardModel>>();
+
+            return View(leaderboardModels);
+        }
     }
 }

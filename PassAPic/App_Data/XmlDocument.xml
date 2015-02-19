@@ -696,9 +696,21 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.GetRecalculateLeaderboardSplit(System.String)">
+             <summary>
+            Test for leaderboard
+             </summary>
+             <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.GetLeaderboard">
              <summary>
             Test for leaderboard
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.GameController.GetLeaderboardSplit">
+             <summary>
+            Test for leaderboard split
              </summary>
              <returns></returns>
         </member>

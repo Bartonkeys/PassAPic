@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -204,6 +205,46 @@ namespace PassAPic.Core.Services
             return null;
         }
 
+        public List<LeaderboardSplit> RecalculateLeaderboardSplit()
+        {
+
+            try
+            {
+                var today = DateTime.UtcNow;
+                Calendar cal = new GregorianCalendar();
+                var weekNumber = cal.GetWeekOfYear(today, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+                var startOfWeek = FirstDateOfWeek(today.Year, weekNumber, new CultureInfo("en-GB"));
+                var endOfWeek = startOfWeek.AddDays(7);
+
+                var scoresThisWeek = _dataContext.Score.Where(s => startOfWeek <= s.DateCreated && s.DateCreated  <= endOfWeek).ToList();
+                var newLeaderboardSplit = CollateScoresForLeaderboardSplit(scoresThisWeek, weekNumber);
+
+                //Clear out old leaderboad
+                foreach (var leaderboardSplit in _dataContext.LeaderboardSplit)
+                {
+                    if (leaderboardSplit.WeekNumber == weekNumber)
+                    {_dataContext.LeaderboardSplit.Remove(leaderboardSplit);}
+                }
+
+                //Write all leaderboard items together
+                foreach (var leaderboardSplit in newLeaderboardSplit)
+                {
+                    _dataContext.LeaderboardSplit.Add(leaderboardSplit);
+                }
+
+                _dataContext.Commit();
+
+                return newLeaderboardSplit;
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
         public async Task<List<Leaderboard>> RecalculateLeaderboardAsync()
         {
             return await Task.Run(() => RecalculateLeaderboard());
@@ -255,6 +296,54 @@ namespace PassAPic.Core.Services
             
         }
 
+        private List<LeaderboardSplit> CollateScoresForLeaderboardSplit(List<Game_Scoring> scores, int weekNumber )
+        {
+            var newLeaderboard = new List<LeaderboardSplit>();
+            var now = DateTime.UtcNow;
+
+            try
+            {
+
+                foreach (var gameScoringModel in scores)
+                {
+
+                    var leaderboardItem = new LeaderboardSplit();
+
+                    if (newLeaderboard.Any(l => l.UserId == gameScoringModel.User.Id))
+                    {
+                        leaderboardItem =
+                            (newLeaderboard.FirstOrDefault(l => l.UserId == gameScoringModel.User.Id));
+                        if (leaderboardItem != null)
+                        {
+                            leaderboardItem.TotalScore += gameScoringModel.Score;
+                            leaderboardItem.DateCreated = now;
+                            leaderboardItem.WeekNumber = weekNumber;
+                        }
+                    }
+                    else
+                    {
+                        leaderboardItem.UserId = gameScoringModel.User.Id;
+                        leaderboardItem.Username = gameScoringModel.User.Username;
+                        leaderboardItem.TotalScore = gameScoringModel.Score;
+                        leaderboardItem.DateCreated = now;
+
+                    }
+
+                    newLeaderboard.Add(leaderboardItem);
+
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+
+            return newLeaderboard;
+
+        }
+
         private bool compareWords(WordGuess firstWordGuess, WordGuess secondWordGuess)
         {         
             var firstWordModel = new WordModel
@@ -276,6 +365,44 @@ namespace PassAPic.Core.Services
             var similarSoundex = soundex.IsSimilar(stringArray);
 
             return similarMetaphone || similarSoundex;
+        }
+
+
+        //private DateTime FirstDateOfWeek(int year, int weekNum, CalendarWeekRule rule)
+        //{
+        //    Debug.Assert(weekNum >= 1);
+
+        //    DateTime jan1 = new DateTime(year, 1, 1);
+
+        //    int daysOffset = DayOfWeek.Monday - jan1.DayOfWeek;
+        //    DateTime firstMonday = jan1.AddDays(daysOffset);
+        //    Debug.Assert(firstMonday.DayOfWeek == DayOfWeek.Monday);
+
+        //    var cal = CultureInfo.CurrentCulture.Calendar;
+        //    int firstWeek = cal.GetWeekOfYear(firstMonday, rule, DayOfWeek.Monday);
+
+        //    if (firstWeek <= 1)
+        //    {
+        //        weekNum -= 1;
+        //    }
+
+        //    DateTime result = firstMonday.AddDays(weekNum * 7);
+
+        //    return result;
+        //}
+
+        public static DateTime FirstDateOfWeek(int year, int weekOfYear, CultureInfo ci)
+        {
+            DateTime jul1 = new DateTime(year, 7, 1);
+            while (jul1.DayOfWeek != ci.DateTimeFormat.FirstDayOfWeek)
+            {
+                jul1 = jul1.AddDays(1.0);
+            }
+            int refWeek = ci.Calendar.GetWeekOfYear(jul1, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+
+            int weekOffset = weekOfYear - refWeek;
+
+            return jul1.AddDays(7 * weekOffset);
         }
        
     }

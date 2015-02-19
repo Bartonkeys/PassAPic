@@ -300,6 +300,7 @@
     <Content Include="Views\Leaderboard\Index.cshtml" />
     <Content Include="Views\Shared\_EmptyLayout.cshtml" />
     <Content Include="Views\WordView\Index.cshtml" />
+    <Content Include="Views\Leaderboard\Split.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

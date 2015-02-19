@@ -97,6 +97,17 @@
           <Property Name="TotalScore" Type="int" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="LeaderboardSplit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Username" Type="nvarchar(max)" />
+          <Property Name="TotalScore" Type="int" />
+          <Property Name="WeekNumber" Type="int" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="PushRegister">
           <Key>
             <PropertyRef Name="Id" />
@@ -285,6 +296,7 @@
           <EntitySet Name="Guesses_ImageGuess" EntityType="Self.Guesses_ImageGuess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guesses_WordGuess" EntityType="Self.Guesses_WordGuess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Leaderboard" EntityType="Self.Leaderboard" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LeaderboardSplit" EntityType="Self.LeaderboardSplit" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PushRegister" EntityType="Self.PushRegister" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Words" EntityType="Self.Words" Schema="dbo" store:Type="Tables" />
@@ -392,6 +404,7 @@
             <End Role="Game" EntitySet="Games" />
             <End Role="Game_Exchange_Words" EntitySet="Game_Exchange_Words" />
           </AssociationSet>
+          <EntitySet Name="LeaderboardSplits" EntityType="PassAPicModel.LeaderboardSplit" />
           </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -611,6 +624,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="LeaderboardSplit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TotalScore" Type="Int32" />
+          <Property Name="WeekNumber" Type="Int32" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -774,6 +798,18 @@
               <MappingFragment StoreEntitySet="Game_Exchange_Words">
                 <ScalarProperty Name="GameId" ColumnName="GameId" />
                 <ScalarProperty Name="word" ColumnName="word" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LeaderboardSplits">
+            <EntityTypeMapping TypeName="PassAPicModel.LeaderboardSplit">
+              <MappingFragment StoreEntitySet="LeaderboardSplit">
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
+                <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

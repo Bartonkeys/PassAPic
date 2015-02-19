@@ -83,6 +83,9 @@
     <Compile Include="Leaderboard.cs">
       <DependentUpon>PassAPicModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="LeaderboardSplit.cs">
+      <DependentUpon>PassAPicModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PassAPicModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
