@@ -16,7 +16,7 @@ namespace PassAPic.Controllers
         public async Task<ActionResult> Index()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboard");
+            var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboard/overall");
             
             var leaderboardModels = await response.Content.ReadAsAsync<List<LeaderboardModel>>();
             
@@ -27,7 +27,7 @@ namespace PassAPic.Controllers
         public async Task<ActionResult> Split()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboardSplit");
+            var response = await client.GetAsync(BaseUrl + "/api/game/getLeaderboard/thisweek");
 
             var leaderboardModels = await response.Content.ReadAsAsync<List<LeaderboardModel>>();
 

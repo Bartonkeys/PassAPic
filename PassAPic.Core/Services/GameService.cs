@@ -28,7 +28,9 @@ namespace PassAPic.Core.Services
             var scores = await Task.Run(() => CalculateScoreForGame(game));
             //try writing scores to DB
             await SaveScoresToDatabaseAsync(scores);
-            //Update Leaderboard
+            
+            //Update Leaderboard(s)
+            RecalculateLeaderboardSplitAsync();
             return await RecalculateLeaderboardAsync();
         }
 
@@ -205,6 +207,11 @@ namespace PassAPic.Core.Services
             return null;
         }
 
+        public async Task<List<Leaderboard>> RecalculateLeaderboardAsync()
+        {
+            return await Task.Run(() => RecalculateLeaderboard());
+        }
+
         public List<LeaderboardSplit> RecalculateLeaderboardSplit()
         {
 
@@ -245,10 +252,12 @@ namespace PassAPic.Core.Services
             return null;
         }
 
-        public async Task<List<Leaderboard>> RecalculateLeaderboardAsync()
+        public async Task<List<LeaderboardSplit>> RecalculateLeaderboardSplitAsync()
         {
-            return await Task.Run(() => RecalculateLeaderboard());
+            return await Task.Run(() => RecalculateLeaderboardSplit());
         }
+
+       
         private List<Leaderboard> CollateScoresForLeaderboard(List<Game_Scoring> scores)
         {
             var newLeaderboard = new List<Leaderboard>();

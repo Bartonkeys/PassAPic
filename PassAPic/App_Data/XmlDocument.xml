@@ -703,10 +703,16 @@
              <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.GameController.GetLeaderboard">
-             <summary>
-            Test for leaderboard
-             </summary>
-             <returns></returns>
+            <summary>
+            Return Leaderboard data to the app
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:PassAPic.Controllers.GameController.GetLeaderboard(System.String)">
+            <summary>
+            Return Leaderboard data to the app
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:PassAPic.Controllers.GameController.GetLeaderboardSplit">
              <summary>

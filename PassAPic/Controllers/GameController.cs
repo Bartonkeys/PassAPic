@@ -4,6 +4,7 @@ using System.Data.Entity.SqlServer;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -248,7 +249,7 @@ namespace PassAPic.Controllers
                 }
                 else
                 {
-                    await SendPushMessage(
+                    Task.Run(() =>  SendPushMessage(
                             game.Id, 
                             new List<PushQueueMember>(){
                                 new PushQueueMember
@@ -257,7 +258,7 @@ namespace PassAPic.Controllers
                                     PushBadgeNumber = 1
                                 }
                             },
-                            String.Format("{0} has sent you a new word to draw!", user.Username));
+                            String.Format("{0} has sent you a new word to draw!", user.Username)));
                 } 
 
                 return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage("Push message sent successfully"));
@@ -583,7 +584,7 @@ namespace PassAPic.Controllers
                 {
                     //SendPushMessage(game.Id, nextUser.Id, String.Format("{0} has sent you a new image to guess!", user.Username));
 
-                    await SendPushMessage(
+                    Task.Run(() => SendPushMessage(
                             game.Id,
                             new List<PushQueueMember>(){
                                 new PushQueueMember
@@ -592,7 +593,7 @@ namespace PassAPic.Controllers
                                     PushBadgeNumber = 1
                                 }
                             },
-                            String.Format("{0} has sent you a new image to guess!", user.Username));
+                            String.Format("{0} has sent you a new image to guess!", user.Username)));
                 }
 
                 else
@@ -803,10 +804,11 @@ namespace PassAPic.Controllers
 
         // Get /api/game/getLeaderboard
         /// <summary>
-        ///Test for leaderboard
+        /// Return Leaderboard data to the app
         /// </summary>
         /// <returns></returns>
         [Route("GetLeaderboard")]
+        [Obsolete("/api/game/getLeaderboard is deprecated, please use /api/game/getLeaderboard/splitString instead.", true)]
         public async Task<HttpResponseMessage> GetLeaderboard()
         {
             try
@@ -834,6 +836,83 @@ namespace PassAPic.Controllers
             }
         }
 
+        // Get /api/game/getLeaderboard/splitString
+        /// <summary>
+        /// Return Leaderboard data to the app
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetLeaderboard/{split}")]
+        public async Task<HttpResponseMessage> GetLeaderboard(string split)
+        {
+            try
+            {
+                var leaderboardModels = new List<LeaderboardModel>();
+
+                if (split == null || split.Trim().ToLower().Equals("overall"))
+                {
+                    var leaderboardItems = DataContext.Leaderboard;
+                    foreach (var leaderboardItem in leaderboardItems)
+                    {
+                        if (leaderboardItem.TotalScore != null)
+                            leaderboardModels.Add(new LeaderboardModel()
+                            {
+                                UserName = leaderboardItem.Username,
+                                TotalScore = (int)leaderboardItem.TotalScore
+
+                            });
+                    }
+
+                }
+                else if (split.Trim().ToLower().Equals("thisweek"))
+                {
+                    var today = DateTime.UtcNow;
+                    Calendar cal = new GregorianCalendar();
+                    var weekNumber = cal.GetWeekOfYear(today, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+
+                    var leaderboardItems = DataContext.LeaderboardSplit.Where(s => s.WeekNumber == weekNumber);
+                    foreach (var leaderboardItem in leaderboardItems)
+                    {
+                        if (leaderboardItem.TotalScore != null)
+                            if (leaderboardItem.WeekNumber != null)
+                                leaderboardModels.Add(new LeaderboardModel()
+                                {
+                                    UserName = leaderboardItem.Username,
+                                    TotalScore = (int)leaderboardItem.TotalScore,
+                                    WeekNumber = (int)leaderboardItem.WeekNumber
+                                });
+                    }
+
+                }
+
+                else if (split.Trim().ToLower().Equals("allweeks"))
+                {
+                   
+                    var leaderboardItems = DataContext.LeaderboardSplit;
+                    foreach (var leaderboardItem in leaderboardItems)
+                    {
+                        if (leaderboardItem.TotalScore != null)
+                            if (leaderboardItem.WeekNumber != null)
+                                leaderboardModels.Add(new LeaderboardModel()
+                                {
+                                    UserName = leaderboardItem.Username,
+                                    TotalScore = (int)leaderboardItem.TotalScore,
+                                    WeekNumber = (int)leaderboardItem.WeekNumber
+                                });
+                    }
+
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.TotalScore));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+
 
         // Get /api/game/getLeaderboardSplit
         /// <summary>
@@ -841,6 +920,8 @@ namespace PassAPic.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("GetLeaderboardSplit")]
+        [Obsolete("/api/game/getLeaderboardSplit is deprecated, please use /api/game/getLeaderboard/splitString instead.", true)]
+        
         public async Task<HttpResponseMessage> GetLeaderboardSplit()
         {
             try
