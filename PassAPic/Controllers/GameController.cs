@@ -878,8 +878,7 @@ namespace PassAPic.Controllers
                                 leaderboardModels.Add(new LeaderboardModel()
                                 {
                                     UserName = leaderboardItem.Username,
-                                    TotalScore = (int)leaderboardItem.TotalScore,
-                                    WeekNumber = (int)leaderboardItem.WeekNumber
+                                    TotalScore = (int)leaderboardItem.TotalScore
                                 });
                     }
 
