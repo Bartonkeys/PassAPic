@@ -965,7 +965,7 @@ namespace PassAPic.Controllers
 
                 IQueryable<AccountModel> usersOnline =
                     DataContext.User
-                    .Where(x => x.IsOnline)
+                    .Where(x => x.IsOnline && (bool)!x.Archived)
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
                     .Take(pageSize)
