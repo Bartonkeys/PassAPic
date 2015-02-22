@@ -708,7 +708,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:PassAPic.Controllers.GameController.GetLeaderboard(System.String)">
+        <member name="M:PassAPic.Controllers.GameController.GetLeaderboard(System.String,System.Int32)">
             <summary>
             Return Leaderboard data to the app
             </summary>

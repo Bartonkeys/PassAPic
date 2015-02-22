@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity.SqlServer;
 using System.Diagnostics;
 using System.Drawing;
@@ -841,8 +842,8 @@ namespace PassAPic.Controllers
         /// Return Leaderboard data to the app
         /// </summary>
         /// <returns></returns>
-        [Route("GetLeaderboard/{split}")]
-        public async Task<HttpResponseMessage> GetLeaderboard(string split)
+        [Route("GetLeaderboard/{split}/{userId?}")]
+        public async Task<HttpResponseMessage> GetLeaderboard(string split, int userId = -1)
         {
             try
             {
@@ -888,16 +889,35 @@ namespace PassAPic.Controllers
                 {
                    
                     var leaderboardItems = DataContext.LeaderboardSplit;
+                    var leaderboardModelsTemp = new List<LeaderboardModel>();
+
+                    
                     foreach (var leaderboardItem in leaderboardItems)
                     {
                         if (leaderboardItem.TotalScore != null)
                             if (leaderboardItem.WeekNumber != null)
-                                leaderboardModels.Add(new LeaderboardModel()
+                                leaderboardModelsTemp.Add(new LeaderboardModel()
                                 {
                                     UserName = leaderboardItem.Username,
                                     TotalScore = (int)leaderboardItem.TotalScore,
                                     WeekNumber = (int)leaderboardItem.WeekNumber
                                 });
+                    }
+
+                    if (userId != -1)
+                    {
+                        //var weeks = new List<int>();
+                        var weeks = leaderboardModelsTemp.Select(l => l.WeekNumber).Distinct();
+                        var user = DataContext.User.FirstOrDefault(u => u.Id == userId);
+                        foreach (var week in weeks)
+                        {
+                            leaderboardModels.Add(leaderboardModelsTemp.Where(l => l.WeekNumber == week).Aggregate((i1,i2) => i1.TotalScore > i2.TotalScore ? i1 : i2));
+                            leaderboardModels.Add(leaderboardModelsTemp.FirstOrDefault(l => user != null && l.UserName == user.Username));
+                        }
+                    }
+                    else
+                    {
+                        leaderboardModels = leaderboardModelsTemp;
                     }
 
                     return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
