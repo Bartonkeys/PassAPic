@@ -911,7 +911,13 @@ namespace PassAPic.Controllers
                         var user = DataContext.User.FirstOrDefault(u => u.Id == userId);
                         foreach (var week in weeks)
                         {
-                            leaderboardModels.Add(leaderboardModelsTemp.Where(l => l.WeekNumber == week).Aggregate((i1,i2) => i1.TotalScore > i2.TotalScore ? i1 : i2));
+
+                            var weeklyHighScore =
+                                leaderboardModelsTemp.Where(l => l.WeekNumber == week)
+                                    .Aggregate((i1, i2) => i1.TotalScore > i2.TotalScore ? i1 : i2);
+                            
+                            weeklyHighScore.HighScore = true;
+                            leaderboardModels.Add(weeklyHighScore);
                             leaderboardModels.Add(leaderboardModelsTemp.FirstOrDefault(l => user != null && l.UserName == user.Username && l.WeekNumber == week));
                         }
                     }
