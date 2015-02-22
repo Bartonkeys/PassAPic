@@ -317,6 +317,7 @@ namespace PassAPic.Core.Services
                 {
 
                     var leaderboardItem = new LeaderboardSplit();
+                    leaderboardItem.WeekNumber = weekNumber;
 
                     if (newLeaderboard.Any(l => l.UserId == gameScoringModel.User.Id))
                     {
@@ -326,7 +327,7 @@ namespace PassAPic.Core.Services
                         {
                             leaderboardItem.TotalScore += gameScoringModel.Score;
                             leaderboardItem.DateCreated = now;
-                            leaderboardItem.WeekNumber = weekNumber;
+                            
                         }
                     }
                     else
