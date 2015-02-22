@@ -130,7 +130,7 @@ namespace PassAPic.Controllers
             try
             {
                 List<AccountModel> usersOnline =
-                    DataContext.User.Where(x => x.IsOnline)
+                    DataContext.User.Where(x => x.IsOnline && (bool) !x.Archived)
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
                     .Take(pageSize)

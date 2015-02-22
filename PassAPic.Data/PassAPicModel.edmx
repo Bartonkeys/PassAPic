@@ -128,6 +128,7 @@
           <Property Name="FacebookId" Type="bigint" />
           <Property Name="Password" Type="varchar(max)" />
           <Property Name="Email" Type="varchar" MaxLength="200" />
+          <Property Name="Archived" Type="bit" />
         </EntityType>
         <EntityType Name="Words">
           <Key>
@@ -460,6 +461,7 @@
           <Property Name="Email" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Users" FromRole="User" ToRole="Game_Comments" />
           <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Users" FromRole="User" ToRole="Game_Scoring" />
+          <Property Name="Archived" Type="Boolean" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -684,6 +686,7 @@
     <EntitySetMapping Name="Users">
       <EntityTypeMapping TypeName="IsTypeOf(PassAPicModel.User)">
         <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Archived" ColumnName="Archived" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="FacebookId" ColumnName="FacebookId" />
