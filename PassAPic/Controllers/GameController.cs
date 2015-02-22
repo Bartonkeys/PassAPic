@@ -693,7 +693,7 @@ namespace PassAPic.Controllers
 
                         }
 
-                        SendPushMessage(game.Id, usersInGame, user.Username + " says '" + model.Text + "' about '" + game.StartingWord + "'");
+                        Task.Run(() => SendPushMessage(game.Id, usersInGame, user.Username + " says '" + model.Text + "' about '" + game.StartingWord + "'"));
 
                         return Request.CreateResponse(HttpStatusCode.Created, "Comment added!");
                     }
