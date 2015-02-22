@@ -912,7 +912,7 @@ namespace PassAPic.Controllers
                         foreach (var week in weeks)
                         {
                             leaderboardModels.Add(leaderboardModelsTemp.Where(l => l.WeekNumber == week).Aggregate((i1,i2) => i1.TotalScore > i2.TotalScore ? i1 : i2));
-                            leaderboardModels.Add(leaderboardModelsTemp.FirstOrDefault(l => user != null && l.UserName == user.Username));
+                            leaderboardModels.Add(leaderboardModelsTemp.FirstOrDefault(l => user != null && l.UserName == user.Username && l.WeekNumber == week));
                         }
                     }
                     else
