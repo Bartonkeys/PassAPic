@@ -900,7 +900,7 @@ namespace PassAPic.Controllers
                                 });
                     }
 
-                    return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenBy(l => l.TotalScore));
+                    return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
 
                 }
 
