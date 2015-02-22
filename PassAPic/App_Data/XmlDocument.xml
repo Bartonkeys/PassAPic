@@ -732,6 +732,12 @@
              </summary>
              <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.RecalculateLeaderboards(System.String)">
+            <summary>
+            Leaderboards are recalculated on game compete - this will clear out the Db and recalculate them all
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GameController.GetLazyGuesses(System.Int32,System.Int32,System.Int32)">
             <summary>
             Returns a Paginated collection of abandoned games for user, latest game at top.

@@ -965,7 +965,7 @@ namespace PassAPic.Controllers
 
                 IQueryable<AccountModel> usersOnline =
                     DataContext.User
-                    .Where(x => x.IsOnline && (bool)!x.Archived)
+                    .Where(x => x.IsOnline && !x.Archived)
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
                     .Take(pageSize)
@@ -1034,6 +1034,36 @@ namespace PassAPic.Controllers
                 DataContext.Commit();
 
                 return Request.CreateResponse(HttpStatusCode.OK, "Deleted " + gamesToDelete + " games");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+
+
+         // Get /api/game/RecalculateLeaderboards/{password}
+        /// <summary>
+        /// Leaderboards are recalculated on game compete - this will clear out the Db and recalculate them all
+        /// </summary>
+        /// <returns></returns>
+        [Route("RecalculateLeaderboards/{password}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> RecalculateLeaderboards(string password)
+        {
+            if (password != "Y)rm91234")
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorised to run this command");
+            }
+            try
+            {
+                var gs = new GameService(DataContext);
+                await gs.RecalculateLeaderboardAsync();
+                await gs.RecalculateLeaderboardSplitAsync();
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Leaderboards recaclulated!");
             }
             catch (Exception ex)
             {
