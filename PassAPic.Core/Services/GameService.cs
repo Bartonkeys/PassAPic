@@ -30,7 +30,7 @@ namespace PassAPic.Core.Services
             await SaveScoresToDatabaseAsync(scores);
             
             //Update Leaderboard(s)
-            RecalculateLeaderboardSplitAsync();
+            await RecalculateLeaderboardSplitAsync();
             return await RecalculateLeaderboardAsync();
         }
 
