@@ -52,7 +52,7 @@ namespace PassAPic.Controllers
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
                         SentFromUsername = sentFromUsername,
-                        DateCreated = guess.Game.DateCreated,
+                        DateCreated = guess.DateCreated ?? guess.Game.DateCreated,
                         TimerInSeconds = guess.Game.TimerInSeconds
                     };
 
@@ -70,7 +70,7 @@ namespace PassAPic.Controllers
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
                         SentFromUsername = sentFromUsername,
-                        DateCreated = guess.Game.DateCreated,
+                        DateCreated = guess.DateCreated ?? guess.Game.DateCreated,
                         TimerInSeconds = guess.Game.TimerInSeconds
                     };
 
