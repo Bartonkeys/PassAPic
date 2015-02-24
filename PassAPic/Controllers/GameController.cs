@@ -178,7 +178,7 @@ namespace PassAPic.Controllers
         // POST /api/game/guessword
         /// <summary>
         /// Post up word guess, with next user. Store all that in Guess table. Return 201 if all good, 406 if next user has already had a go on this one.
-        /// If this is last guess then dont set next user and mark game as over.
+        /// If this is last guess then dont set next user and mark game as over. 
         /// </summary>
         /// <returns></returns>
         [Route("GuessWord")]
