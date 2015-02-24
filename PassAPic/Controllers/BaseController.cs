@@ -42,6 +42,8 @@ namespace PassAPic.Controllers
                     sentFromUsername = guess.Game.Creator.Username;
                 }
 
+               
+
                 if (guess is WordGuess)
                 {
                     var wordGuess = (WordGuess)guess;
@@ -54,6 +56,7 @@ namespace PassAPic.Controllers
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
                         SentFromUsername = sentFromUsername,
+                        UserName = wordGuess.User.Username,
                         DateCreated = guess.DateCreated ?? guess.Game.DateCreated,
                         TimerInSeconds = guess.Game.TimerInSeconds
                     };
@@ -73,6 +76,7 @@ namespace PassAPic.Controllers
                         IsLastTurn = isLastTurn,
                         CreatorId = guess.Game.Creator.Id,
                         SentFromUsername = sentFromUsername,
+                        UserName = imageGuess.User.Username,
                         DateCreated = guess.DateCreated ?? guess.Game.DateCreated,
                         TimerInSeconds = guess.Game.TimerInSeconds
                     };
