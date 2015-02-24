@@ -756,6 +756,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:PassAPic.Controllers.GameController.PostChangeNextPlayer(PassAPic.Models.Models.GameBaseModel)">
+            <summary>
+            Allow user to change the next user if it has not been guessed within designated time Return 201 if all good, 406 if next user has already had a go on this one.
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:PassAPic.Controllers.GifController.GetAnimatedGif(System.Int32)">
             GET /api/gif
             <summary>

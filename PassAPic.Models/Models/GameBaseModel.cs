@@ -6,6 +6,9 @@ namespace PassAPic.Models.Models
 {
     public class GameBaseModel
     {
+        [JsonProperty(PropertyName = "guessId")]
+        public int GuessId { get; set; }
+
         [JsonProperty(PropertyName = "userId")]
         public int UserId { get; set; }
 
@@ -41,6 +44,12 @@ namespace PassAPic.Models.Models
 
         [JsonProperty(PropertyName = "exchanges")]
         public int Exchanges { get; set; }
+
+        [JsonProperty(PropertyName = "nextUserId")]
+        public int NextUserId { get; set; }
+
+        [JsonProperty("sentFromUsername")]
+        public string SentFromUsername { get; set; }
 
     }
 }

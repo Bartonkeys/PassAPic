@@ -28,6 +28,7 @@ namespace PassAPic.Controllers
 
             foreach (var guess in guesses)
             {
+               
                 var isLastTurn = guess.Game.Guesses.Count() + 1 >= guess.Game.NumberOfGuesses;
 
                 var sentFromUsername = ""; 
@@ -46,6 +47,7 @@ namespace PassAPic.Controllers
                     var wordGuess = (WordGuess)guess;
                     var wordModel = new WordModel
                     {
+                        GuessId = wordGuess.Id,
                         GameId = wordGuess.Game.Id,
                         UserId = wordGuess.NextUser.Id,
                         Word = wordGuess.Word,
@@ -64,6 +66,7 @@ namespace PassAPic.Controllers
 
                     var imageModel = new ImageModel
                     {
+                        GuessId = imageGuess.Id,
                         GameId = imageGuess.Game.Id,
                         UserId = imageGuess.NextUser.Id,
                         Image = imageGuess.Image,

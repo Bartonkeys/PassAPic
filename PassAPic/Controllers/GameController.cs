@@ -837,7 +837,7 @@ namespace PassAPic.Controllers
             }
         }
 
-        // Get /api/game/getLeaderboard/splitString
+        // Get /api/game/getLeaderboard/{split}/{userId?}
         /// <summary>
         /// Return Leaderboard data to the app
         /// </summary>
@@ -1127,8 +1127,8 @@ namespace PassAPic.Controllers
                     x.User.Id == userId &&
                     !x.Complete &&
                     !x.Game.GameOverMan &&
-                    x.DateCreated < TwoDaysAgo);
-                //(x.DateCreated == null || x.DateCreated < DateTime.Now));
+                    //x.DateCreated < TwoDaysAgo);
+                    (x.DateCreated == null || x.DateCreated < TwoDaysAgo));
 
                 //PopulatePaginationHeaderForAction needs refactored
                 //PopulatePaginationHeaderForAction(userId, page, pageSize, "LazyGuesses");
@@ -1140,6 +1140,89 @@ namespace PassAPic.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
 
+        }
+
+        // POST /api/game/changeNextPlayer
+        /// <summary>
+        /// Allow user to change the next user if it has not been guessed within designated time Return 201 if all good, 406 if next user has already had a go on this one.
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Route("ChangeNextPlayer")]
+        public async Task<HttpResponseMessage> PostChangeNextPlayer(GameBaseModel model)
+        {
+            try
+            {
+                var user = DataContext.User.Find(model.UserId);
+                var nextUser = DataContext.User.Find(model.NextUserId);
+                var game = DataContext.Game.Find(model.GameId);
+
+                if (NextUserAlreadyHadAGo(game, model.NextUserId))
+                    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                        String.Format("Please pick another user, {0} has already had a turn", nextUser.Username));
+
+                //if (CurrentUserAlreadyHadAGo(game, model.UserId))
+                //    return Request.CreateResponse(HttpStatusCode.NotAcceptable,
+                //        String.Format("You have already submitted this guess"));
+
+                //SetPreviousGuessAsComplete(game, model.UserId);
+                //var order = game.Guesses.Count + 1;
+
+                var guess = DataContext.Guess.FirstOrDefault(g => g.Id == model.GuessId);
+               
+                if (guess != null)
+                {
+                    var currentNextUserId = guess.NextUser.Id;
+                    Task.Run(() => SendPushMessage(
+                            game.Id,
+                            new List<PushQueueMember>(){
+                                new PushQueueMember
+                                {
+                                    Id = currentNextUserId,
+                                    PushBadgeNumber = 1
+                                }
+                            },
+                            String.Format("{0} has taken back their guess because you took too long. Lazy!", user.Username)));
+
+                    guess.NextUser = nextUser;
+                    guess.DateCreated = DateTime.UtcNow;
+
+                    DataContext.Commit();
+
+                    Task.Run(() => SendPushMessage(
+                            game.Id,
+                            new List<PushQueueMember>(){
+                                new PushQueueMember
+                                {
+                                    Id = nextUser.Id,
+                                    PushBadgeNumber = 1
+                                }
+                            },
+                            String.Format("{0} has sent you a new guess!", user.Username)));
+
+
+                    return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage("Push message sent successfully"));
+
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.ExpectationFailed, new ReturnMessage("Error with guess - not found"));
+
+                }
+             
+            }
+            catch (PushMessageException pushEx)
+            {
+                //Push Message Exception is NOT fatal to the client so we hide the exception
+                //Response body could be checked if required
+                _log.Error(pushEx);
+                return Request.CreateResponse(HttpStatusCode.Created, new ReturnMessage(pushEx.Message));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
         }
 
         #region "Helper methods"
