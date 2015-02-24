@@ -204,6 +204,7 @@ namespace PassAPic.Controllers
 
                 var wordGuess = new WordGuess
                 {
+                    DateCreated = DateTime.UtcNow,
                     Order = order,
                     User = user,
                     Word = model.Word,
@@ -563,6 +564,7 @@ namespace PassAPic.Controllers
                     
                 var imageGuess = new ImageGuess
                 {
+                    DateCreated = DateTime.UtcNow,
                     Order = order,
                     User = user,
                     Image = imageUrl,
