@@ -1024,10 +1024,10 @@ namespace PassAPic.Controllers
 
                 var onlineUsersNotPlaying = usersOnline.Except(playersInGame);
 
-                //var sortedUsers = onlineUsersNotPlaying.OrderBy(o => o.GamesPlayedWithUserBefore).ToList();
+                var sortedUsers = onlineUsersNotPlaying.OrderByDescending(o => o.UserId).ToList();
                 //sortedUsers.Reverse();
 
-                return Request.CreateResponse(HttpStatusCode.OK, onlineUsersNotPlaying);
+                return Request.CreateResponse(HttpStatusCode.OK, sortedUsers);
             }
             catch (Exception ex)
             {
