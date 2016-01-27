@@ -27,6 +27,7 @@ using PassAPic.Models;
 using PassAPic.Core.AnimatedGif;
 using PassAPic.Models.Models;
 using PassAPic.Models.Models.Models;
+using System.Data.Entity;
 using Phonix;
 using Word = PassAPic.Models.Models.Word;
 
@@ -992,8 +993,8 @@ namespace PassAPic.Controllers
             try
             {
 
-                IQueryable<AccountModel> usersOnline =
-                    DataContext.User
+                var usersOnline =
+                    DataContext.User.AsNoTracking()
                     .Where(x => x.IsOnline && !x.Archived)
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
@@ -1007,10 +1008,10 @@ namespace PassAPic.Controllers
                             HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
                             GamesPlayedWithUserBefore = y.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
 
-                        });
+                        }).ToList();
 
 
-                var playersInGame = DataContext.Guess.Where(g => g.Game.Id == gameId).Select(u => new AccountModel
+                var playersInGame = DataContext.Guess.AsNoTracking().Where(g => g.Game.Id == gameId).Select(u => new AccountModel
                 {
                     UserId = u.User.Id,
                     Username = u.User.Username,
@@ -1019,12 +1020,11 @@ namespace PassAPic.Controllers
                     HasPlayedWithUserBefore = u.User.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
                     GamesPlayedWithUserBefore = u.User.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
 
-                });
+                }).ToList();
 
                 var onlineUsersNotPlaying = usersOnline.Except(playersInGame);
 
-                var sortedUsers = onlineUsersNotPlaying.OrderBy(o => o.GamesPlayedWithUserBefore).ToList();
-                sortedUsers.Reverse();
+                var sortedUsers = onlineUsersNotPlaying.OrderByDescending(o => o.GamesPlayedWithUserBefore).ToList();
 
                 return Request.CreateResponse(HttpStatusCode.OK, sortedUsers);
             }
