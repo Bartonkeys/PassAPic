@@ -127,10 +127,12 @@ namespace PassAPic.Controllers
         [AllowAnonymous]
         public HttpResponseMessage GetUsersOnline(int currentUserId, int page = 0, int pageSize = 10)
         {
+            var oneMonthAgo = DateTime.Now.AddMonths(-1).AddDays(-1);
+           
             try
             {
                 List<AccountModel> usersOnline =
-                    DataContext.User.Where(x => x.IsOnline && (bool) !x.Archived)
+                    DataContext.User.Where(x => x.IsOnline && (bool)!x.Archived && x.Games.Any(g => g.Guesses.Any(h => h.DateCreated != null && h.DateCreated < oneMonthAgo)))
                     .OrderBy(x => x.Username)
                     .Skip(pageSize * page)
                     .Take(pageSize)
@@ -143,6 +145,8 @@ namespace PassAPic.Controllers
                             HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId))
                         })
                         .ToList();
+
+
 
                 List<AccountModel> sortedUsersOnline = usersOnline.OrderBy(o => o.HasPlayedWithUserBefore).ToList();
                 sortedUsersOnline.Reverse();
