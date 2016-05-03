@@ -1008,7 +1008,7 @@ namespace PassAPic.Controllers
                             HasPlayedWithUserBefore = y.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
                             GamesPlayedWithUserBefore = y.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
 
-                        }).ToList();
+                        });
 
 
                 var playersInGame = DataContext.Guess.AsNoTracking().Where(g => g.Game.Id == gameId).Select(u => new AccountModel
@@ -1020,7 +1020,7 @@ namespace PassAPic.Controllers
                     HasPlayedWithUserBefore = u.User.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
                     GamesPlayedWithUserBefore = u.User.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
 
-                }).ToList();
+                });
 
                 var onlineUsersNotPlaying = usersOnline.Except(playersInGame);
 
