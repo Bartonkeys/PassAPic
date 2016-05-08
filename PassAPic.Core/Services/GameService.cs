@@ -16,10 +16,14 @@ namespace PassAPic.Core.Services
     public class GameService
     {
         private readonly IDataContext _dataContext;
+        private readonly System.Globalization.DateTimeFormatInfo _dfi = null;
 
         public GameService(IDataContext dataContext)
         {
             _dataContext = dataContext;
+            // Instantiate a culture using CreateSpecificCulture.
+            var ci = CultureInfo.CreateSpecificCulture("en-gb");
+            _dfi = ci.DateTimeFormat;
         }
 
         public async Task<List<Leaderboard>> DoScoringAsync(Game game)
@@ -217,10 +221,9 @@ namespace PassAPic.Core.Services
 
             try
             {
-                DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
                 var today = DateTime.UtcNow;
-                Calendar cal = dfi.Calendar;
-                var weekNumber = cal.GetWeekOfYear(today, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                Calendar cal = _dfi.Calendar;
+                var weekNumber = cal.GetWeekOfYear(today, _dfi.CalendarWeekRule, _dfi.FirstDayOfWeek);
                 var startOfWeek = FirstDateOfWeek(today.Year, weekNumber, new CultureInfo("en-GB"));
                 var endOfWeek = startOfWeek.AddDays(7);
 

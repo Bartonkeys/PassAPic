@@ -47,6 +47,10 @@ namespace PassAPic.Controllers
         static readonly string ServerUploadFolder = Path.GetTempPath();
         static readonly DateTime TwoDaysAgo = DateTime.Now.AddDays(-2);
 
+        private readonly System.Globalization.DateTimeFormatInfo _dfi = null;
+
+        
+
         [Inject]
         public GameController(IDataContext dataContext, IPushProvider pushProvider, ICloudImageProvider cloudImageProvider, IWordManager wordManager)
         {
@@ -58,6 +62,9 @@ namespace PassAPic.Controllers
             GameService = new GameService(dataContext);
             WordManager = wordManager;
             WordManager.DataContext = DataContext;
+            // Instantiate a culture using CreateSpecificCulture.
+            var ci = CultureInfo.CreateSpecificCulture("en-gb");
+            _dfi = ci.DateTimeFormat;
         }
 
         // POST /api/game/start
@@ -869,10 +876,10 @@ namespace PassAPic.Controllers
                 }
                 else if (split.Trim().ToLower().Equals("thisweek"))
                 {
-                    DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+                    
                     var today = DateTime.UtcNow;
-                    Calendar cal = dfi.Calendar;
-                    var weekNumber = cal.GetWeekOfYear(today, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                    Calendar cal = _dfi.Calendar;
+                    var weekNumber = cal.GetWeekOfYear(today, _dfi.CalendarWeekRule, _dfi.FirstDayOfWeek);
                     var leaderboardItems = DataContext.LeaderboardSplit.Where(s => s.WeekNumber == weekNumber);
                     foreach (var leaderboardItem in leaderboardItems)
                     {
