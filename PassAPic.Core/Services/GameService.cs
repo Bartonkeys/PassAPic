@@ -217,9 +217,10 @@ namespace PassAPic.Core.Services
 
             try
             {
+                DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
                 var today = DateTime.UtcNow;
-                Calendar cal = new GregorianCalendar();
-                var weekNumber = cal.GetWeekOfYear(today, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+                Calendar cal = dfi.Calendar;
+                var weekNumber = cal.GetWeekOfYear(today, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
                 var startOfWeek = FirstDateOfWeek(today.Year, weekNumber, new CultureInfo("en-GB"));
                 var endOfWeek = startOfWeek.AddDays(7);
 

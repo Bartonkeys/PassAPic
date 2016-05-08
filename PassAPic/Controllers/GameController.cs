@@ -869,10 +869,10 @@ namespace PassAPic.Controllers
                 }
                 else if (split.Trim().ToLower().Equals("thisweek"))
                 {
+                    DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
                     var today = DateTime.UtcNow;
-                    Calendar cal = new GregorianCalendar();
-                    var weekNumber = cal.GetWeekOfYear(today, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-
+                    Calendar cal = dfi.Calendar;
+                    var weekNumber = cal.GetWeekOfYear(today, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
                     var leaderboardItems = DataContext.LeaderboardSplit.Where(s => s.WeekNumber == weekNumber);
                     foreach (var leaderboardItem in leaderboardItems)
                     {

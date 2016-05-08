@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -302,11 +303,6 @@
     <Content Include="Views\WordView\Index.cshtml" />
     <Content Include="Views\Leaderboard\Split.cshtml" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Content Include="packages.config" />
-    <None Include="Project_Readme.html" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PassAPic.Contracts\PassAPic.Contracts.csproj">
       <Project>{9829536c-b05a-4430-b6a0-ea3a3e42861c}</Project>
@@ -317,13 +313,17 @@
       <Name>PassAPic.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\PassAPic.Data\PassAPic.Data.csproj">
-      <Project>{47D67790-5496-4905-9785-9A281F5F818F}</Project>
+      <Project>{47d67790-5496-4905-9785-9a281f5f818f}</Project>
       <Name>PassAPic.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\PassAPic.Models\PassAPic.Models.csproj">
       <Project>{e32308a4-a909-40c6-9815-7f92c26216c2}</Project>
       <Name>PassAPic.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Project_Readme.html" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
