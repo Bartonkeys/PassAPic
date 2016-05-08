@@ -935,6 +935,8 @@ namespace PassAPic.Controllers
                         leaderboardModels = leaderboardModelsTemp;
                     }
 
+                    leaderboardModels.RemoveAll(item => item == null);
+
                     return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
 
                 }
