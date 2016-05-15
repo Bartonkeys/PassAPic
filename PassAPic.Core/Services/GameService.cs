@@ -224,16 +224,17 @@ namespace PassAPic.Core.Services
                 var today = DateTime.UtcNow;
                 Calendar cal = _dfi.Calendar;
                 var weekNumber = cal.GetWeekOfYear(today, _dfi.CalendarWeekRule, _dfi.FirstDayOfWeek);
+                var year = (int) cal.GetYear(today);
                 var startOfWeek = FirstDateOfWeek(today.Year, weekNumber, new CultureInfo("en-GB"));
                 var endOfWeek = startOfWeek.AddDays(7);
 
                 var scoresThisWeek = _dataContext.Score.Where(s => startOfWeek <= s.DateCreated && s.DateCreated  <= endOfWeek).ToList();
-                var newLeaderboardSplit = CollateScoresForLeaderboardSplit(scoresThisWeek, weekNumber);
-
+                var newLeaderboardSplit = CollateScoresForLeaderboardSplit(scoresThisWeek, weekNumber, year);
+               
                 //Clear out old leaderboad
                 foreach (var leaderboardSplit in _dataContext.LeaderboardSplit)
                 {
-                    if (leaderboardSplit.WeekNumber == weekNumber)
+                    if (leaderboardSplit.WeekNumber == weekNumber && leaderboardSplit.Year == year)
                     {_dataContext.LeaderboardSplit.Remove(leaderboardSplit);}
                 }
 
@@ -309,7 +310,7 @@ namespace PassAPic.Core.Services
             
         }
 
-        private List<LeaderboardSplit> CollateScoresForLeaderboardSplit(List<Game_Scoring> scores, int weekNumber )
+        private List<LeaderboardSplit> CollateScoresForLeaderboardSplit(List<Game_Scoring> scores, int weekNumber, int year )
         {
             var newLeaderboard = new List<LeaderboardSplit>();
             var now = DateTime.UtcNow;
@@ -322,6 +323,7 @@ namespace PassAPic.Core.Services
 
                     var leaderboardItem = new LeaderboardSplit();
                     leaderboardItem.WeekNumber = weekNumber;
+                    leaderboardItem.Year = year;
 
                     if (newLeaderboard.Any(l => l.UserId == gameScoringModel.User.Id))
                     {

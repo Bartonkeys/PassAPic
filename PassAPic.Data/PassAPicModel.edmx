@@ -106,6 +106,7 @@
           <Property Name="Username" Type="nvarchar(max)" />
           <Property Name="TotalScore" Type="int" />
           <Property Name="WeekNumber" Type="int" />
+          <Property Name="Year" Type="int" />
           <Property Name="DateCreated" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PushRegister">
@@ -128,7 +129,7 @@
           <Property Name="FacebookId" Type="bigint" />
           <Property Name="Password" Type="varchar(max)" />
           <Property Name="Email" Type="varchar" MaxLength="200" />
-          <Property Name="Archived" Type="bit" />
+          <Property Name="Archived" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Words">
           <Key>
@@ -461,7 +462,7 @@
           <Property Name="Email" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Game_Comments" Relationship="PassAPicModel.FK_Game_Comments_Users" FromRole="User" ToRole="Game_Comments" />
           <NavigationProperty Name="Game_Scoring" Relationship="PassAPicModel.FK_Game_Scoring_Users" FromRole="User" ToRole="Game_Scoring" />
-          <Property Name="Archived" Type="Boolean" />
+          <Property Name="Archived" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="UserGame">
           <End Type="PassAPicModel.User" Multiplicity="0..1" Role="User" />
@@ -636,6 +637,7 @@
           <Property Name="TotalScore" Type="Int32" />
           <Property Name="WeekNumber" Type="Int32" />
           <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Year" Type="Int32" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -808,6 +810,7 @@
           <EntitySetMapping Name="LeaderboardSplits">
             <EntityTypeMapping TypeName="PassAPicModel.LeaderboardSplit">
               <MappingFragment StoreEntitySet="LeaderboardSplit">
+                <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
                 <ScalarProperty Name="WeekNumber" ColumnName="WeekNumber" />
                 <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />

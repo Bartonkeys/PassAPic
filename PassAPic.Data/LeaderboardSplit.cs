@@ -20,5 +20,6 @@ namespace PassAPic.Data
         public Nullable<int> TotalScore { get; set; }
         public Nullable<int> WeekNumber { get; set; }
         public System.DateTime DateCreated { get; set; }
+        public Nullable<int> Year { get; set; }
     }
 }

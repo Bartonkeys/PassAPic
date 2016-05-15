@@ -23,6 +23,9 @@ namespace PassAPic.Models.Models
         [JsonProperty(PropertyName = "weekNumber")]
         public int WeekNumber { get; set; }
 
+        [JsonProperty(PropertyName = "year")]
+        public int Year { get; set; }
+
         [JsonProperty(PropertyName = "highScore")]
         public bool HighScore { get; set; }
 

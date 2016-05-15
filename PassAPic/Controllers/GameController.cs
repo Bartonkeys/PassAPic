@@ -905,12 +905,14 @@ namespace PassAPic.Controllers
                     {
                         if (leaderboardItem.TotalScore != null)
                             if (leaderboardItem.WeekNumber != null)
-                                leaderboardModelsTemp.Add(new LeaderboardModel()
-                                {
-                                    UserName = leaderboardItem.Username,
-                                    TotalScore = (int)leaderboardItem.TotalScore,
-                                    WeekNumber = (int)leaderboardItem.WeekNumber
-                                });
+                                if (leaderboardItem.Year != null)
+                                    leaderboardModelsTemp.Add(new LeaderboardModel()
+                                    {
+                                        UserName = leaderboardItem.Username,
+                                        TotalScore = (int)leaderboardItem.TotalScore,
+                                        WeekNumber = (int)leaderboardItem.WeekNumber,
+                                        Year = (int) leaderboardItem.Year
+                                    });
                     }
 
                     if (userId != -1)
@@ -935,6 +937,7 @@ namespace PassAPic.Controllers
                         leaderboardModels = leaderboardModelsTemp;
                     }
 
+                    //TODO: Not sure why nulls are in this list!
                     leaderboardModels.RemoveAll(item => item == null);
 
                     return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
@@ -1033,7 +1036,7 @@ namespace PassAPic.Controllers
 
                 var onlineUsersNotPlaying = usersOnline.Except(playersInGame);
 
-                var sortedUsers = onlineUsersNotPlaying.OrderByDescending(o => o.GamesPlayedWithUserBefore).ToList();
+                var sortedUsers = onlineUsersNotPlaying.OrderByDescending(o => o.GamesPlayedWithUserBefore).ThenByDescending(o => o.LastActivity).ToList();
 
                 return Request.CreateResponse(HttpStatusCode.OK, sortedUsers);
             }
