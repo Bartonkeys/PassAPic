@@ -1027,7 +1027,7 @@ namespace PassAPic.Controllers
                 {
                     UserId = u.User.Id,
                     Username = u.User.Username,
-                    LastActivity = u.User.Games.Max(d => d.DateCompleted),
+                    LastActivity = u.User.CompletedGuesses.Max(d => d.DateCreated),
                     NumberOfCompletedGames = u.User.Games.Count(g => g.GameOverMan),
                     HasPlayedWithUserBefore = u.User.Games.Any(g => g.Guesses.Any(h => h.User.Id == currentUserId)),
                     GamesPlayedWithUserBefore = u.User.Games.Count(g => g.Guesses.Any(h => h.User.Id == currentUserId))
