@@ -1069,6 +1069,13 @@ namespace PassAPic.Controllers
 
                 foreach (var game in gamesWithNoGuesses)
                 {
+                    var gameExchanegWordsToRemove = DataContext.GameExchangeWords.Where(g => g.GameId == game.Id);
+                    foreach (var gameExchangeWord  in gameExchanegWordsToRemove)
+                    {
+                        DataContext.GameExchangeWords.Remove(gameExchangeWord);
+
+                    }
+
                     DataContext.Game.Remove(game);
                 }
                 

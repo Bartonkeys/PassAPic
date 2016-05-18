@@ -15,6 +15,7 @@ namespace PassAPic.Contracts
         IDbSet<Game_Scoring> Score { get; }
         IDbSet<Leaderboard> Leaderboard { get; }
         IDbSet<LeaderboardSplit> LeaderboardSplit { get; } 
+        IDbSet<Game_Exchange_Words> GameExchangeWords { get; } 
 
         void Commit();
     }

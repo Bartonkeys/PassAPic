@@ -22,8 +22,8 @@ namespace PassAPic.Core.Repositories
         public IDbSet<Game_Scoring> Score { get { return _context.Game_Scoring; } }
         public IDbSet<Leaderboard> Leaderboard { get { return _context.Leaderboards; } }
         public IDbSet<LeaderboardSplit> LeaderboardSplit { get { return _context.LeaderboardSplits; } }
+        public IDbSet<Game_Exchange_Words> GameExchangeWords { get { return _context.Game_Exchange_Words; } }
 
-        
         public void Commit()
         {
             _context.SaveChanges();        

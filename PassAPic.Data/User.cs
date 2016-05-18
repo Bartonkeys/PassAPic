@@ -31,6 +31,7 @@ namespace PassAPic.Data
         public string Password { get; set; }
         public string Email { get; set; }
         public bool Archived { get; set; }
+        public Nullable<System.DateTime> Created { get; set; }
     
         public virtual ICollection<Game> Games { get; set; }
         public virtual ICollection<Guess> CompletedGuesses { get; set; }
