@@ -943,7 +943,7 @@ namespace PassAPic.Controllers
                     //TODO: Not sure why nulls are in this list!
                     leaderboardModels.RemoveAll(item => item == null);
 
-                    return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
+                    return Request.CreateResponse(HttpStatusCode.OK, leaderboardModels.OrderByDescending(l => l.Year).ThenByDescending(l => l.WeekNumber).ThenByDescending(l => l.TotalScore));
 
                 }
 
