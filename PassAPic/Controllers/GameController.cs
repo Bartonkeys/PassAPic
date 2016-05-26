@@ -876,11 +876,14 @@ namespace PassAPic.Controllers
                 }
                 else if (split.Trim().ToLower().Equals("thisweek"))
                 {
-                    
+
+  
                     var today = DateTime.UtcNow;
                     Calendar cal = _dfi.Calendar;
                     var weekNumber = cal.GetWeekOfYear(today, _dfi.CalendarWeekRule, _dfi.FirstDayOfWeek);
-                    var leaderboardItems = DataContext.LeaderboardSplit.Where(s => s.WeekNumber == weekNumber);
+                    var year = (int)cal.GetYear(today);
+
+                    var leaderboardItems = DataContext.LeaderboardSplit.Where(s => s.WeekNumber == weekNumber && s.Year == year);
                     foreach (var leaderboardItem in leaderboardItems)
                     {
                         if (leaderboardItem.TotalScore != null)
